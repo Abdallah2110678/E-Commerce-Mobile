@@ -59,17 +59,10 @@ flutter:
 
   #--------------- LOCAL ASSETS ------------------#
   assets:
-    - assets/logos/
-    - assets/icons/brands/
-    - assets/images/content/
-    - assets/images/banners/
-    - assets/images/reviews/
-    - assets/images/products/
-    - assets/icons/categories/
-    - assets/images/animations/
-    - assets/icons/payment_methods/
-    - assets/images/on_boarding_images/
-
+    - assets/logos/facebook-icon.png
+    - assets/logos/google-icon.png
+    - assets/logos/t-store-splash-logo-black.png
+    - assets/logos/t-store-splash-logo-white.png
   #--------------- LOCAL FONTS ------------------#
   fonts:
     - family: Poppins
