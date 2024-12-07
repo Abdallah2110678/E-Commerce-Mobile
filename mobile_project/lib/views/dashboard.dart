@@ -1,7 +1,9 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
+import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Dashboard extends StatefulWidget {
@@ -64,7 +66,33 @@ class _DashboardState extends State<Dashboard> {
               ),
             ),
             //status secction
-            
+            GridView.count(
+                crossAxisCount: 2,
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                childAspectRatio: 1.4,
+                children: [
+                  _buildStatCard(context,
+                      title: 'Total Sales',
+                      value: '\$24,780',
+                      icon: Icons.attach_email_rounded,
+                      color: Color(0xff4caf50)),
+                  _buildStatCard(context,
+                      title: 'Total Orders',
+                      value: '\$12,780',
+                      icon: Icons.shopping_cart_rounded,
+                      color: Color(0xff2196f3)),
+                  _buildStatCard(context,
+                      title: 'Total products',
+                      value: '780',
+                      icon: Icons.inventory_rounded,
+                      color: Color(0xffff5722)),
+                  _buildStatCard(context,
+                      title: 'Total Customer',
+                      value: '\$5,780',
+                      icon: Icons.groups_rounded,
+                      color: Color(0xff9c2780))
+                ]),
             // revenue Section
 
           
