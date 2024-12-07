@@ -95,14 +95,125 @@ class _DashboardState extends State<Dashboard> {
                 ]),
             // revenue Section
 
-          
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Revenue Overview",
+                            style: GoogleFonts.poppins(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: TColors.primary),
+                          )
+                        ])
+                  ],
+                ),
+              ),
+            ),
             // recent Orders
-            
+            Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Recent Orders",
+                                style: GoogleFonts.poppins(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: TColors.primary),
+                              ),
+                              TextButton(
+                                  onPressed: () {},
+                                  child: Text("view All",
+                                      style: GoogleFonts.poppins(
+                                          color: TColors.accent)))
+                            ]),
+                        SizedBox(
+                          height: 10,
+                        ),
+                      ],
+                    )))
           ],
         ),
       ),
     );
   }
 
-
+  Widget _buildStatCard(BuildContext context,
+      {required String title,
+      required String value,
+      required IconData icon,
+      required Color color}) {
+    return Card(
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        child: Container(
+            decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [
+                  color,
+                  color.withOpacity(0.7),
+                ], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                borderRadius: BorderRadius.circular(15)),
+            child: Stack(children: [
+              Positioned(
+                  right: -20,
+                  top: -20,
+                  child: Opacity(
+                    opacity: 0.3,
+                    child: Icon(
+                      icon,
+                      size: 80,
+                      color: Colors.white,
+                    ),
+                  )),
+              Padding(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      icon,
+                      color: Colors.white,
+                      size: 30,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      title,
+                      style: GoogleFonts.poppins(
+                          color: Colors.white70, fontSize: 14),
+                    ),
+                    Text(
+                      value,
+                      style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              )
+            ])));
+  }
 }
