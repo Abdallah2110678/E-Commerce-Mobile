@@ -7,7 +7,7 @@ import 'package:mobile_project/utils/constants/image_setting.dart';
 import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:mobile_project/utils/constants/text_strings.dart';
 import 'package:mobile_project/utils/helpers/helper_function.dart';
-import 'package:mobile_project/views/signup.dart';
+import 'package:mobile_project/views/signup/signup.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
