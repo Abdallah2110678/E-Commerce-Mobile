@@ -71,6 +71,7 @@ flutter:
     - assets/images/animations/sammy-line-success.png
     - assets/images/animations/sammy-line-travel-backpack-with-passport-and-air-ticket.gif
     - assets/images/animations/sammy-line-workout.gif
+    - assets/images/animations/141594-animation-of-docer.json
   #--------------- LOCAL FONTS ------------------#
   fonts:
     - family: Poppins

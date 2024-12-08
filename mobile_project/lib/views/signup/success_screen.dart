@@ -4,7 +4,7 @@ import 'package:mobile_project/common/styles/spacing_styles.dart';
 import 'package:mobile_project/utils/constants/image_setting.dart';
 import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:mobile_project/utils/constants/text_strings.dart';
-import 'package:mobile_project/utils/helpers/helper_function.dart';
+import 'package:mobile_project/utils/helpers/helper_functions.dart';
 import 'package:mobile_project/views/login/login.dart';
 
 class SuccessScreen extends StatelessWidget {

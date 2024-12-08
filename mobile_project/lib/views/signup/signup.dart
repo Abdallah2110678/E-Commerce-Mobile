@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:mobile_project/controllers/signup/signup_controller.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:mobile_project/utils/constants/image_setting.dart';
 import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:mobile_project/utils/constants/text_strings.dart';
-import 'package:mobile_project/utils/helpers/helper_function.dart';
+import 'package:mobile_project/utils/helpers/helper_functions.dart';
+import 'package:mobile_project/utils/validators/validation.dart';
 import 'package:mobile_project/views/signup/verify_email.dart';
 
 class SignupScreen extends StatelessWidget {
@@ -14,6 +16,7 @@ class SignupScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dark = THelperFunctions.isDarkMode(context);
+    final controller = Get.put(SignupController());
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
@@ -29,12 +32,16 @@ class SignupScreen extends StatelessWidget {
 
               ///form
               Form(
+                key: controller.signupFormKey,
                 child: Column(
                   children: [
                     Row(
                       children: [
                         Expanded(
                           child: TextFormField(
+                            controller: controller.firstname,
+                            validator: (value) => TValidator.validateEmptyText(
+                                'First name', value),
                             expands: false,
                             decoration: const InputDecoration(
                                 labelText: TTexts.firstName,
@@ -44,6 +51,9 @@ class SignupScreen extends StatelessWidget {
                         const SizedBox(width: TSizes.spaceBtwInputFields),
                         Expanded(
                           child: TextFormField(
+                            controller: controller.lastname,
+                            validator: (value) => TValidator.validateEmptyText(
+                                'Last name', value),
                             expands: false,
                             decoration: const InputDecoration(
                                 labelText: TTexts.lastName,
@@ -57,6 +67,9 @@ class SignupScreen extends StatelessWidget {
                     ///username
 
                     TextFormField(
+                      controller: controller.username,
+                      validator: (value) =>
+                          TValidator.validateEmptyText('Username', value),
                       expands: false,
                       decoration: const InputDecoration(
                           labelText: TTexts.username,
@@ -67,6 +80,8 @@ class SignupScreen extends StatelessWidget {
                     ///email
                     ///
                     TextFormField(
+                      controller: controller.email,
+                      validator: (value) => TValidator.validateEmail(value),
                       expands: false,
                       decoration: const InputDecoration(
                           labelText: TTexts.email,
@@ -77,6 +92,9 @@ class SignupScreen extends StatelessWidget {
                     ///phone number
                     ///
                     TextFormField(
+                      controller: controller.phonenumber,
+                      validator: (value) =>
+                          TValidator.validatePhoneNumber(value),
                       expands: false,
                       decoration: const InputDecoration(
                           labelText: TTexts.phoneNo,
@@ -86,12 +104,22 @@ class SignupScreen extends StatelessWidget {
 
                     ///password
                     ///
-                    TextFormField(
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: TTexts.password,
-                        prefixIcon: Icon(Iconsax.password_check),
-                        suffixIcon: Icon(Iconsax.eye_slash),
+                    Obx(
+                      () => TextFormField(
+                        controller: controller.password,
+                        validator: (value) =>
+                            TValidator.validatePassword(value),
+                        obscureText: controller.hidepassword.value,
+                        decoration: InputDecoration(
+                          labelText: TTexts.password,
+                          prefixIcon: const Icon(Iconsax.password_check),
+                          suffixIcon: IconButton(
+                              onPressed: () => controller.hidepassword.value =
+                                  !controller.hidepassword.value,
+                              icon: Icon(controller.hidepassword.value
+                                  ? Iconsax.eye_slash
+                                  : Iconsax.eye)),
+                        ),
                       ),
                     ),
                     const SizedBox(height: TSizes.spaceBtwInputFields),
@@ -151,8 +179,7 @@ class SignupScreen extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                          onPressed: () =>
-                              Get.to(() => const VerifyEmailScreen()),
+                          onPressed: () => controller.signup(),
                           child: const Text(TTexts.createAccount)),
                     )
                   ],
