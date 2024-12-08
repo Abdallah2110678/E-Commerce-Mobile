@@ -25,7 +25,7 @@ dependencies:
 
   # Icons
   iconsax: ^0.0.8
-  cupertino_icons: ^1.0.6
+  cupertino_icons: ^1.0.8
 
   # State Management
   get: ^4.6.6
@@ -39,11 +39,12 @@ dependencies:
 
   # Firebase
   firebase_core: ^2.30.1
-  firebase_auth: ^4.19.4
-  cloud_firestore: ^4.17.2
   firebase_storage: ^11.7.4
   google_fonts: ^6.2.1
-
+  firebase_database: ^10.0.8
+  cloud_firestore: ^4.9.0
+  firebase_auth: ^4.2.1
+  image_picker: ^0.8.7+3
 
 
   #--------------- ./ PACKAGES END ------------------#
