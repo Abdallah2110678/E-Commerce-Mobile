@@ -42,6 +42,7 @@ dependencies:
   firebase_auth: ^4.19.4
   cloud_firestore: ^4.17.2
   firebase_storage: ^11.7.4
+  google_fonts: ^6.2.1
 
 
 
@@ -63,6 +64,12 @@ flutter:
     - assets/logos/google-icon.png
     - assets/logos/t-store-splash-logo-black.png
     - assets/logos/t-store-splash-logo-white.png
+    - assets/images/animations/sammy-line-come-back-later.png
+    - assets/images/animations/sammy-line-man-receives-a-mail.png
+    - assets/images/animations/sammy-line-sale.png
+    - assets/images/animations/sammy-line-success.png
+    - assets/images/animations/sammy-line-travel-backpack-with-passport-and-air-ticket.gif
+    - assets/images/animations/sammy-line-workout.gif
   #--------------- LOCAL FONTS ------------------#
   fonts:
     - family: Poppins
