@@ -130,8 +130,10 @@ class SignupScreen extends StatelessWidget {
                         SizedBox(
                             width: 24,
                             height: 24,
-                            child:
-                                Checkbox(value: true, onChanged: (Value) {})),
+                            child: Obx(() => Checkbox(
+                                value: controller.privacyPolicy.value,
+                                onChanged: (Value) => controller.privacyPolicy
+                                    .value = !controller.privacyPolicy.value))),
                         const SizedBox(height: TSizes.spaceBtwItems),
                         Text.rich(
                           TextSpan(children: [

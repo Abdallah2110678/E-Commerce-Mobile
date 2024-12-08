@@ -10,6 +10,7 @@ class SignupController extends GetxController {
 
   ///variables
   final hidepassword = true.obs;
+  final privacyPolicy = true.obs;
   final email = TextEditingController();
   final lastname = TextEditingController();
   final username = TextEditingController();
@@ -33,6 +34,13 @@ class SignupController extends GetxController {
       if (!signupFormKey.currentState!.validate()) return;
 
       ///privacy policy
+      if (!privacyPolicy.value) {
+        TLoaders.warningSnackBar(
+            title: 'Accept Privacy Policy',
+            message:
+                'In order to create account, you must have read and accept the Privacy Policy & Terms of Use');
+      }
+
       ///register user in firebase
       ///save data in firebase
       ///show success message
