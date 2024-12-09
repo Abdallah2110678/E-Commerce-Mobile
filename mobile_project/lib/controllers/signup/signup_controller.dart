@@ -7,7 +7,6 @@ import 'package:mobile_project/utils/constants/image_setting.dart';
 import 'package:mobile_project/utils/helpers/network_manager.dart';
 import 'package:mobile_project/utils/popups/full_screen_loader.dart';
 import 'package:mobile_project/utils/popups/loaders.dart';
-import 'package:mobile_project/views/signup/verify_email.dart';
 
 class SignupController extends GetxController {
   static SignupController get instance => Get.find();
@@ -70,9 +69,6 @@ class SignupController extends GetxController {
           title: 'Congratulations',
           message:
               'Your account has been created! Verify the email to continue');
-
-      ///verify email
-      Get.to(() => const VerifyEmailScreen());
     } catch (e) {
       ///error to user
       TLoaders.errorSnackBar(title: "Oh Snap!", message: e.toString());

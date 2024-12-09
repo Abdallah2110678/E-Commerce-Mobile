@@ -8,7 +8,6 @@ import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:mobile_project/utils/constants/text_strings.dart';
 import 'package:mobile_project/utils/helpers/helper_functions.dart';
 import 'package:mobile_project/utils/validators/validation.dart';
-import 'package:mobile_project/views/signup/verify_email.dart';
 
 class SignupScreen extends StatelessWidget {
   const SignupScreen({super.key});
