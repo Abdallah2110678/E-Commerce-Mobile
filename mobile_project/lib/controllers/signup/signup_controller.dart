@@ -66,9 +66,7 @@ class SignupController extends GetxController {
 
       ///show success message
       TLoaders.successSnackBar(
-          title: 'Congratulations',
-          message:
-              'Your account has been created! Verify the email to continue');
+          title: 'Congratulations', message: 'Your account has been created!');
     } catch (e) {
       ///error to user
       TLoaders.errorSnackBar(title: "Oh Snap!", message: e.toString());
