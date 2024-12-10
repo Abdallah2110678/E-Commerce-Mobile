@@ -45,6 +45,7 @@ dependencies:
   cloud_firestore: ^4.9.0
   firebase_auth: ^4.2.1
   image_picker: ^0.8.7+3
+  uuid: ^4.5.1
 
 
   #--------------- ./ PACKAGES END ------------------#
