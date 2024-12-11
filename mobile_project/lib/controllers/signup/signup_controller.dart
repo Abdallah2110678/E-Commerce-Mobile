@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_project/controllers/signup/authentication.dart';
-import 'package:mobile_project/controllers/user/user_repository.dart';
+import 'package:mobile_project/controllers/authentications/authentication.dart';
+import 'package:mobile_project/services/user_services.dart';
 import 'package:mobile_project/models/usermodel.dart';
 import 'package:mobile_project/utils/constants/image_setting.dart';
 import 'package:mobile_project/utils/helpers/network_manager.dart';

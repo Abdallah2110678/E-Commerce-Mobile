@@ -1,8 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 // import 'package:mobile_project/bindings/general_binding.dart';
-import 'package:mobile_project/controllers/signup/authentication.dart';
-import 'package:mobile_project/controllers/user/user_repository.dart';
+import 'package:mobile_project/controllers/authentications/authentication.dart';
+import 'package:mobile_project/services/user_services.dart';
 import 'package:mobile_project/utils/helpers/network_manager.dart';
 import 'package:mobile_project/views/login/login.dart';
 import 'package:get/get.dart';

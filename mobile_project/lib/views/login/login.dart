@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:mobile_project/common/styles/spacing_styles.dart';
+import 'package:mobile_project/views/styles/spacing_styles.dart';
 import 'package:mobile_project/controllers/login/login_controller.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:mobile_project/utils/constants/image_setting.dart';
