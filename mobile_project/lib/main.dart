@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_project/controllers/authentications/authentication.dart';
 import 'package:mobile_project/services/user_services.dart';
 import 'package:mobile_project/utils/helpers/network_manager.dart';
+import 'package:mobile_project/utils/theme/theme.dart';
 import 'package:mobile_project/views/login/login.dart';
 import 'package:get/get.dart';
 
@@ -21,9 +22,8 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Mobile Project',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: TAppTheme.lightTheme,
+      darkTheme: TAppTheme.darkTheme,
       home: const LoginScreen(),
       initialBinding: GeneralBinding(),
     );
