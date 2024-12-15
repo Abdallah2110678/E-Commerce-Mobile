@@ -1,19 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
+import 'package:mobile_project/utils/constants/text_strings.dart';
+import 'package:mobile_project/views/home/appbar.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: SingleChildScrollView(
         child: Column(
           children: [
-            //curved widget
+            //header
             TPrimaryHeaderContainer(
-              child: Container(),
-            ),
+                child: Column(
+              children: [
+                ///appbar
+                THomeAppBar(),
+
+                ///searchbar
+                ///categories
+              ],
+            )),
           ],
         ),
       ),
@@ -130,10 +140,78 @@ class TPrimaryHeaderContainer extends StatelessWidget {
                 child: TCircularContainer(
                     backgroundColor: TColors.textWhite.withOpacity(0.1)),
               ),
+              child,
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+///cart
+class TCartCounterIcon extends StatelessWidget {
+  const TCartCounterIcon({super.key, required this.onPressed, this.iconColor});
+
+  final Color? iconColor;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        IconButton(
+            onPressed: () {},
+            icon: Icon(Iconsax.shopping_bag, color: iconColor)),
+        Positioned(
+          right: 0,
+          child: Container(
+            width: 18,
+            height: 18,
+            decoration: BoxDecoration(
+              color: TColors.black.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(100),
+            ),
+            child: Center(
+              child: Text('2',
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelLarge!
+                      .apply(color: TColors.white, fontSizeFactor: 0.8)),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+}
+
+///home
+class THomeAppBar extends StatelessWidget {
+  const THomeAppBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return TAppbar(
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(TTexts.homeAppbarTitle,
+              style: Theme.of(context)
+                  .textTheme
+                  .labelMedium!
+                  .apply(color: TColors.grey)),
+          Text(TTexts.homeAppbarSubTitle,
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall!
+                  .apply(color: TColors.white)),
+        ],
+      ),
+      actions: [
+        //cart
+        TCartCounterIcon(onPressed: () {}, iconColor: TColors.white),
+      ],
     );
   }
 }
