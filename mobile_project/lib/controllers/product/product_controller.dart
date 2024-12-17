@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mobile_project/models/category.dart';
 import 'package:mobile_project/models/product.dart';
+import 'package:mobile_project/service/image_service.dart';
 import 'package:mobile_project/service/product_service.dart';
 import 'package:uuid/uuid.dart';
 
@@ -31,7 +33,8 @@ class ProductController {
     if (snapshot.docs.isNotEmpty) {
       lastDocument = snapshot.docs.last;
       if (snapshot.docs.length < pageSize) hasMore = false;
-      products.addAll(snapshot.docs.map((doc) => Product.fromFirestore(doc)));
+      
+      // products.addAll(snapshot.docs.map((doc) => Product.fromFirestore(doc,)));
     }
     return products;
   }
@@ -54,7 +57,7 @@ class ProductController {
 
 
 
-
+final ImageService _imageService = ImageService();
 
   Future<void> createProduct({
     required String title,
@@ -64,35 +67,28 @@ class ProductController {
     required double price,
     required double discount,
     required int stock,
+    required Category category,
   }) async {
     try {
-      // // Upload thumbnail
-      // String thumbnailUrl = await firebaseService.uploadImage(
-      //   thumbnail,
-      //   'products/thumbnails/${DateTime.now().toIso8601String().replaceAll(":", "-")}'
+      String thumbnailPath = await _imageService.saveImageToAssets(thumbnail);
 
-      // );
-
-      // Upload gallery images
-      // List<String> imageUrls = [];
-      // for (var image in images) {
-      //   String imageUrl = await firebaseService.uploadImage(
-      //     image,
-      //     'products/images/${DateTime.now().toIso8601String()}_${image.hashCode}',
-      //   );
-      //   imageUrls.add(imageUrl);
-      // }
+      // Save gallery images
+      List<String> imagePaths = await Future.wait(
+        images.map((image) => _imageService.saveImageToAssets(image))
+      );
 
       // Create product object
       Product product = Product(
         id: const Uuid().v4(),
         title: title,
         description: description,
-        thumbnailUrl: "thumbnailUrl",
-        imageUrls: [],
+        thumbnailUrl: thumbnailPath,
+        imageUrls: imagePaths,
         price: price,
         discount: discount,
         stock: stock,
+        category: category
+
       );
 
       // Save product to Firestore

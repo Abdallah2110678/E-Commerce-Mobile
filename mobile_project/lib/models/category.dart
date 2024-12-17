@@ -24,4 +24,11 @@ class Category {
       'name': name,
     };
   }
+  // Add copyWith method to create a new instance with optional modifications
+  Category copyWith({String? id, String? name}) {
+    return Category(
+      id: id ?? this.id,
+      name: name ?? this.name,
+    );
+  }
 }
