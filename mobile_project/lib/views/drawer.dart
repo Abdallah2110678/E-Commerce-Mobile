@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_project/views/category_list.dart';
-import 'package:mobile_project/views/dashboard.dart';
+import 'package:mobile_project/views/dashboard/dashboard.dart';
 import 'package:mobile_project/views/products/createProduct.dart';
-
 
 // The main screen with a drawer
 class DrawerScreen extends StatefulWidget {
@@ -40,7 +39,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_titles[_selectedIndex]),centerTitle: true,
+        title: Text(_titles[_selectedIndex]),
+        centerTitle: true,
       ),
       drawer: Drawer(
         child: ListView(
