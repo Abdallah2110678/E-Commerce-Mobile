@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
+import 'package:mobile_project/utils/constants/image_setting.dart';
+import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:mobile_project/utils/constants/text_strings.dart';
+import 'package:mobile_project/utils/device/device_utility.dart';
+import 'package:mobile_project/utils/helpers/helper_functions.dart';
 import 'package:mobile_project/views/home/appbar.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -19,12 +23,203 @@ class HomeScreen extends StatelessWidget {
               children: [
                 ///appbar
                 THomeAppBar(),
+                SizedBox(height: TSizes.spaceBtwSections),
 
                 ///searchbar
+                TSearchContainer(text: 'Search in Store'),
+                SizedBox(height: TSizes.spaceBtwSections),
+
                 ///categories
+                Padding(
+                  padding: EdgeInsets.only(left: TSizes.defaultSpace),
+                  child: Column(
+                    children: [
+                      ///heading
+                      TSectionHeading(
+                          title: 'Popular Categories',
+                          showActionButton: false,
+                          textColor: Colors.white),
+                      SizedBox(height: TSizes.spaceBtwSections),
+
+                      //categories
+                      THomeCategories(),
+                    ],
+                  ),
+                ),
               ],
             )),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+//home category
+class THomeCategories extends StatelessWidget {
+  const THomeCategories({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 80,
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemCount: 6,
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (_, index) {
+          return TVerticalImageText(
+            image: TImages.shoeIcon,
+            title: 'Shoes',
+            onTap: () {},
+          );
+        },
+      ),
+    );
+  }
+}
+
+//image category
+class TVerticalImageText extends StatelessWidget {
+  const TVerticalImageText({
+    super.key,
+    required this.image,
+    required this.title,
+    this.textColor = TColors.white,
+    this.backgroundColor = TColors.white,
+    this.onTap,
+  });
+
+  final String image, title;
+  final Color textColor;
+  final Color? backgroundColor;
+  final void Function()? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final dark = THelperFunctions.isDarkMode(context);
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.only(right: TSizes.spaceBtwItems),
+        child: Column(
+          children: [
+            //circular icon
+            Container(
+              width: 56,
+              height: 56,
+              padding: const EdgeInsets.all(TSizes.sm),
+              decoration: BoxDecoration(
+                color: backgroundColor ?? (dark ? TColors.dark : TColors.white),
+                borderRadius: BorderRadius.circular(100),
+              ),
+              child: Center(
+                child: Image(
+                    image: AssetImage(image),
+                    fit: BoxFit.cover,
+                    color: dark ? TColors.light : TColors.dark),
+              ),
+            ),
+            //text
+            const SizedBox(height: TSizes.spaceBtwItems / 2),
+            SizedBox(
+              width: 55,
+              child: Text(
+                title,
+                style: Theme.of(context)
+                    .textTheme
+                    .labelMedium!
+                    .apply(color: textColor),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+//category heading
+class TSectionHeading extends StatelessWidget {
+  const TSectionHeading({
+    super.key,
+    this.textColor,
+    this.showActionButton = false,
+    required this.title,
+    this.buttonTitle = 'View all',
+    this.onPressed,
+  });
+
+  final Color? textColor;
+  final bool showActionButton;
+  final String title, buttonTitle;
+  final void Function()? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text(title,
+            style: Theme.of(context)
+                .textTheme
+                .headlineSmall!
+                .apply(color: textColor),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis),
+        if (showActionButton)
+          TextButton(onPressed: onPressed, child: Text(buttonTitle))
+      ],
+    );
+  }
+}
+
+//searchbar
+class TSearchContainer extends StatelessWidget {
+  const TSearchContainer({
+    super.key,
+    required this.text,
+    this.icon = Iconsax.search_normal,
+    this.showBackground = true,
+    this.showBorder = true,
+    this.onTap,
+  });
+
+  final String text;
+  final IconData? icon;
+  final bool showBackground, showBorder;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final dark = THelperFunctions.isDarkMode(context);
+    return GestureDetector(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: TSizes.defaultSpace),
+        child: Container(
+          width: TDeviceUtils.getScreenWidth(context),
+          padding: const EdgeInsets.all(TSizes.md),
+          decoration: BoxDecoration(
+            color: showBackground
+                ? dark
+                    ? TColors.dark
+                    : TColors.light
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(TSizes.cardRadiusLg),
+            border: showBorder ? Border.all(color: TColors.grey) : null,
+          ),
+          child: Row(
+            children: [
+              Icon(icon, color: TColors.darkGrey),
+              const SizedBox(height: TSizes.spaceBtwItems),
+              Text(text, style: Theme.of(context).textTheme.bodySmall),
+            ],
+          ),
         ),
       ),
     );
