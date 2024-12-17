@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_project/views/category_list.dart';
 import 'package:mobile_project/views/dashboard.dart';
 import 'package:mobile_project/views/products/createProduct.dart';
-import 'package:mobile_project/views/products/productsTable.dart';
+
 
 // The main screen with a drawer
 class DrawerScreen extends StatefulWidget {
@@ -15,7 +15,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
   final List<Widget> _screens = [
     Dashboard(),
     AddProductView(),
-    CategoryList()
+    CategoryManagementPage()
   ];
 
   // List of titles for AppBar

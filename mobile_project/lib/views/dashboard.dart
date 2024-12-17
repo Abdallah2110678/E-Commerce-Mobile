@@ -17,7 +17,7 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Column(

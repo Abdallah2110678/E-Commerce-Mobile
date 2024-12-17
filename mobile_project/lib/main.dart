@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:mobile_project/controllers/signup/authentication.dart';
 import 'package:mobile_project/controllers/user/user_repository.dart';
 import 'package:mobile_project/utils/helpers/network_manager.dart';
-import 'package:mobile_project/views/login/login.dart';
+
+import 'package:mobile_project/views/drawer.dart';
+
 import 'package:get/get.dart';
-import 'package:mobile_project/views/products/createProduct.dart';
-import 'package:mobile_project/views/products/productsTable.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home:  ProductTableView(),
+      home:  DrawerScreen(),
       initialBinding: GeneralBinding(),
     );
   }

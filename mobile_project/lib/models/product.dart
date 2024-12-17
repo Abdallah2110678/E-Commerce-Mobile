@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:uuid/uuid.dart';
+import 'package:mobile_project/models/category.dart';
 
-
-const uuid= Uuid();
 class Product {
   String id;
   String title;
@@ -12,6 +10,7 @@ class Product {
   double price;
   double discount;
   int stock;
+  Category category;
 
   Product({
     required this.id,
@@ -22,6 +21,7 @@ class Product {
     required this.price,
     required this.discount,
     required this.stock,
+    required this.category,
   });
 
   // Calculate the discounted price
@@ -31,20 +31,21 @@ class Product {
 
   // Convert a Firestore document to a Product object
   // Factory constructor for creating a Product from Firestore
-  factory Product.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    
-    return Product(
-      id: doc.id, // Use Firestore document ID as the product ID
-      title: data['title'] ?? '', // Provide a default value in case the field is null
-      description: data['description'] ?? '',
-      thumbnailUrl: data['thumbnailUrl'] ?? '',
-      imageUrls: List<String>.from(data['imageUrls'] ?? []), // Ensure it's a List<String>
-      price: (data['price'] as num).toDouble(), // Convert num to double
-      discount: (data['discount'] as num).toDouble(),
-      stock: (data['stock'] as num).toInt(),
-    );
-  }
+  factory Product.fromFirestore(DocumentSnapshot doc, Category category) {
+  Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+  return Product(
+    id: doc.id,
+    title: data['title'] ?? '',
+    description: data['description'] ?? '',
+    thumbnailUrl: data['thumbnailUrl'] ?? '',
+    imageUrls: List<String>.from(data['imageUrls'] ?? []),
+    price: (data['price'] as num).toDouble(),
+    discount: (data['discount'] as num).toDouble(),
+    stock: (data['stock'] as num).toInt(),
+    category: category,
+  );
+}
 
   // Convert a Product object to a Firestore document
   Map<String, dynamic> toFirestore() {
@@ -56,6 +57,7 @@ class Product {
       'price': price,
       'discount': discount,
       'stock': stock,
+      'categoryId': category.id,
     };
   }
 }
