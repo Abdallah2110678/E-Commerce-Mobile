@@ -64,18 +64,20 @@ class THomeCategories extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 80,
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: 6,
-        scrollDirection: Axis.horizontal,
-        itemBuilder: (_, index) {
-          return TVerticalImageText(
-            image: TImages.shoeIcon,
-            title: 'Shoes',
-            onTap: () {},
-          );
-        },
+      height: 90,
+      child: Flexible(
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemCount: 6,
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (_, index) {
+            return TVerticalImageText(
+              image: TImages.shoeIcon,
+              title: 'Shoes',
+              onTap: () {},
+            );
+          },
+        ),
       ),
     );
   }
@@ -106,6 +108,7 @@ class TVerticalImageText extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(right: TSizes.spaceBtwItems),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             //circular icon
             Container(
