@@ -5,7 +5,8 @@ import 'package:mobile_project/controllers/authentications/authentication.dart';
 import 'package:mobile_project/services/user_services.dart';
 import 'package:mobile_project/utils/helpers/network_manager.dart';
 import 'package:mobile_project/utils/theme/theme.dart';
-import 'package:mobile_project/views/login/login.dart';
+import 'package:mobile_project/views/boarding_screen/onboarding_screen.dart';
+// import 'package:mobile_project/views/login/login.dart';
 import 'package:get/get.dart';
 
 void main() async {
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
       title: 'Mobile Project',
       theme: TAppTheme.lightTheme,
       darkTheme: TAppTheme.darkTheme,
-      home: const LoginScreen(),
+      home: const OnboardingScreen(),
       initialBinding: GeneralBinding(),
     );
   }

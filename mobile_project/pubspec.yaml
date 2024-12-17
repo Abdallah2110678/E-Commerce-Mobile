@@ -84,6 +84,10 @@ flutter:
     - assets/icons/categories/icons8-sparkling-diamond-64.png
     - assets/icons/categories/icons8-tailors-dummy-64.png
     - assets/icons/categories/icons8-wooden-toy-car-50.png
+    - assets/images/on_boarding_images/sammy-line-delivery.gif
+    - assets/images/on_boarding_images/sammy-line-no-connection.gif
+    - assets/images/on_boarding_images/sammy-line-searching.gif
+    - assets/images/on_boarding_images/sammy-line-shopping.gif
   #--------------- LOCAL FONTS ------------------#
   fonts:
     - family: Poppins
