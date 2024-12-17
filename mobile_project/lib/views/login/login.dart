@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:mobile_project/common/styles/spacing_styles.dart';
+import 'package:mobile_project/views/home/nav.dart';
+import 'package:mobile_project/views/styles/spacing_styles.dart';
 import 'package:mobile_project/controllers/login/login_controller.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:mobile_project/utils/constants/image_setting.dart';
@@ -109,8 +110,22 @@ class LoginScreen extends StatelessWidget {
                       SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                              onPressed: () =>
-                                  controller.emailAndPasswordSignIn(),
+                              onPressed: () async {
+                                // Check if the form is valid
+                                if (controller.loginFormKey.currentState!
+                                    .validate()) {
+                                  try {
+                                    await controller.emailAndPasswordSignIn();
+
+                                    Get.to(() => Nav());
+                                  } catch (e) {
+                                    print('Sign-in failed: $e');
+                                  }
+                                } else {
+                                  print(
+                                      'Please enter valid email and password');
+                                }
+                              },
                               child: const Text(TTexts.signIn))),
                       const SizedBox(height: TSizes.spaceBtwItems),
 

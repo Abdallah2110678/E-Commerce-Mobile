@@ -45,7 +45,7 @@ dependencies:
   cloud_firestore: ^4.9.0
   firebase_auth: ^4.2.1
   image_picker: ^0.8.7+3
-  uuid: ^4.5.1
+  google_sign_in: ^6.2.2
 
 
   #--------------- ./ PACKAGES END ------------------#
@@ -73,6 +73,17 @@ flutter:
     - assets/images/animations/sammy-line-travel-backpack-with-passport-and-air-ticket.gif
     - assets/images/animations/sammy-line-workout.gif
     - assets/images/animations/141594-animation-of-docer.json
+    - assets/icons/categories/icons8-bowling-64.png
+    - assets/icons/categories/icons8-cosmetics-64.png
+    - assets/icons/categories/icons8-dining-chair-64.png
+    - assets/icons/categories/icons8-dog-heart-64.png
+    - assets/icons/categories/icons8-school-uniform-64.png
+    - assets/icons/categories/icons8-shoes-64.png
+    - assets/icons/categories/icons8-smartphone-64.png
+    - assets/icons/categories/icons8-sparkling-diamond-64.png
+    - assets/icons/categories/icons8-sparkling-diamond-64.png
+    - assets/icons/categories/icons8-tailors-dummy-64.png
+    - assets/icons/categories/icons8-wooden-toy-car-50.png
   #--------------- LOCAL FONTS ------------------#
   fonts:
     - family: Poppins

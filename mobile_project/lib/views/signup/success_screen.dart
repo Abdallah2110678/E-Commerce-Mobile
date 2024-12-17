@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:mobile_project/common/styles/spacing_styles.dart';
+import 'package:mobile_project/views/styles/spacing_styles.dart';
 import 'package:mobile_project/utils/constants/image_setting.dart';
 import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:mobile_project/utils/constants/text_strings.dart';
