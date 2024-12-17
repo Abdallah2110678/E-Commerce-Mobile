@@ -62,9 +62,28 @@ flutter:
 
   #--------------- LOCAL ASSETS ------------------#
   assets:
-    - assets/logos/
-    - assets/images/
-    - assets/icons/
+    - assets/logos/facebook-icon.png
+    - assets/logos/google-icon.png
+    - assets/logos/t-store-splash-logo-black.png
+    - assets/logos/t-store-splash-logo-white.png
+    - assets/images/animations/sammy-line-come-back-later.png
+    - assets/images/animations/sammy-line-man-receives-a-mail.png
+    - assets/images/animations/sammy-line-sale.png
+    - assets/images/animations/sammy-line-success.png
+    - assets/images/animations/sammy-line-travel-backpack-with-passport-and-air-ticket.gif
+    - assets/images/animations/sammy-line-workout.gif
+    - assets/images/animations/141594-animation-of-docer.json
+    - assets/icons/categories/icons8-bowling-64.png
+    - assets/icons/categories/icons8-cosmetics-64.png
+    - assets/icons/categories/icons8-dining-chair-64.png
+    - assets/icons/categories/icons8-dog-heart-64.png
+    - assets/icons/categories/icons8-school-uniform-64.png
+    - assets/icons/categories/icons8-shoes-64.png
+    - assets/icons/categories/icons8-smartphone-64.png
+    - assets/icons/categories/icons8-sparkling-diamond-64.png
+    - assets/icons/categories/icons8-sparkling-diamond-64.png
+    - assets/icons/categories/icons8-tailors-dummy-64.png
+    - assets/icons/categories/icons8-wooden-toy-car-50.png
   #--------------- LOCAL FONTS ------------------#
   fonts:
     - family: Poppins
