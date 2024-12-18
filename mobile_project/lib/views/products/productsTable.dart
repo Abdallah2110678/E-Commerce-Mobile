@@ -1,6 +1,6 @@
 // lib/views/product_table_view.dart
 import 'package:flutter/material.dart';
-import 'package:mobile_project/controllers/product/product_controller.dart';
+import 'package:mobile_project/controllers/product_controller.dart';
 import 'package:mobile_project/models/product.dart';
 
 class ProductTableView extends StatefulWidget {

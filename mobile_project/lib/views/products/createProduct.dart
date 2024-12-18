@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_project/controllers/category_controller.dart';
-import 'package:mobile_project/controllers/product/product_controller.dart';
+import 'package:mobile_project/controllers/product_controller.dart';
 import 'package:mobile_project/models/category.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 

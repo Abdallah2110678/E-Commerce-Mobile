@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_project/controllers/authentications/authentication.dart';
+import 'package:mobile_project/controllers/authentication.dart';
 import 'package:mobile_project/services/user_services.dart';
 import 'package:mobile_project/models/usermodel.dart';
 import 'package:mobile_project/utils/constants/image_setting.dart';

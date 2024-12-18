@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:mobile_project/controllers/nav/nav_controller.dart';
+import 'package:mobile_project/controllers/nav_controller.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:mobile_project/utils/helpers/helper_functions.dart';
 

@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mobile_project/models/category.dart';
 import 'package:mobile_project/models/product.dart';
-import 'package:mobile_project/service/image_service.dart';
-import 'package:mobile_project/service/product_service.dart';
+import 'package:mobile_project/services/image_service.dart';
+import 'package:mobile_project/services/product_service.dart';
 import 'package:uuid/uuid.dart';
 
 class ProductController {
