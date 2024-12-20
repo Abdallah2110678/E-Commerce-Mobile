@@ -5,7 +5,7 @@ import 'package:mobile_project/controllers/authentication.dart';
 import 'package:mobile_project/services/user_services.dart';
 import 'package:mobile_project/utils/helpers/network_manager.dart';
 import 'package:mobile_project/utils/theme/theme.dart';
-import 'package:mobile_project/views/boarding_screen/onboarding_screen.dart';
+import 'package:mobile_project/screens/boarding_screen/onboarding_screen.dart';
 // import 'package:mobile_project/views/login/login.dart';
 import 'package:get/get.dart';
 

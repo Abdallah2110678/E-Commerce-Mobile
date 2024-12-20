@@ -6,7 +6,7 @@ import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:mobile_project/utils/constants/text_strings.dart';
 import 'package:mobile_project/utils/device/device_utility.dart';
 import 'package:mobile_project/utils/helpers/helper_functions.dart';
-import 'package:mobile_project/views/home/appbar.dart';
+import 'package:mobile_project/screens/home/appbar.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

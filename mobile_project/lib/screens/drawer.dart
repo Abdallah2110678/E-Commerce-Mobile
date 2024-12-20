@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_project/views/category_list.dart';
-import 'package:mobile_project/views/dashboard/dashboard.dart';
-import 'package:mobile_project/views/products/createProduct.dart';
+import 'package:mobile_project/screens/category_list.dart';
+import 'package:mobile_project/screens/dashboard/dashboard.dart';
+import 'package:mobile_project/screens/dashboard/products/createProduct.dart';
 
 // The main screen with a drawer
 class DrawerScreen extends StatefulWidget {

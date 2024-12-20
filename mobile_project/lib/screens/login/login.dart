@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:mobile_project/views/home/nav.dart';
-import 'package:mobile_project/views/styles/spacing_styles.dart';
+import 'package:mobile_project/screens/home/nav.dart';
+import 'package:mobile_project/screens/styles/spacing_styles.dart';
 import 'package:mobile_project/controllers/login_controller.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:mobile_project/utils/constants/image_setting.dart';
@@ -10,7 +10,7 @@ import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:mobile_project/utils/constants/text_strings.dart';
 import 'package:mobile_project/utils/helpers/helper_functions.dart';
 import 'package:mobile_project/utils/validators/validation.dart';
-import 'package:mobile_project/views/signup/signup.dart';
+import 'package:mobile_project/screens/signup/signup.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
