@@ -9,7 +9,6 @@ import 'package:mobile_project/screens/boarding_screen/onboarding_screen.dart';
 // import 'package:mobile_project/views/login/login.dart';
 import 'package:get/get.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
