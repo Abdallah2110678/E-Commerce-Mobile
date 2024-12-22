@@ -61,9 +61,7 @@ class _ProductTableViewState extends State<ProductTableView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Products'),
-      ),
+    
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -72,12 +70,12 @@ class _ProductTableViewState extends State<ProductTableView> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    // Add product logic here
-                  },
-                  child: const Text('Add Product'),
-                ),
+                // ElevatedButton(
+                //   onPressed: () {
+                //     // Add product logic here
+                //   },
+                //   child: const Text('Add Product'),
+                // ),
                 SizedBox(
                   width: 300,
                   child: TextField(
@@ -105,8 +103,10 @@ class _ProductTableViewState extends State<ProductTableView> {
                           Colors.grey[200],
                         ),
                         columns: const [
-                          DataColumn(label: Text('Product', style: TextStyle(fontWeight: FontWeight.bold))),
+                          DataColumn(label: Text('Name', style: TextStyle(fontWeight: FontWeight.bold))),
                           DataColumn(label: Text('Stock', style: TextStyle(fontWeight: FontWeight.bold))),
+                          DataColumn(label: Text('Thumbnail', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(label: Text('Brand', style: TextStyle(fontWeight: FontWeight.bold))),
                           DataColumn(label: Text('Price', style: TextStyle(fontWeight: FontWeight.bold))),
                           DataColumn(label: Text('Action', style: TextStyle(fontWeight: FontWeight.bold))),
                         ],
@@ -116,6 +116,8 @@ class _ProductTableViewState extends State<ProductTableView> {
                           return DataRow(cells: [
                             DataCell(Text(product.title)),
                             DataCell(Text(product.stock.toString())),
+                            DataCell(Center(child: Image.network(product.thumbnailUrl,width: 70,))),
+                            DataCell(Center(child: Image.network(product.brand.logoUrl,width: 70,))),
                             DataCell(Text('\$${product.price.toStringAsFixed(2)}')),
                             DataCell(
                               Row(

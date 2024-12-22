@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_project/screens/category_list.dart';
 import 'package:mobile_project/screens/dashboard/dashboard.dart';
 import 'package:mobile_project/screens/dashboard/products/createProduct.dart';
+import 'package:mobile_project/screens/dashboard/products/productsTable.dart';
 
 // The main screen with a drawer
 class DrawerScreen extends StatefulWidget {
@@ -14,7 +15,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
   final List<Widget> _screens = [
     Dashboard(),
     AddProductView(),
-    CategoryManagementPage()
+    CategoryManagementPage(),
+    ProductTableView()
   ];
 
   // List of titles for AppBar
@@ -22,6 +24,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
     "Dashboard",
     "Add Product",
     "Categories",
+    "Products"
   ];
 
   // Currently selected index for the drawer
@@ -76,6 +79,12 @@ class _DrawerScreenState extends State<DrawerScreen> {
               title: Text('Categorise'),
               selected: _selectedIndex == 2, // Highlight when active
               onTap: () => _onSelectItem(2),
+            ),
+            ListTile(
+              leading:const Icon(Icons.category),
+              title: const Text('Product'),
+              selected: _selectedIndex == 3, // Highlight when active
+              onTap: () => _onSelectItem(3),
             ),
           ],
         ),

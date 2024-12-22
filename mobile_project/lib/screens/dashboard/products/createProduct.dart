@@ -1,24 +1,30 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
+
 import 'package:mobile_project/controllers/category_controller.dart';
 import 'package:mobile_project/controllers/product_controller.dart';
+import 'package:mobile_project/models/brand.dart';
 import 'package:mobile_project/models/category.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 
 class AddProductView extends StatefulWidget {
-  const AddProductView({Key? key}) : super(key: key);
+  const AddProductView({super.key});
 
   @override
   _AddProductViewState createState() => _AddProductViewState();
 }
 
 class _AddProductViewState extends State<AddProductView> {
+
+String selectedThumbnail="";
+List<String> selectedImages = [];
+
+
+
   final _formKey = GlobalKey<FormState>();
   final _productController = ProductController();
   final _categoryController = CategoryController();
-  final _imagePicker = ImagePicker();
+
 
   // Controllers
   final _titleController = TextEditingController();
@@ -27,9 +33,7 @@ class _AddProductViewState extends State<AddProductView> {
   final _discountController = TextEditingController();
   final _stockController = TextEditingController();
 
-  // Image states
-  File? _thumbnailImage;
-  List<File> _galleryImages = [];
+
 
   // Category state
   List<Category> _categories = [];
@@ -61,70 +65,60 @@ class _AddProductViewState extends State<AddProductView> {
       _showErrorSnackBar('Failed to fetch categories: $e');
     }
   }
+void _submitProduct() async {
+  if (!_formKey.currentState!.validate()) return;
 
-  Future<void> _pickImage({required bool isThumbnail}) async {
-    try {
-      final pickedFile = await _imagePicker.pickImage(source: ImageSource.gallery);
-      
-      if (pickedFile != null) {
-        setState(() {
-          if (isThumbnail) {
-            _thumbnailImage = File(pickedFile.path);
-          } else {
-            _galleryImages.add(File(pickedFile.path));
-          }
-        });
-      }
-    } catch (e) {
-      _showErrorSnackBar('Error picking image: $e');
-    }
+  // Check if thumbnail is selected
+  if (selectedThumbnail == "" || selectedThumbnail.isEmpty) {
+    _showErrorSnackBar('Please select a thumbnail image');
+    return;
   }
 
-  Future<void> _submitProduct() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    if (_thumbnailImage == null) {
-      _showErrorSnackBar('Please select a thumbnail image');
-      return;
-    }
-
-    if (_galleryImages.isEmpty) {
-      _showErrorSnackBar('Please add at least one gallery image');
-      return;
-    }
-
-    try {
-      await _productController.createProduct(
-        title: _titleController.text.trim(),
-        description: _descriptionController.text.trim(),
-        thumbnail: _thumbnailImage!,
-        images: _galleryImages,
-        price: double.parse(_priceController.text),
-        discount: double.parse(_discountController.text),
-        stock: int.parse(_stockController.text),
-        category: _selectedCategory!,
-      );
-
-      _showSuccessSnackBar('Product created successfully');
-      _resetForm();
-    } catch (e) {
-      _showErrorSnackBar('Failed to create product: $e');
-    }
+  // Check if at least one image is selected
+  if (selectedImages.isEmpty) {
+    _showErrorSnackBar('Please add at least one gallery image');
+    return;
   }
 
-  void _resetForm() {
-    setState(() {
-      _titleController.clear();
-      _descriptionController.clear();
-      _priceController.clear();
-      _discountController.clear();
-      _stockController.clear();
-      _thumbnailImage = null;
-      _galleryImages.clear();
-      _selectedCategory = null;
-    });
+  // Check if category is selected
+  if (_selectedCategory == null) {
+    _showErrorSnackBar('Please select a category');
+    return;
   }
 
+  try {
+    await _productController.createProduct(
+      title: _titleController.text.trim(),
+      description: _descriptionController.text.trim(),
+      thumbnailUrl: selectedThumbnail,
+      imageUrls: selectedImages,
+      price: double.parse(_priceController.text),
+      discount: double.parse(_discountController.text),
+      stock: int.parse(_stockController.text),
+      category: _selectedCategory!,
+      brand: Brand(id: "vOnJPUIs2JTC2cUTGgBj", name: "name", logoUrl: "logoUrl") // Safely use _selectedCategory
+    );
+
+    _showSuccessSnackBar('Product created successfully');
+    _resetForm();
+  } catch (e) {
+    _showErrorSnackBar('Failed to create product: $e');
+  }
+}
+
+
+void _resetForm() {
+  setState(() {
+    _titleController.clear();
+    _descriptionController.clear();
+    _priceController.clear();
+    _discountController.clear();
+    _stockController.clear();
+    selectedThumbnail = "";
+    selectedImages.clear();
+    _selectedCategory = null;
+  });
+}
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -176,7 +170,9 @@ class _AddProductViewState extends State<AddProductView> {
               const SizedBox(height: 25),
               _buildThumbnailPickerCard(),
               const SizedBox(height: 25),
-              _buildImageSelectionSection(),
+              
+              
+              _buildGalleryImagesCard(),
               const SizedBox(height: 20),
               _buildSubmitButton(),
             ],
@@ -276,7 +272,7 @@ class _AddProductViewState extends State<AddProductView> {
     );
   }
 
-  Widget _buildThumbnailPickerCard() {
+Widget _buildThumbnailPickerCard() {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
@@ -287,27 +283,38 @@ class _AddProductViewState extends State<AddProductView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle("Pick Thumbnail"),
+            _buildSectionTitle("Product Thumbnail"),
+            const SizedBox(height: 16),
             GestureDetector(
-              onTap: () => _pickImage(isThumbnail: true),
-              child: _thumbnailImage == null
+              onTap: () => _showImagePicker(true),
+              child: selectedThumbnail == ""
                   ? Container(
                       height: 200,
                       width: double.infinity,
-                      color: Colors.grey[300],
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                       child: const Center(
-                        child: Icon(
-                          Icons.add_photo_alternate,
-                          size: 50,
-                          color: Colors.grey,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add_photo_alternate,
+                              size: 50,
+                              color: Colors.grey,
+                            ),
+                            SizedBox(height: 8),
+                            Text('Select Thumbnail'),
+                          ],
                         ),
                       ),
                     )
-                  : Image.file(
-                      _thumbnailImage!,
-                      height: 300,
+                  : Image.network(
+                      selectedThumbnail,
+                      height: 200,
                       width: double.infinity,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.contain,
                     ),
             ),
           ],
@@ -316,18 +323,133 @@ class _AddProductViewState extends State<AddProductView> {
     );
   }
 
-  Widget _buildImageSelectionSection() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        ElevatedButton(
-          onPressed: () => _pickImage(isThumbnail: false),
-          child: const Text('Pick Gallery Images'),
+  Widget _buildGalleryImagesCard() {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionTitle("Product Images"),
+            const SizedBox(height: 16),
+            selectedImages.isEmpty
+                ? GestureDetector(
+                    onTap: () => _showImagePicker(false),
+                    child: Container(
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add_photo_alternate,
+                              size: 30,
+                              color: Colors.grey,
+                            ),
+                            SizedBox(height: 8),
+                            Text('Add Product Images'),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                : GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 4,
+                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 8,
+                    ),
+                    itemCount: selectedImages.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == selectedImages.length) {
+                        return GestureDetector(
+                          onTap: () => _showImagePicker(false),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(
+                              Icons.add,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        );
+                      }
+                      return Stack(
+                        children: [
+                          Image.network(
+                            selectedImages[index],
+                            fit: BoxFit.cover,
+                            width: 100,
+                            height: 100,
+                          ),
+                          Positioned(
+                            right: 4,
+                            top: 4,
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selectedImages.removeAt(index);
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: const BoxDecoration(
+                                  color: Colors.blue,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.close,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+          ],
         ),
-        Text('${_galleryImages.length} images selected'),
-      ],
+      ),
     );
   }
+void _showImagePicker(bool isThumbnail) {
+    showDialog(
+      context: context,
+      builder: (context) => ProductImagePicker(
+        isThumbnailPicker: isThumbnail,
+        selectedImages: isThumbnail
+            ? (selectedThumbnail != "" ? [selectedThumbnail] : [])
+            : selectedImages,
+        onThumbnailSelected: (imagePath) {
+          setState(() {
+            selectedThumbnail = imagePath;
+          });
+        },
+        onImagesSelected: (images) {
+          setState(() {
+            selectedImages = images;
+          });
+        },
+      ),
+    );
+  }
+
+
+
 
   Widget _buildSubmitButton() {
     return ElevatedButton(
@@ -399,5 +521,161 @@ class InputValidators {
       return 'Please enter a valid non-negative number';
     }
     return null;
+  }
+}
+
+
+
+class ProductImagePicker extends StatefulWidget {
+  final Function(String) onThumbnailSelected;
+  final Function(List<String>) onImagesSelected;
+  final bool isThumbnailPicker;
+  final List<String> selectedImages;
+
+  const ProductImagePicker({
+    Key? key,
+    required this.onThumbnailSelected,
+    required this.onImagesSelected,
+    required this.isThumbnailPicker,
+    required this.selectedImages,
+  }) : super(key: key);
+
+  @override
+  State<ProductImagePicker> createState() => _ProductImagePickerState();
+}
+
+class _ProductImagePickerState extends State<ProductImagePicker> {
+  List<String> tempSelectedImages = [];
+
+  @override
+  void initState() {
+    super.initState();
+    tempSelectedImages = List.from(widget.selectedImages);
+  }
+
+  final List<String> availableImages = [
+    'https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg',
+    'https://static.vecteezy.com/ti/photos-gratuite/t2/48021360-colore-lezard-dans-neon-couleurs-fonce-contexte-avec-une-fermer-photo.jpg',
+    'https://img.freepik.com/photos-gratuite/gros-plan-iguane-dans-nature_23-2151718784.jpg',
+    'https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg',
+    'https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg',
+  ];
+
+  void _toggleImageSelection(String imagePath) {
+    setState(() {
+      if (widget.isThumbnailPicker) {
+        tempSelectedImages = [imagePath];
+      } else {
+        if (tempSelectedImages.contains(imagePath)) {
+          tempSelectedImages.remove(imagePath);
+        } else {
+          tempSelectedImages.add(imagePath);
+        }
+      }
+    });
+  }
+
+  void _confirmSelection() {
+    if (widget.isThumbnailPicker && tempSelectedImages.isNotEmpty) {
+      widget.onThumbnailSelected(tempSelectedImages.first);
+    } else {
+      widget.onImagesSelected(tempSelectedImages);
+    }
+    Navigator.pop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            // Header
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  widget.isThumbnailPicker ? 'Select Thumbnail' : 'Select Images',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Row(
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Close'),
+                    ),
+                    ElevatedButton(
+                      onPressed: _confirmSelection,
+                      child: const Text('Add'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            // Image Grid
+            Expanded(
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                ),
+                itemCount: availableImages.length,
+                itemBuilder: (context, index) {
+                  final imagePath = availableImages[index];
+                  final isSelected = tempSelectedImages.contains(imagePath);
+
+                  return GestureDetector(
+                    onTap: () => _toggleImageSelection(imagePath),
+                    child: Stack(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: isSelected ? Colors.blue : Colors.grey[300]!,
+                              width: isSelected ? 2 : 1,
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Image.network(
+                            imagePath,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        if (isSelected)
+                          Positioned(
+                            top: 4,
+                            right: 4,
+                            child: GestureDetector(
+                              onTap: () => _toggleImageSelection(imagePath),
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: const BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.close,
+                                  color: Colors.white,
+                                  size: 14,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
