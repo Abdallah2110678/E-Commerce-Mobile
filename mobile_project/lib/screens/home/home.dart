@@ -1,5 +1,8 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:mobile_project/controllers/home_controller.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:mobile_project/utils/constants/image_setting.dart';
 import 'package:mobile_project/utils/constants/sizes.dart';
@@ -18,7 +21,7 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           children: [
             //header
-            TPrimaryHeaderContainer(
+            const TPrimaryHeaderContainer(
                 child: Column(
               children: [
                 ///appbar
@@ -48,8 +51,84 @@ class HomeScreen extends StatelessWidget {
                 ),
               ],
             )),
+            Padding(
+                padding: const EdgeInsets.all(TSizes.defaultSpace),
+                child: TPromoSlider(banners:TImages.banners))
           ],
         ),
+      ),
+    );
+  }
+}
+
+class TPromoSlider extends StatelessWidget {
+  const TPromoSlider({
+    super.key, required this.banners,
+  });
+
+  final List<String> banners;
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = Get.put(HomeController());
+    return Column(
+      children: [
+        CarouselSlider(
+          items:banners.map((url)=>TRoundedImage(imageUrl: url)).toList(),
+          options: CarouselOptions(
+              viewportFraction: 1,
+              onPageChanged: (index, _) =>
+                  controller.updatePageIndicator(index)),
+        ),
+        const SizedBox(
+          height: TSizes.spaceBtwItems,
+        ),
+        Center(
+          child: Obx(
+            () => Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (int i = 0; i < banners.length; i++)
+                  TCircularContainer(
+                    width: 20,
+                    height: 4,
+                    margin: const EdgeInsets.only(right: 10),
+                    backgroundColor: controller.carousalCurrentIndex.value == i
+                        ? Colors.green
+                        : Colors.grey,
+                  )
+              ],
+            ),
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class TRoundedImage extends StatelessWidget {
+  const TRoundedImage({
+    super.key,
+    required this.imageUrl,
+    this.onPressed,
+  });
+
+  final String imageUrl;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        decoration:
+            BoxDecoration(borderRadius: BorderRadius.circular(TSizes.md)),
+        child: ClipRRect(
+            borderRadius: BorderRadius.circular(TSizes.md),
+            child: Image.network(
+              imageUrl,
+              fit: BoxFit.contain,
+            )),
       ),
     );
   }
@@ -236,6 +315,7 @@ class TCircularContainer extends StatelessWidget {
       this.width = 400,
       this.height = 400,
       this.radius = 400,
+      this.margin,
       this.padding = 0,
       this.child,
       this.backgroundColor = TColors.white});
@@ -244,6 +324,7 @@ class TCircularContainer extends StatelessWidget {
   final double? height;
   final double radius;
   final double padding;
+  final EdgeInsets? margin;
   final Widget? child;
   final Color backgroundColor;
 
@@ -252,6 +333,7 @@ class TCircularContainer extends StatelessWidget {
     return Container(
       width: width,
       height: height,
+      margin: margin,
       padding: EdgeInsets.all(padding),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(radius),
