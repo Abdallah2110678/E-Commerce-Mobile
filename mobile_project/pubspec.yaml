@@ -91,6 +91,7 @@ flutter:
     - assets/images/on_boarding_images/sammy-line-no-connection.gif
     - assets/images/on_boarding_images/sammy-line-searching.gif
     - assets/images/on_boarding_images/sammy-line-shopping.gif
+    - assets/images/products/
   #--------------- LOCAL FONTS ------------------#
   fonts:
     - family: Poppins

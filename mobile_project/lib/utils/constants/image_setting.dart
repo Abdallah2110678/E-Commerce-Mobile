@@ -49,12 +49,11 @@ class TImages {
       'assets/icons/categories/icons8-sparkling-diamond-64.png';
   static const String electronicsIcon =
       'assets/icons/categories/icons8-smartphone-64.png';
-
-  static const List<String> banners =[
-  'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/banners/banner_1.jpg?raw=true',
-  'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/banners/banner_2.jpg?raw=true',
-  'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/banners/banner_3.jpg?raw=true',
-  'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/banners/banner_7.jpg?raw=true'
+  static const String productImage1 = 'assets/images/products/NikeWildhorse.png';
+  static const List<String> banners = [
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/banners/banner_1.jpg?raw=true',
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/banners/banner_2.jpg?raw=true',
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/banners/banner_3.jpg?raw=true',
+    
   ];
-      
 }
