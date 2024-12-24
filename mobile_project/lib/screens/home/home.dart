@@ -3,20 +3,24 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:mobile_project/controllers/home_controller.dart';
+import 'package:mobile_project/screens/home/appbar.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:mobile_project/utils/constants/image_setting.dart';
 import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:mobile_project/utils/constants/text_strings.dart';
 import 'package:mobile_project/utils/device/device_utility.dart';
 import 'package:mobile_project/utils/helpers/helper_functions.dart';
-import 'package:mobile_project/screens/home/appbar.dart';
+import 'package:mobile_project/widgets/images/rounded_image.dart';
+import 'package:mobile_project/widgets/layout/grid_layout.dart';
+import 'package:mobile_project/widgets/products/product_cards/product_card_vertical.dart';
+
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -53,7 +57,24 @@ class HomeScreen extends StatelessWidget {
             )),
             Padding(
                 padding: const EdgeInsets.all(TSizes.defaultSpace),
-                child: TPromoSlider(banners:TImages.banners))
+                child: Column(
+                  children: [
+                    const TPromoSlider(banners: TImages.banners),
+                    const SizedBox(height: TSizes.spaceBtwSections),
+
+                    /// -- Popular Products -- Tutorial [Section #3, Video #7]
+                    TSectionHeading(
+                      title: 'Popular Product',
+                      onPressed: () {},
+                      showActionButton: true,
+                    ),
+                    const SizedBox(height: TSizes.spaceBtwItems),
+                    TGridLayout(
+                      itemCount: 8,
+                      itemBuilder: (_, index) => const TProductCardVertical(),
+                    ),
+                  ],
+                ))
           ],
         ),
       ),
@@ -63,7 +84,8 @@ class HomeScreen extends StatelessWidget {
 
 class TPromoSlider extends StatelessWidget {
   const TPromoSlider({
-    super.key, required this.banners,
+    super.key,
+    required this.banners,
   });
 
   final List<String> banners;
@@ -74,7 +96,7 @@ class TPromoSlider extends StatelessWidget {
     return Column(
       children: [
         CarouselSlider(
-          items:banners.map((url)=>TRoundedImage(imageUrl: url)).toList(),
+          items: banners.map((url) => TRoundedImage(imageUrl: url)).toList(),
           options: CarouselOptions(
               viewportFraction: 1,
               onPageChanged: (index, _) =>
@@ -106,33 +128,61 @@ class TPromoSlider extends StatelessWidget {
   }
 }
 
-class TRoundedImage extends StatelessWidget {
-  const TRoundedImage({
-    super.key,
-    required this.imageUrl,
-    this.onPressed,
-  });
+// class TRoundedImage extends StatelessWidget {
+//   const TRoundedImage({
+//     super.key,
+//     this.border,
+//     this.padding,
+//     this.onPressed,
+//     this.width,
+//     this.height,
+//     this.applyImageRadius = true,
+//     required this.imageUrl,
+//     this.fit = BoxFit.contain,
+//     this.backgroundColor,
+//     this.isNetworkImage = false,
+//     this.borderRadius = TSizes.md,
+//   });
 
-  final String imageUrl;
-  final VoidCallback? onPressed;
+//   final double? width, height;
+//   final String imageUrl;
+//   final bool applyImageRadius;
+//   final BoxBorder? border;
+//   final Color? backgroundColor;
+//   final BoxFit fit;
+//   final EdgeInsetsGeometry? padding;
+//   final bool isNetworkImage;
+//   final VoidCallback? onPressed;
+//   final double borderRadius;
 
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        decoration:
-            BoxDecoration(borderRadius: BorderRadius.circular(TSizes.md)),
-        child: ClipRRect(
-            borderRadius: BorderRadius.circular(TSizes.md),
-            child: Image.network(
-              imageUrl,
-              fit: BoxFit.contain,
-            )),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return GestureDetector(
+//       onTap: onPressed,
+//       child: Container(
+//         width: width,
+//         height: height,
+//         padding: padding,
+//         decoration: BoxDecoration(
+//           border: border,
+//           color: backgroundColor,
+//           borderRadius: BorderRadius.circular(borderRadius),
+//         ),
+//         child: ClipRRect(
+//           borderRadius: applyImageRadius
+//               ? BorderRadius.circular(borderRadius)
+//               : BorderRadius.zero,
+//           child: Image(
+//             fit: fit,
+//             image: isNetworkImage
+//                 ? NetworkImage(imageUrl)
+//                 : AssetImage(imageUrl) as ImageProvider,
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 //home category
 class THomeCategories extends StatelessWidget {
@@ -231,7 +281,7 @@ class TSectionHeading extends StatelessWidget {
   const TSectionHeading({
     super.key,
     this.textColor,
-    this.showActionButton = false,
+    this.showActionButton = true,
     required this.title,
     this.buttonTitle = 'View all',
     this.onPressed,
@@ -245,6 +295,7 @@ class TSectionHeading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(title,
             style: Theme.of(context)
@@ -269,12 +320,14 @@ class TSearchContainer extends StatelessWidget {
     this.showBackground = true,
     this.showBorder = true,
     this.onTap,
+    this.padding =const EdgeInsets.symmetric(horizontal: TSizes.defaultSpace),
   });
 
   final String text;
   final IconData? icon;
   final bool showBackground, showBorder;
   final VoidCallback? onTap;
+  final EdgeInsetsGeometry padding;
 
   @override
   Widget build(BuildContext context) {
@@ -282,7 +335,7 @@ class TSearchContainer extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: TSizes.defaultSpace),
+        padding: padding,
         child: Container(
           width: TDeviceUtils.getScreenWidth(context),
           padding: const EdgeInsets.all(TSizes.md),
