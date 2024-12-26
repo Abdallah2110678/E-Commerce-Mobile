@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_project/controllers/authentication.dart';
+import 'package:mobile_project/screens/login/verify_email.dart';
 import 'package:mobile_project/services/user_services.dart';
 import 'package:mobile_project/models/usermodel.dart';
 import 'package:mobile_project/utils/constants/image_setting.dart';
@@ -67,6 +68,9 @@ class SignupController extends GetxController {
       ///show success message
       TLoaders.successSnackBar(
           title: 'Congratulations', message: 'Your account has been created!');
+
+      ///verify email
+      Get.to(() => VerifyEmailScreen(email: email.text.trim()));
     } catch (e) {
       ///error to user
       TLoaders.errorSnackBar(title: "Oh Snap!", message: e.toString());
