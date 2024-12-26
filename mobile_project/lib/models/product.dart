@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mobile_project/models/brand.dart';
 import 'package:mobile_project/models/category.dart';
 
 class Product {
@@ -11,6 +12,7 @@ class Product {
   double discount;
   int stock;
   Category category;
+  Brand brand;
 
   Product({
     required this.id,
@@ -22,6 +24,7 @@ class Product {
     required this.discount,
     required this.stock,
     required this.category,
+    required this.brand,
   });
 
   // Calculate the discounted price
@@ -29,10 +32,13 @@ class Product {
     return price - (price * (discount / 100));
   }
 
-  // Convert a Firestore document to a Product object
-  // Factory constructor for creating a Product from Firestore
-  factory Product.fromFirestore(DocumentSnapshot doc, Category category) {
-  Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+  
+  factory Product.fromFirestore(
+    DocumentSnapshot doc, {
+    required Category category,
+    required Brand brand,
+  }) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
   return Product(
     id: doc.id,
@@ -44,6 +50,7 @@ class Product {
     discount: (data['discount'] as num).toDouble(),
     stock: (data['stock'] as num).toInt(),
     category: category,
+    brand: brand,
   );
 }
 
@@ -58,6 +65,7 @@ class Product {
       'discount': discount,
       'stock': stock,
       'categoryId': category.id,
+      'brandId': brand.id,
     };
   }
 }

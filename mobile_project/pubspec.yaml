@@ -48,6 +48,7 @@ dependencies:
   google_sign_in: ^6.2.2
   uuid: ^4.5.1
   provider: ^6.0.5
+  socket_io_client: ^3.0.2
 
 
   #--------------- ./ PACKAGES END ------------------#
@@ -90,12 +91,6 @@ flutter:
     - assets/images/on_boarding_images/sammy-line-no-connection.gif
     - assets/images/on_boarding_images/sammy-line-searching.gif
     - assets/images/on_boarding_images/sammy-line-shopping.gif
-    - assets/images/animations/sammy-line-come-back-later.png
-    - assets/images/animations/sammy-line-man-receives-a-mail.png
-    - assets/images/animations/sammy-line-sale.png
-    - assets/images/animations/sammy-line-success.png
-    - assets/images/animations/sammy-line-travel-backpack-with-passport-and-air-ticket.gif
-    - assets/images/animations/sammy-line-workout.gif
   #--------------- LOCAL FONTS ------------------#
   fonts:
     - family: Poppins
