@@ -1,8 +1,10 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:mobile_project/controllers/home_controller.dart';
+import 'package:mobile_project/models/category.dart';
 import 'package:mobile_project/screens/home/appbar.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:mobile_project/utils/constants/image_setting.dart';
@@ -70,7 +72,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: TSizes.spaceBtwItems),
                     TGridLayout(
-                      itemCount: 8,
+                      itemCount: 1,
                       itemBuilder: (_, index) => const TProductCardVertical(),
                     ),
                   ],
@@ -186,31 +188,51 @@ class TPromoSlider extends StatelessWidget {
 
 //home category
 class THomeCategories extends StatelessWidget {
-  const THomeCategories({
-    super.key,
-  });
+  const THomeCategories({super.key});
+
+  Future<List<Category>> _fetchCategories() async {
+    final querySnapshot = await FirebaseFirestore.instance.collection('categories').get();
+    return querySnapshot.docs.map((doc) => Category.fromFirestore(doc)).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 90,
-      child: Flexible(
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: 6,
-          scrollDirection: Axis.horizontal,
-          itemBuilder: (_, index) {
-            return TVerticalImageText(
-              image: TImages.shoeIcon,
-              title: 'Shoes',
-              onTap: () {},
-            );
-          },
-        ),
-      ),
+    return FutureBuilder<List<Category>>(
+      future: _fetchCategories(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return const Center(child: Text('Error loading categories'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('No categories found'));
+        }
+
+        final categories = snapshot.data!;
+
+        return SizedBox(
+          height: 90,
+          child: ListView.builder(
+            itemCount: categories.length,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (_, index) {
+              final category = categories[index];
+              return TVerticalImageText(
+                image: TImages.shoeIcon, // Replace with dynamic image handling if needed
+                title: category.name,
+                onTap: () {
+                  // Handle category tap
+                  print('Selected category: ${category.name}');
+                },
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }
+
 
 //image category
 class TVerticalImageText extends StatelessWidget {
