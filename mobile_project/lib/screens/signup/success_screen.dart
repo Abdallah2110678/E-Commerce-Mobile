@@ -8,7 +8,15 @@ import 'package:mobile_project/utils/helpers/helper_functions.dart';
 import 'package:mobile_project/screens/login/login.dart';
 
 class SuccessScreen extends StatelessWidget {
-  const SuccessScreen({super.key});
+  final VoidCallback onpressed;
+  final String image, title, subtitle;
+
+  const SuccessScreen(
+      {super.key,
+      required this.image,
+      required this.title,
+      required this.subtitle,
+      required this.onpressed});
 
   @override
   Widget build(BuildContext context) {
