@@ -16,7 +16,6 @@ import 'package:mobile_project/widgets/images/rounded_image.dart';
 import 'package:mobile_project/widgets/layout/grid_layout.dart';
 import 'package:mobile_project/widgets/products/product_cards/product_card_vertical.dart';
 
-
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -55,6 +54,7 @@ class HomeScreen extends StatelessWidget {
                     ],
                   ),
                 ),
+                SizedBox(height: TSizes.spaceBtwSections),
               ],
             )),
             Padding(
@@ -191,8 +191,11 @@ class THomeCategories extends StatelessWidget {
   const THomeCategories({super.key});
 
   Future<List<Category>> _fetchCategories() async {
-    final querySnapshot = await FirebaseFirestore.instance.collection('categories').get();
-    return querySnapshot.docs.map((doc) => Category.fromFirestore(doc)).toList();
+    final querySnapshot =
+        await FirebaseFirestore.instance.collection('categories').get();
+    return querySnapshot.docs
+        .map((doc) => Category.fromFirestore(doc))
+        .toList();
   }
 
   @override
@@ -218,7 +221,8 @@ class THomeCategories extends StatelessWidget {
             itemBuilder: (_, index) {
               final category = categories[index];
               return TVerticalImageText(
-                image: TImages.shoeIcon, // Replace with dynamic image handling if needed
+                image: TImages
+                    .shoeIcon, // Replace with dynamic image handling if needed
                 title: category.name,
                 onTap: () {
                   // Handle category tap
@@ -232,7 +236,6 @@ class THomeCategories extends StatelessWidget {
     );
   }
 }
-
 
 //image category
 class TVerticalImageText extends StatelessWidget {
@@ -342,7 +345,7 @@ class TSearchContainer extends StatelessWidget {
     this.showBackground = true,
     this.showBorder = true,
     this.onTap,
-    this.padding =const EdgeInsets.symmetric(horizontal: TSizes.defaultSpace),
+    this.padding = const EdgeInsets.symmetric(horizontal: TSizes.defaultSpace),
   });
 
   final String text;
@@ -479,25 +482,22 @@ class TPrimaryHeaderContainer extends StatelessWidget {
       child: Container(
         color: TColors.primary,
         padding: const EdgeInsets.all(0),
-        child: SizedBox(
-          height: 400,
-          child: Stack(
-            children: [
-              Positioned(
-                top: -150,
-                right: -250,
-                child: TCircularContainer(
-                    backgroundColor: TColors.textWhite.withOpacity(0.1)),
-              ),
-              Positioned(
-                top: 100,
-                right: -300,
-                child: TCircularContainer(
-                    backgroundColor: TColors.textWhite.withOpacity(0.1)),
-              ),
-              child,
-            ],
-          ),
+        child: Stack(
+          children: [
+            Positioned(
+              top: -150,
+              right: -250,
+              child: TCircularContainer(
+                  backgroundColor: TColors.textWhite.withOpacity(0.1)),
+            ),
+            Positioned(
+              top: 100,
+              right: -300,
+              child: TCircularContainer(
+                  backgroundColor: TColors.textWhite.withOpacity(0.1)),
+            ),
+            child,
+          ],
         ),
       ),
     );
