@@ -2,8 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_project/controllers/product_controller.dart';
 import 'package:mobile_project/models/product.dart';
+import 'package:mobile_project/screens/dashboard/products/updateProduct.dart';
 
 class ProductTableView extends StatefulWidget {
+  const ProductTableView({super.key});
+
   @override
   _ProductTableViewState createState() => _ProductTableViewState();
 }
@@ -125,6 +128,12 @@ class _ProductTableViewState extends State<ProductTableView> {
                                   IconButton(
                                     icon: const Icon(Icons.delete, color: Colors.red),
                                     onPressed: () => _deleteProduct(product),
+                                    
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.edit, color: Colors.blue,),
+                                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateProductView(product: product))),
+                                    
                                   ),
                                 ],
                               ),
