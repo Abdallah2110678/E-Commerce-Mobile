@@ -65,6 +65,47 @@ class TValidator {
 
     return null;
   }
+static String? validateNonEmptyField(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'This field cannot be empty';
+    }
+    return null;
+  }
+
+  static String? validatePositiveNumber(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Price is required';
+    }
+    final number = double.tryParse(value);
+    if (number == null || number <= 0) {
+      return 'Please enter a valid positive number';
+    }
+    return null;
+  }
+
+  static String? validatePercentage(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Discount is required';
+    }
+    final number = double.tryParse(value);
+    if (number == null || number < 0 || number > 100) {
+      return 'Please enter a valid percentage (0-100)';
+    }
+    return null;
+  }
+
+  static String? validateNonNegativeInteger(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Stock is required';
+    }
+    final number = int.tryParse(value);
+    if (number == null || number < 0) {
+      return 'Please enter a valid non-negative number';
+    }
+    return null;
+  }
+
+
 
 // Add more custom validators as needed for your specific requirements.
 }
