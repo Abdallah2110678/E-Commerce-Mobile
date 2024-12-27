@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+// import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:mobile_project/screens/home/account_settings.dart';
 import 'package:mobile_project/screens/home/appbar.dart';
 import 'package:mobile_project/screens/home/home.dart';
+import 'package:mobile_project/screens/home/profile/profile.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:mobile_project/utils/constants/image_setting.dart';
 import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:mobile_project/widgets/images/circular_image.dart';
 
-class Profile extends StatelessWidget {
-  const Profile({super.key});
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +34,8 @@ class Profile extends StatelessWidget {
                   ),
 
                   //User profile card
-                  const userProfileTitle(),
+                  userProfileTitle(
+                      onPressed: () => Get.to(() => const ProfileScreen())),
                   const SizedBox(height: TSizes.spaceBtwSections),
                 ],
               ),
@@ -131,7 +134,10 @@ class Profile extends StatelessWidget {
 class userProfileTitle extends StatelessWidget {
   const userProfileTitle({
     super.key,
+    required this.onPressed,
   });
+
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -149,7 +155,7 @@ class userProfileTitle extends StatelessWidget {
               .bodyMedium!
               .apply(color: Colors.white)),
       trailing: IconButton(
-          onPressed: () {},
+          onPressed: onPressed,
           icon: const Icon(Iconsax.edit, color: TColors.white)),
     );
   }

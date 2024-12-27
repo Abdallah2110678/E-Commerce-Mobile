@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+// import 'package:get/get.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 
 class AccountSettings extends StatelessWidget {
