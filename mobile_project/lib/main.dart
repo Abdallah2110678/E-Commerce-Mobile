@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       title: 'Mobile Project',
       theme: TAppTheme.lightTheme,
       darkTheme: TAppTheme.darkTheme,
-      home: const Nav(),
+      home: const OnboardingScreen(),
       initialBinding: GeneralBinding(),
     );
   }
