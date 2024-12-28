@@ -20,6 +20,8 @@ class LoginScreen extends StatelessWidget {
     final dark = THelperFunctions.isDarkMode(context);
     final controller = Get.put(LoginController());
 
+    controller.resetFields();
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(

@@ -27,6 +27,11 @@ class LoginController extends GetxController {
     super.onInit();
   }
 
+  void resetFields() {
+    email.clear();
+    password.clear();
+  }
+
   Future<void> emailAndPasswordSignIn() async {
     try {
       // Start loading
