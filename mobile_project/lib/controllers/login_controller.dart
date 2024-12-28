@@ -1,8 +1,11 @@
 // import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mobile_project/controllers/authentication.dart';
+import 'package:mobile_project/controllers/user_controller.dart';
+import 'package:mobile_project/screens/home/nav.dart';
 import 'package:mobile_project/utils/constants/image_setting.dart';
 import 'package:mobile_project/utils/helpers/network_manager.dart';
 import 'package:mobile_project/utils/popups/full_screen_loader.dart';
@@ -18,6 +21,8 @@ class LoginController extends GetxController {
   final email = TextEditingController();
   final password = TextEditingController();
   GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
+
+  final userController = Get.put(UserController());
 
   @override
   void onInit() {
@@ -66,6 +71,38 @@ class LoginController extends GetxController {
 
       // Redirect to appropriate screen
       // AuthenticationRepository.instance.screenRedirect();
+    } catch (e) {
+      // Stop loader and show error
+      TFullScreenLoader.stopLoading();
+      TLoaders.errorSnackBar(title: "Oh Snap!", message: e.toString());
+    }
+  }
+
+//google sign in
+  Future<void> googleSignIn() async {
+    try {
+      // Start loading
+      TFullScreenLoader.openLoadingDialog(
+          'Logging you in...', TImages.docerAnimation);
+
+      // Check internet connection
+      final isConnected = await NetworkManager.instance.isConnected();
+      if (!isConnected) {
+        TFullScreenLoader.stopLoading();
+        return;
+      }
+
+      //google authentication
+      final userCredential =
+          await AuthenticationRepository.instance.signInWithGoogle();
+
+      //save user records
+      await userController.saveUserRecord(userCredential);
+
+      // Remove loader
+      TFullScreenLoader.stopLoading();
+
+      Get.offAll(() => Nav());
     } catch (e) {
       // Stop loader and show error
       TFullScreenLoader.stopLoading();

@@ -7,6 +7,7 @@ import 'package:get/get_instance/get_instance.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 // import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mobile_project/screens/boarding_screen/onboarding_screen.dart';
 import 'package:mobile_project/screens/home/nav.dart';
 import 'package:mobile_project/screens/login/login.dart';
@@ -69,9 +70,36 @@ class AuthenticationRepository extends GetxController {
     }
   }
 
+  //Google signin
+  Future<UserCredential> signInWithGoogle() async {
+    try {
+      //trigger auth flow
+      final GoogleSignInAccount? userAccount = await GoogleSignIn().signIn();
+      //obtain auth details
+      final GoogleSignInAuthentication? googleAuth =
+          await userAccount?.authentication;
+      //create a new credential
+      final credentials = GoogleAuthProvider.credential(
+          accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
+      //sign in to firebase
+      return await _auth.signInWithCredential(credentials);
+    } on FirebaseAuthException catch (e) {
+      throw TFirebaseAuthException(e.code).message;
+    } on FirebaseException catch (e) {
+      throw TFirebaseException(e.code).message;
+    } on FormatException catch (_) {
+      throw const TFormatException();
+    } on PlatformException catch (e) {
+      throw TPlatformException(e.code).message;
+    } catch (e) {
+      throw 'Something went wrong. Please try again';
+    }
+  }
+
   //logout
   Future<void> logout() async {
     try {
+      await GoogleSignIn().signOut();
       return FirebaseAuth.instance.signOut();
       Get.offAll(() => const LoginScreen());
     } on FirebaseAuthException catch (e) {
