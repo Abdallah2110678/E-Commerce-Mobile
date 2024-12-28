@@ -7,11 +7,9 @@ import 'package:get/get_instance/get_instance.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 // import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:mobile_project/controllers/verify_email_controller.dart';
 import 'package:mobile_project/screens/boarding_screen/onboarding_screen.dart';
 import 'package:mobile_project/screens/home/nav.dart';
 import 'package:mobile_project/screens/login/login.dart';
-import 'package:mobile_project/screens/login/verify_email.dart';
 // import 'package:mobile_project/main.dart';
 import 'package:mobile_project/utils/exceptions/firebase_auth_exceptions.dart';
 import 'package:mobile_project/utils/exceptions/firebase_exceptions.dart';
@@ -30,25 +28,6 @@ class AuthenticationRepository extends GetxController {
   @override
   void onReady() {
     FlutterNativeSplash.remove();
-    screenRedirect();
-  }
-
-  screenRedirect() async {
-    final user = _auth.currentUser;
-    if (user != null) {
-      if (user.emailVerified) {
-        Get.offAll(() => const Nav());
-      } else {
-        Get.offAll(() => VerifyEmailScreen(email: _auth.currentUser?.email));
-      }
-    } else {
-      //local storage
-      deviceStorage.writeIfNull('IsFristTime', true);
-      //check if it's first time
-      deviceStorage.read('IsFristTime') != true
-          ? Get.offAll(() => const LoginScreen())
-          : Get.offAll(const OnboardingScreen());
-    }
   }
 
   /*-----------------------------email & password sign_in-----------------------*/
@@ -77,23 +56,6 @@ class AuthenticationRepository extends GetxController {
     try {
       return await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
-    } on FirebaseAuthException catch (e) {
-      throw TFirebaseAuthException(e.code).message;
-    } on FirebaseException catch (e) {
-      throw TFirebaseException(e.code).message;
-    } on FormatException catch (_) {
-      throw const TFormatException();
-    } on PlatformException catch (e) {
-      throw TPlatformException(e.code).message;
-    } catch (e) {
-      throw 'Something went wrong. Please try again';
-    }
-  }
-
-  //email verification
-  Future<void> sendEmailVerification() async {
-    try {
-      await _auth.currentUser?.sendEmailVerification();
     } on FirebaseAuthException catch (e) {
       throw TFirebaseAuthException(e.code).message;
     } on FirebaseException catch (e) {

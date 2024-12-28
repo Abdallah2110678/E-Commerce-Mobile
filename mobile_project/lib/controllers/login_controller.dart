@@ -60,7 +60,7 @@ class LoginController extends GetxController {
       TFullScreenLoader.stopLoading();
 
       // Redirect to appropriate screen
-      AuthenticationRepository.instance.screenRedirect();
+      // AuthenticationRepository.instance.screenRedirect();
     } catch (e) {
       // Stop loader and show error
       TFullScreenLoader.stopLoading();
