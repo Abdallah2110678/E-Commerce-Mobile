@@ -13,11 +13,8 @@ import 'package:get/get.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  // await Supabase.initialize(
-  //   url: 'YOUR_SUPABASE_URL',
-  //   anonKey: 'YOUR_SUPABASE_ANON_KEY',
-  // );
   runApp(const MyApp());
+  Get.put(AuthenticationRepository());
 }
 
 class MyApp extends StatelessWidget {
