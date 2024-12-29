@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +12,7 @@ import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:mobile_project/utils/helpers/network_manager.dart';
 import 'package:mobile_project/utils/popups/full_screen_loader.dart';
 import 'package:mobile_project/utils/popups/loaders.dart';
-import 'package:provider/provider.dart';
-
+import 'package:mobile_project/models/role.dart';
 class UserController extends GetxController {
   static UserController get instance => Get.find();
   var users = <UserModel>[].obs; // Reactive list
@@ -93,8 +91,8 @@ class UserController extends GetxController {
             lastName:
                 nameparts.length > 1 ? nameparts.sublist(1).join('') : ' ',
             phoneNumber: userCredentials.user!.phoneNumber ?? '',
-            profilePicture: userCredentials.user!.photoURL ?? '');
-
+            profilePicture: userCredentials.user!.photoURL ?? '',
+            role: Role.user); 
         //save user data
         await userRepository.saveUserRecords(user);
       }

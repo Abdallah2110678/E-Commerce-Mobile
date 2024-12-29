@@ -23,27 +23,27 @@ class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   Future<String?> _getAdminEmail() async {
-  try {
-    final snapshot = await FirebaseFirestore.instance
-        .collection('Users')
-        .where('IsAdmin', isEqualTo: true) // Note: Field name must match case
-        .limit(1)
-        .get();
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('Users')
+          .where('Role', isEqualTo: 'admin') // Note: Field name must match case
+          .limit(1)
+          .get();
 
-    if (snapshot.docs.isNotEmpty) {
-      final adminEmail = snapshot.docs.first.get('Email'); // Make sure 'Email' matches the field name
-      return adminEmail;
-    } else {
-      return null; // No admin found
+      if (snapshot.docs.isNotEmpty) {
+        final adminEmail = snapshot.docs.first
+            .get('Email'); // Make sure 'Email' matches the field name
+        return adminEmail;
+      } else {
+        return null; // No admin found
+      }
+    } catch (e) {
+      debugPrint('Error fetching admin email: $e');
+      return null;
     }
-  } catch (e) {
-    debugPrint('Error fetching admin email: $e');
-    return null;
   }
-}
 
   void _navigateToChat(BuildContext context, String currentUserEmail) async {
-    
     final adminEmail = await _getAdminEmail();
     if (adminEmail != null) {
       Navigator.push(
@@ -111,22 +111,20 @@ class HomeScreen extends StatelessWidget {
                     itemCount: 1,
                     itemBuilder: (_, index) => const TProductCardVertical(),
                   ),
-                
                 ],
               ),
             ),
           ],
         ),
       ),
-       floatingActionButton: FloatingActionButton(
-      onPressed: () => _navigateToChat(context, emailController.text.trim()),
-      backgroundColor: TColors.primary,
-      child: const Icon(Iconsax.message, color: Colors.white),
-       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _navigateToChat(context, emailController.text.trim()),
+        backgroundColor: TColors.primary,
+        child: const Icon(Iconsax.message, color: Colors.white),
+      ),
     );
   }
 }
-
 
 class TPromoSlider extends StatelessWidget {
   const TPromoSlider({
@@ -142,7 +140,7 @@ class TPromoSlider extends StatelessWidget {
     return Column(
       children: [
         CarouselSlider(
-          items: banners.map((url) => TRoundedImage(imageUrl: url)).toList(),
+          items: banners.map((url) => TRoundedImage(imageUrl: url,isNetworkImage: true,)).toList(),
           options: CarouselOptions(
               viewportFraction: 1,
               onPageChanged: (index, _) =>
@@ -265,8 +263,7 @@ class THomeCategories extends StatelessWidget {
             itemBuilder: (_, index) {
               final category = categories[index];
               return TVerticalImageText(
-                image: TImages
-                    .shoeIcon, // Replace with dynamic image handling if needed
+                image: category.imagUrl, // Replace with dynamic image handling if needed
                 title: category.name,
                 onTap: () {
                   // Handle category tap
@@ -319,7 +316,7 @@ class TVerticalImageText extends StatelessWidget {
               ),
               child: Center(
                 child: Image(
-                    image: AssetImage(image),
+                    image: NetworkImage(image),
                     fit: BoxFit.cover,
                     color: dark ? TColors.light : TColors.dark),
               ),

@@ -1,5 +1,6 @@
 import 'package:mobile_project/utils/formatters/formatter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mobile_project/models/role.dart';
 
 class UserModel {
   final String id;
@@ -9,7 +10,7 @@ class UserModel {
   String lastName;
   String phoneNumber;
   String profilePicture;
-  bool isAdmin;
+  Role role;
 
   UserModel({
     required this.id,
@@ -19,7 +20,7 @@ class UserModel {
     required this.lastName,
     required this.phoneNumber,
     required this.profilePicture,
-    this.isAdmin = false,
+    required this.role,
   });
 
   String get fullName => '$firstName $lastName';
@@ -33,9 +34,8 @@ class UserModel {
     String firstName = nameParts[0].toLowerCase();
     String lastName = nameParts.length > 1 ? nameParts[1].toLowerCase() : "";
 
-    String camelCaseUsername =
-        "$firstName$lastName"; 
-    String usernameWithPrefix = "cwt_$camelCaseUsername"; 
+    String camelCaseUsername = "$firstName$lastName";
+    String usernameWithPrefix = "cwt_$camelCaseUsername";
     return usernameWithPrefix;
   }
 
@@ -48,7 +48,7 @@ class UserModel {
       email: "",
       phoneNumber: "",
       profilePicture: "",
-      isAdmin: false);
+      role: Role.user);
 
   // Convert model to JSON structure for storing data in Firebase.
   Map<String, dynamic> toJson() {
@@ -59,7 +59,7 @@ class UserModel {
       'Email': email,
       'PhoneNumber': phoneNumber,
       'ProfilePicture': profilePicture,
-      'IsAdmin': isAdmin,
+      'Role': role.name,
     };
   }
 
@@ -75,7 +75,8 @@ class UserModel {
       email: data['Email'] ?? "",
       phoneNumber: data['PhoneNumber'] ?? "",
       profilePicture: data['ProfilePicture'] ?? "",
-      isAdmin: data['IsAdmin'] ?? false,
+      role: Role.values
+          .firstWhere((e) => e.name == data['Role'], orElse: () => Role.user),
     );
   }
 
@@ -88,7 +89,7 @@ class UserModel {
       email: map['Email'],
       phoneNumber: map['PhoneNumber'],
       profilePicture: map['ProfilePicture'],
-      isAdmin: map['IsAdmin'] ?? false,
+      role: Role.values.firstWhere((e) => e.name == map['Role']),
     );
   }
 
@@ -100,7 +101,7 @@ class UserModel {
       'Email': email,
       'PhoneNumber': phoneNumber,
       'ProfilePicture': profilePicture,
-      'IsAdmin': isAdmin,
+      'Role': role,
     };
   }
 }

@@ -13,10 +13,10 @@ class DrawerScreen extends StatefulWidget {
 class _DrawerScreenState extends State<DrawerScreen> {
   // List of screens for navigation
   final List<Widget> _screens = [
-    Dashboard(),
-    AddProductView(),
+    const Dashboard(),
+    const AddProductView(),
     CategoryManagementPage(),
-    ProductTableView()
+    const ProductTableView()
   ];
 
   // List of titles for AppBar
@@ -37,7 +37,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
     });
     Navigator.pop(context); // Close the drawer
   }
-
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(

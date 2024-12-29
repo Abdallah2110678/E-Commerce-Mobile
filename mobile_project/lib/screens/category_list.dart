@@ -64,7 +64,7 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
                     if (category == null) {
                       // Add new category
                       await _categoryController.addCategory(
-                        Category(id: '', name: nameController.text.trim()),
+                        Category(id: '', name: nameController.text.trim(), imagUrl: 'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/iconCategory/icons8-shoes-64.png?raw=true',),
                       );
                     } else {
                       // Update existing category
@@ -138,7 +138,7 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+                  children:[
                     Icon(Icons.category_outlined, size: 100, color: Colors.grey),
                     SizedBox(height: 20),
                     Text(
