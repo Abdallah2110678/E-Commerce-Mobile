@@ -23,7 +23,7 @@ dependencies:
   connectivity_plus: ^6.0.3
   lottie: ^3.1.0 # OR RIVE
   shimmer: ^3.0.0
-
+  
   # Icons
   iconsax: ^0.0.8
   cupertino_icons: ^1.0.8

@@ -9,12 +9,8 @@ import 'package:mobile_project/utils/theme/theme.dart';
 import 'package:mobile_project/screens/boarding_screen/onboarding_screen.dart';
 // import 'package:mobile_project/views/login/login.dart';
 import 'package:get/get.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
 
 void main() async {
-
-
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   // await Supabase.initialize(
