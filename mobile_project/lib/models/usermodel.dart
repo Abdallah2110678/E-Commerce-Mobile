@@ -1,5 +1,6 @@
 import 'package:mobile_project/utils/formatters/formatter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mobile_project/models/role.dart';
 
 class UserModel {
   final String id;
@@ -9,6 +10,7 @@ class UserModel {
   String lastName;
   String phoneNumber;
   String profilePicture;
+  Role role;
 
   UserModel({
     required this.id,
@@ -18,6 +20,7 @@ class UserModel {
     required this.lastName,
     required this.phoneNumber,
     required this.profilePicture,
+    required this.role,
   });
 
   String get fullName => '$firstName $lastName';
@@ -31,9 +34,8 @@ class UserModel {
     String firstName = nameParts[0].toLowerCase();
     String lastName = nameParts.length > 1 ? nameParts[1].toLowerCase() : "";
 
-    String camelCaseUsername =
-        "$firstName$lastName"; // Combine first and last name
-    String usernameWithPrefix = "cwt_$camelCaseUsername"; // Add "cwt_" prefix
+    String camelCaseUsername = "$firstName$lastName";
+    String usernameWithPrefix = "cwt_$camelCaseUsername";
     return usernameWithPrefix;
   }
 
@@ -45,7 +47,8 @@ class UserModel {
       username: "",
       email: "",
       phoneNumber: "",
-      profilePicture: "");
+      profilePicture: "",
+      role: Role.user);
 
   // Convert model to JSON structure for storing data in Firebase.
   Map<String, dynamic> toJson() {
@@ -56,6 +59,7 @@ class UserModel {
       'Email': email,
       'PhoneNumber': phoneNumber,
       'ProfilePicture': profilePicture,
+      'Role': role.name,
     };
   }
 
@@ -71,27 +75,33 @@ class UserModel {
       email: data['Email'] ?? "",
       phoneNumber: data['PhoneNumber'] ?? "",
       profilePicture: data['ProfilePicture'] ?? "",
+      role: Role.values
+          .firstWhere((e) => e.name == data['Role'], orElse: () => Role.user),
     );
   }
+
   factory UserModel.fromMap(Map<String, dynamic> map, String id) {
     return UserModel(
       id: id,
       firstName: map['FirstName'],
       lastName: map['LastName'],
-      username:map['Username'],
+      username: map['Username'],
       email: map['Email'],
       phoneNumber: map['PhoneNumber'],
-      profilePicture: map['ProfilePicture']
+      profilePicture: map['ProfilePicture'],
+      role: Role.values.firstWhere((e) => e.name == map['Role']),
     );
   }
-    Map<String, dynamic> toMap() {
+
+  Map<String, dynamic> toMap() {
     return {
       'FirstName': firstName,
       'LastName': lastName,
       'username': username,
-      'email': email,
+      'Email': email,
       'PhoneNumber': phoneNumber,
-      'ProfilePicture':profilePicture
+      'ProfilePicture': profilePicture,
+      'Role': role,
     };
   }
 }

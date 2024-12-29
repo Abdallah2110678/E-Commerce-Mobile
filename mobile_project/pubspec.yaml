@@ -22,7 +22,8 @@ dependencies:
   smooth_page_indicator: ^1.1.0
   connectivity_plus: ^6.0.3
   lottie: ^3.1.0 # OR RIVE
-
+  shimmer: ^3.0.0
+  
   # Icons
   iconsax: ^0.0.8
   cupertino_icons: ^1.0.8
@@ -49,6 +50,9 @@ dependencies:
   uuid: ^4.5.1
   provider: ^6.0.5
   socket_io_client: ^3.0.2
+  supabase_flutter: ^2.8.2
+  flutter_express: ^0.8.4
+  belatuk_body_parser: ^5.4.1
 
 
   #--------------- ./ PACKAGES END ------------------#

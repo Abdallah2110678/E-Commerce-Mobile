@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-// import 'package:mobile_project/bindings/general_binding.dart';
+import 'package:mobile_project/bindings/general_binding.dart';
 import 'package:mobile_project/controllers/authentication.dart';
 import 'package:mobile_project/screens/home/nav.dart';
 import 'package:mobile_project/services/user_services.dart';
@@ -13,7 +13,12 @@ import 'package:get/get.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  // await Supabase.initialize(
+  //   url: 'YOUR_SUPABASE_URL',
+  //   anonKey: 'YOUR_SUPABASE_ANON_KEY',
+  // );
   runApp(const MyApp());
+  Get.put(AuthenticationRepository());
 }
 
 class MyApp extends StatelessWidget {

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:mobile_project/controllers/user_controller.dart';
 import 'package:mobile_project/screens/home/appbar.dart';
 import 'package:mobile_project/screens/home/home.dart';
+import 'package:mobile_project/screens/home/profile/changename.dart';
 import 'package:mobile_project/utils/constants/image_setting.dart';
 import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:mobile_project/widgets/images/circular_image.dart';
@@ -11,6 +14,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = UserController.instance;
     return Scaffold(
       appBar: const TAppbar(
         showBlackArrow: true,
@@ -45,11 +49,13 @@ class ProfileScreen extends StatelessWidget {
 
               profileMenu(
                 title: 'Name',
-                value: 'Ahmed',
-                onPressed: () {},
+                value: controller.user.value.fullName,
+                onPressed: () => Get.to(() => const ChangeName()),
               ),
               profileMenu(
-                  title: 'Username', value: 'Ahmed Ayman', onPressed: () {}),
+                  title: 'Username',
+                  value: controller.user.value.username,
+                  onPressed: () {}),
               const SizedBox(height: TSizes.spaceBtwItems),
               const Divider(),
               const SizedBox(height: TSizes.spaceBtwItems),
@@ -59,22 +65,26 @@ class ProfileScreen extends StatelessWidget {
                   title: 'Personal Information', showActionButton: false),
               const SizedBox(height: TSizes.spaceBtwItems),
 
-              profileMenu(title: 'User ID', value: '45689', onPressed: () {}),
               profileMenu(
-                  title: 'E-mail', value: 'ahmed@gmail.com', onPressed: () {}),
+                  title: 'User ID',
+                  value: controller.user.value.id,
+                  onPressed: () {}),
+              profileMenu(
+                  title: 'E-mail',
+                  value: controller.user.value.email,
+                  onPressed: () {}),
               profileMenu(
                   title: 'Phone Number',
-                  value: '01022085061',
+                  value: controller.user.value.phoneNumber,
                   onPressed: () {}),
-              profileMenu(title: 'Gender', value: 'Male', onPressed: () {}),
               const Divider(),
               const SizedBox(height: TSizes.spaceBtwItems),
 
               Center(
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () => controller.deleteAccountWarrningPopup(),
                   child: const Text(
-                    'Close Account',
+                    'Delete Account',
                     style: TextStyle(color: Colors.red),
                   ),
                 ),
