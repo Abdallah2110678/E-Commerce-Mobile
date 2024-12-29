@@ -1,8 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 // import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:mobile_project/controllers/authentication.dart';
+import 'package:mobile_project/controllers/user_controller.dart';
 import 'package:mobile_project/screens/home/account_settings.dart';
 import 'package:mobile_project/screens/home/appbar.dart';
 import 'package:mobile_project/screens/home/home.dart';
@@ -157,15 +159,17 @@ class userProfileTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = UserController.instance;
+
     return ListTile(
       leading: TCircularImage(
           image: TImages.user, width: 50, height: 50, padding: 0),
-      title: Text('Ahmed',
+      title: Text(controller.user.value.fullName,
           style: Theme.of(context)
               .textTheme
               .headlineSmall!
               .apply(color: Colors.white)),
-      subtitle: Text('ahmed@gmail.com',
+      subtitle: Text(controller.user.value.email,
           style: Theme.of(context)
               .textTheme
               .bodyMedium!

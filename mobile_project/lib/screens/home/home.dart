@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:mobile_project/controllers/home_controller.dart';
+import 'package:mobile_project/controllers/user_controller.dart';
 import 'package:mobile_project/models/category.dart';
 import 'package:mobile_project/screens/home/appbar.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
@@ -12,6 +13,7 @@ import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:mobile_project/utils/constants/text_strings.dart';
 import 'package:mobile_project/utils/device/device_utility.dart';
 import 'package:mobile_project/utils/helpers/helper_functions.dart';
+import 'package:mobile_project/utils/shimmers/shimmer.dart';
 import 'package:mobile_project/widgets/images/rounded_image.dart';
 import 'package:mobile_project/widgets/layout/grid_layout.dart';
 import 'package:mobile_project/widgets/products/product_cards/product_card_vertical.dart';
@@ -547,6 +549,7 @@ class THomeAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(UserController());
     return TAppbar(
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -556,11 +559,17 @@ class THomeAppBar extends StatelessWidget {
                   .textTheme
                   .labelMedium!
                   .apply(color: TColors.grey)),
-          Text(TTexts.homeAppbarSubTitle,
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineSmall!
-                  .apply(color: TColors.white)),
+          Obx(() {
+            if (controller.profileLoading.value) {
+              return const TShimmerEffect(width: 80, height: 15);
+            } else {
+              return Text(controller.user.value.fullName,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineSmall!
+                      .apply(color: TColors.white));
+            }
+          }),
         ],
       ),
       actions: [
