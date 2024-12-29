@@ -7,6 +7,7 @@ import 'package:mobile_project/utils/constants/image_setting.dart';
 import 'package:mobile_project/utils/helpers/network_manager.dart';
 import 'package:mobile_project/utils/popups/full_screen_loader.dart';
 import 'package:mobile_project/utils/popups/loaders.dart';
+import 'package:mobile_project/models/role.dart';
 
 class SignupController extends GetxController {
   static SignupController get instance => Get.find();
@@ -58,6 +59,8 @@ class SignupController extends GetxController {
         lastName: lastname.text.trim(),
         phoneNumber: phonenumber.text.trim(),
         profilePicture: '',
+        role: Role.user,
+
       );
       await UserRepository.instance.saveUserRecords(newUser);
 

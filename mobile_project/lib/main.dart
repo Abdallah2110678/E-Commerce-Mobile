@@ -18,6 +18,7 @@ void main() async {
   //   anonKey: 'YOUR_SUPABASE_ANON_KEY',
   // );
   runApp(const MyApp());
+  Get.put(AuthenticationRepository());
 }
 
 class MyApp extends StatelessWidget {

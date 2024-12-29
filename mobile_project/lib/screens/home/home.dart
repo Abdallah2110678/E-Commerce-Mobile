@@ -26,7 +26,7 @@ class HomeScreen extends StatelessWidget {
   try {
     final snapshot = await FirebaseFirestore.instance
         .collection('Users')
-        .where('IsAdmin', isEqualTo: true) // Note: Field name must match case
+        .where('Role', isEqualTo: 'admin') // Note: Field name must match case
         .limit(1)
         .get();
 

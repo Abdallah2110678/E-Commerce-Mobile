@@ -129,8 +129,9 @@ class AuthenticationRepository extends GetxController {
   Future<void> logout() async {
     try {
       await GoogleSignIn().signOut();
-      return FirebaseAuth.instance.signOut();
+      await FirebaseAuth.instance.signOut();
       Get.offAll(() => const LoginScreen());
+      
     } on FirebaseAuthException catch (e) {
       throw TFirebaseAuthException(e.code).message;
     } on FirebaseException catch (e) {
@@ -142,6 +143,7 @@ class AuthenticationRepository extends GetxController {
     } catch (e) {
       throw 'Something went wrong. Please try again';
     }
+    return;
   }
 
   Future<void> deleteAccount() async {
