@@ -1,8 +1,7 @@
 
 import 'package:flutter/material.dart';
+import 'package:mobile_project/controllers/ChatController.dart';
 import 'package:mobile_project/services/socket_service.dart';
-
-import '../../controllers/ChatController.dart';
 
 
 class ChatScreen extends StatefulWidget {

@@ -9,6 +9,7 @@ class UserModel {
   String lastName;
   String phoneNumber;
   String profilePicture;
+  bool isAdmin;
 
   UserModel({
     required this.id,
@@ -18,6 +19,7 @@ class UserModel {
     required this.lastName,
     required this.phoneNumber,
     required this.profilePicture,
+    this.isAdmin = false,
   });
 
   String get fullName => '$firstName $lastName';
@@ -32,8 +34,8 @@ class UserModel {
     String lastName = nameParts.length > 1 ? nameParts[1].toLowerCase() : "";
 
     String camelCaseUsername =
-        "$firstName$lastName"; // Combine first and last name
-    String usernameWithPrefix = "cwt_$camelCaseUsername"; // Add "cwt_" prefix
+        "$firstName$lastName"; 
+    String usernameWithPrefix = "cwt_$camelCaseUsername"; 
     return usernameWithPrefix;
   }
 
@@ -45,7 +47,8 @@ class UserModel {
       username: "",
       email: "",
       phoneNumber: "",
-      profilePicture: "");
+      profilePicture: "",
+      isAdmin: false);
 
   // Convert model to JSON structure for storing data in Firebase.
   Map<String, dynamic> toJson() {
@@ -56,6 +59,7 @@ class UserModel {
       'Email': email,
       'PhoneNumber': phoneNumber,
       'ProfilePicture': profilePicture,
+      'IsAdmin': isAdmin,
     };
   }
 
@@ -71,27 +75,32 @@ class UserModel {
       email: data['Email'] ?? "",
       phoneNumber: data['PhoneNumber'] ?? "",
       profilePicture: data['ProfilePicture'] ?? "",
+      isAdmin: data['IsAdmin'] ?? false,
     );
   }
+
   factory UserModel.fromMap(Map<String, dynamic> map, String id) {
     return UserModel(
       id: id,
       firstName: map['FirstName'],
       lastName: map['LastName'],
-      username:map['Username'],
+      username: map['Username'],
       email: map['Email'],
       phoneNumber: map['PhoneNumber'],
-      profilePicture: map['ProfilePicture']
+      profilePicture: map['ProfilePicture'],
+      isAdmin: map['IsAdmin'] ?? false,
     );
   }
-    Map<String, dynamic> toMap() {
+
+  Map<String, dynamic> toMap() {
     return {
       'FirstName': firstName,
       'LastName': lastName,
       'username': username,
-      'email': email,
+      'Email': email,
       'PhoneNumber': phoneNumber,
-      'ProfilePicture':profilePicture
+      'ProfilePicture': profilePicture,
+      'IsAdmin': isAdmin,
     };
   }
 }
