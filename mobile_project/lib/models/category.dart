@@ -3,10 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Category {
   String id;
   String name;
+  String imagUrl;
 
   Category({
     required this.id,
     required this.name,
+    required this.imagUrl,
   });
 
   // Factory constructor to create a Category from Firestore
@@ -14,7 +16,8 @@ class Category {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return Category(
       id: doc.id, // Use Firestore document ID as the category ID
-      name: data['name'] ?? '', // Default value if name is null
+      name: data['name'] ?? '',
+      imagUrl: data['imagUrl'] ?? '', // Default value if name is null
     );
   }
 
@@ -22,13 +25,16 @@ class Category {
   Map<String, dynamic> toFirestore() {
     return {
       'name': name,
+      'imagUrl': imagUrl,
     };
   }
+
   // Add copyWith method to create a new instance with optional modifications
-  Category copyWith({String? id, String? name}) {
+  Category copyWith({String? id, String? name,String? imagUrl }) {
     return Category(
       id: id ?? this.id,
       name: name ?? this.name,
+      imagUrl: imagUrl ?? this.imagUrl,
     );
   }
 }

@@ -14,7 +14,8 @@ class _CategoryFormState extends State<CategoryForm> {
 
   void _saveCategory() async {
     if (_formKey.currentState!.validate()) {
-      Category category = Category(id: '', name: _nameController.text);
+      Category category = Category(id: '', name: _nameController.text, imagUrl: "https://github.com/aMoni3m/e-commerce-Image/blob/main/images/iconCategory/icons8-shoes-64.png?raw=true"
+);
       await _categoryController.addCategory(category);
 
       ScaffoldMessenger.of(context).showSnackBar(

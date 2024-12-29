@@ -98,7 +98,7 @@ class TPromoSlider extends StatelessWidget {
     return Column(
       children: [
         CarouselSlider(
-          items: banners.map((url) => TRoundedImage(imageUrl: url)).toList(),
+          items: banners.map((url) => TRoundedImage(imageUrl: url,isNetworkImage: true,)).toList(),
           options: CarouselOptions(
               viewportFraction: 1,
               onPageChanged: (index, _) =>
@@ -221,8 +221,7 @@ class THomeCategories extends StatelessWidget {
             itemBuilder: (_, index) {
               final category = categories[index];
               return TVerticalImageText(
-                image: TImages
-                    .shoeIcon, // Replace with dynamic image handling if needed
+                image: category.imagUrl, // Replace with dynamic image handling if needed
                 title: category.name,
                 onTap: () {
                   // Handle category tap
@@ -275,7 +274,7 @@ class TVerticalImageText extends StatelessWidget {
               ),
               child: Center(
                 child: Image(
-                    image: AssetImage(image),
+                    image: NetworkImage(image),
                     fit: BoxFit.cover,
                     color: dark ? TColors.light : TColors.dark),
               ),

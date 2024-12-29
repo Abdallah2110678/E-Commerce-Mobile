@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:mobile_project/utils/constants/image_setting.dart';
 
 class ProductImagePicker extends StatefulWidget {
   final Function(String) onThumbnailSelected;
@@ -28,14 +28,7 @@ class _ProductImagePickerState extends State<ProductImagePicker> {
     tempSelectedImages = List.from(widget.selectedImages);
   }
 
-  final List<String> availableImages = [
-    'https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg',
-    'https://static.vecteezy.com/ti/photos-gratuite/t2/48021360-colore-lezard-dans-neon-couleurs-fonce-contexte-avec-une-fermer-photo.jpg',
-    'https://img.freepik.com/photos-gratuite/gros-plan-iguane-dans-nature_23-2151718784.jpg',
-    'https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg',
-    'https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg',
-  ];
-
+  final List<String> availableImages = TImages.products;
   void _toggleImageSelection(String imagePath) {
     setState(() {
       if (widget.isThumbnailPicker) {
@@ -98,7 +91,7 @@ class _ProductImagePickerState extends State<ProductImagePicker> {
             Expanded(
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
+                  crossAxisCount: 2,
                   crossAxisSpacing: 8,
                   mainAxisSpacing: 8,
                 ),

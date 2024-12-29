@@ -74,6 +74,7 @@ class ProductDescriptionPage extends StatelessWidget {
               children: [
                 /// Product Thumbnail
                 TRoundedImage(
+                  isNetworkImage: true,
                   imageUrl: productData['thumbnailUrl'],
                   height: 250,
                   applyImageRadius: true,

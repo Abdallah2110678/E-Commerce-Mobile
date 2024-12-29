@@ -61,4 +61,39 @@ class TImages {
     'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/banners/banner_2.jpg?raw=true',
     'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/banners/banner_3.jpg?raw=true',
   ];
+
+  static const List<String> products = [
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/products/NikeAirMax.png?raw=true',
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/products/NikeAirJOrdonWhiteRed.png?raw=true',
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/products/NikeAirJordonSingleBlue.png?raw=true',
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/products/NikeAirJordonSingleOrange.png?raw=true',
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/products/NikeAirJordonwhiteMagenta.png?raw=true',
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/products/NikeBasketballShoeGreenBlack.png?raw=true',
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/products/NikeWildhorse.png?raw=true',
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/products/acer_laptop_1.png?raw=true',
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/products/acer_laptop_2.png?raw=true',
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/products/acer_laptop_3.png?raw=true',
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/products/acer_laptop_4.png?raw=true',
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/products/acer_laptop_var_3.png?raw=true',
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/products/iphone_12_black.png?raw=true',
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/products/iphone_12_blue.png?raw=true',
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/products/iphone_12_green.png?raw=true',
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/products/iphone_12_red.png?raw=true'
+  ];
+  static const List<String> iconCategory = [
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/iconCategory/icons8-smartphone-64.png?raw=true',
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/iconCategory/icons8-shoes-64.png?raw=true',
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/iconCategory/icons8-school-uniform-64.png?raw=true',
+  ];
+
+  
+  static const List<String> brands = [
+    
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/brands/apple-logo.png?raw=true',
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/brands/acer_logo.png?raw=true',
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/brands/nike.png?raw=true',
+    'https://github.com/aMoni3m/e-commerce-Image/blob/main/images/brands/adidas-logo.png?raw=true',
+  ];
+
+
 }
