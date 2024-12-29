@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:mobile_project/controllers/home_controller.dart';
 import 'package:mobile_project/models/category.dart';
+import 'package:mobile_project/screens/chat/Chat_Screen.dart';
 import 'package:mobile_project/screens/home/appbar.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:mobile_project/utils/constants/image_setting.dart';
@@ -19,70 +20,111 @@ import 'package:mobile_project/widgets/products/product_cards/product_card_verti
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
+  Future<String?> _getAdminEmail() async {
+  try {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('Users')
+        .where('IsAdmin', isEqualTo: true) // Note: Field name must match case
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      final adminEmail = snapshot.docs.first.get('Email'); // Make sure 'Email' matches the field name
+      return adminEmail;
+    } else {
+      return null; // No admin found
+    }
+  } catch (e) {
+    debugPrint('Error fetching admin email: $e');
+    return null;
+  }
+}
+
+  void _navigateToChat(BuildContext context, String currentUserEmail) async {
+    
+    final adminEmail = await _getAdminEmail();
+    if (adminEmail != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ChatScreen(
+            currentUserEmail: currentUserEmail,
+            targetEmail: adminEmail,
+          ),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No admin available for chat.')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final TextEditingController emailController = TextEditingController();
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
           children: [
-            //header
             const TPrimaryHeaderContainer(
-                child: Column(
-              children: [
-                ///appbar
-                THomeAppBar(),
-                SizedBox(height: TSizes.spaceBtwSections),
-
-                ///searchbar
-                TSearchContainer(text: 'Search in Store'),
-                SizedBox(height: TSizes.spaceBtwSections),
-
-                ///categories
-                Padding(
-                  padding: EdgeInsets.only(left: TSizes.defaultSpace),
-                  child: Column(
-                    children: [
-                      ///heading
-                      TSectionHeading(
+              child: Column(
+                children: [
+                  THomeAppBar(),
+                  SizedBox(height: TSizes.spaceBtwSections),
+                  TSearchContainer(text: 'Search in Store'),
+                  SizedBox(height: TSizes.spaceBtwSections),
+                  Padding(
+                    padding: EdgeInsets.only(left: TSizes.defaultSpace),
+                    child: Column(
+                      children: [
+                        TSectionHeading(
                           title: 'Popular Categories',
                           showActionButton: false,
-                          textColor: Colors.white),
-                      SizedBox(height: TSizes.spaceBtwSections),
-
-                      //categories
-                      THomeCategories(),
-                    ],
+                          textColor: Colors.white,
+                        ),
+                        SizedBox(height: TSizes.spaceBtwSections),
+                        THomeCategories(),
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(height: TSizes.spaceBtwSections),
-              ],
-            )),
+                  SizedBox(height: TSizes.spaceBtwSections),
+                ],
+              ),
+            ),
             Padding(
-                padding: const EdgeInsets.all(TSizes.defaultSpace),
-                child: Column(
-                  children: [
-                    const TPromoSlider(banners: TImages.banners),
-                    const SizedBox(height: TSizes.spaceBtwSections),
-
-                    /// -- Popular Products -- Tutorial [Section #3, Video #7]
-                    TSectionHeading(
-                      title: 'Popular Product',
-                      onPressed: () {},
-                      showActionButton: true,
-                    ),
-                    const SizedBox(height: TSizes.spaceBtwItems),
-                    TGridLayout(
-                      itemCount: 1,
-                      itemBuilder: (_, index) => const TProductCardVertical(),
-                    ),
-                  ],
-                ))
+              padding: const EdgeInsets.all(TSizes.defaultSpace),
+              child: Column(
+                children: [
+                  const TPromoSlider(banners: TImages.banners),
+                  const SizedBox(height: TSizes.spaceBtwSections),
+                  TSectionHeading(
+                    title: 'Popular Product',
+                    onPressed: () {},
+                    showActionButton: true,
+                  ),
+                  const SizedBox(height: TSizes.spaceBtwItems),
+                  TGridLayout(
+                    itemCount: 1,
+                    itemBuilder: (_, index) => const TProductCardVertical(),
+                  ),
+                
+                ],
+              ),
+            ),
           ],
         ),
       ),
+       floatingActionButton: FloatingActionButton(
+      onPressed: () => _navigateToChat(context, emailController.text.trim()),
+      backgroundColor: TColors.primary,
+      child: const Icon(Iconsax.message, color: Colors.white),
+       ),
     );
   }
 }
+
 
 class TPromoSlider extends StatelessWidget {
   const TPromoSlider({
