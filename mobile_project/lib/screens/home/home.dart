@@ -33,7 +33,6 @@ class HomeScreen extends StatelessWidget {
           .where('Role', isEqualTo: 'admin')
           .limit(1)
           .get();
-
       if (snapshot.docs.isNotEmpty) {
         return snapshot.docs.first.get('Email');
       } else {
@@ -189,13 +188,10 @@ class HomeScreen extends StatelessWidget {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
                       }
-                      
                       if (snapshot.hasError) {
                         return Center(child: Text('Error: ${snapshot.error}'));
                       }
-
                       final products = snapshot.data ?? [];
-                      
                       return GridView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
@@ -277,62 +273,6 @@ class TPromoSlider extends StatelessWidget {
     );
   }
 }
-
-// class TRoundedImage extends StatelessWidget {
-//   const TRoundedImage({
-//     super.key,
-//     this.border,
-//     this.padding,
-//     this.onPressed,
-//     this.width,
-//     this.height,
-//     this.applyImageRadius = true,
-//     required this.imageUrl,
-//     this.fit = BoxFit.contain,
-//     this.backgroundColor,
-//     this.isNetworkImage = false,
-//     this.borderRadius = TSizes.md,
-//   });
-
-//   final double? width, height;
-//   final String imageUrl;
-//   final bool applyImageRadius;
-//   final BoxBorder? border;
-//   final Color? backgroundColor;
-//   final BoxFit fit;
-//   final EdgeInsetsGeometry? padding;
-//   final bool isNetworkImage;
-//   final VoidCallback? onPressed;
-//   final double borderRadius;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return GestureDetector(
-//       onTap: onPressed,
-//       child: Container(
-//         width: width,
-//         height: height,
-//         padding: padding,
-//         decoration: BoxDecoration(
-//           border: border,
-//           color: backgroundColor,
-//           borderRadius: BorderRadius.circular(borderRadius),
-//         ),
-//         child: ClipRRect(
-//           borderRadius: applyImageRadius
-//               ? BorderRadius.circular(borderRadius)
-//               : BorderRadius.zero,
-//           child: Image(
-//             fit: fit,
-//             image: isNetworkImage
-//                 ? NetworkImage(imageUrl)
-//                 : AssetImage(imageUrl) as ImageProvider,
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 //home category
 class THomeCategories extends StatelessWidget {
