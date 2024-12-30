@@ -25,9 +25,9 @@ class UserListScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final user = users[index];
               return ListTile(
-                title: Text(user['username']),
-                subtitle: Text(user['email']),
-                onTap: () => onUserSelected(user['email']),
+                title: Text(user['Username']),
+                subtitle: Text(user['Email']),
+                onTap: () => onUserSelected(user['Email']),
               );
             },
           );
