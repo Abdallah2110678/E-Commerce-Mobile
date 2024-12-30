@@ -12,8 +12,8 @@ class UserListScreen extends StatelessWidget {
       appBar: AppBar(title: Text('Users')),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection('UserModel')
-            .where('isAdmin', isEqualTo: false)
+            .collection('Users')
+            .where('Role', isEqualTo: 'admin')
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
