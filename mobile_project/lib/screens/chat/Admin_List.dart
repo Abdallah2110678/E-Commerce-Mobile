@@ -13,7 +13,7 @@ class UserListScreen extends StatelessWidget {
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('Users')
-            .where('Role', isEqualTo: 'admin')
+            .where('Role', isEqualTo: 'user')
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
