@@ -5,7 +5,9 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:mobile_project/controllers/home_controller.dart';
 import 'package:mobile_project/controllers/user_controller.dart';
+import 'package:mobile_project/models/brand.dart';
 import 'package:mobile_project/models/category.dart';
+import 'package:mobile_project/models/product.dart';
 import 'package:mobile_project/models/role.dart';
 import 'package:mobile_project/screens/chat/Admin_List.dart';
 import 'package:mobile_project/screens/chat/Chat_Screen.dart';
@@ -112,6 +114,29 @@ class HomeScreen extends StatelessWidget {
     }
   }
 
+  Future<List<Product>> _fetchProducts() async {
+    try {
+      final productsSnapshot = await FirebaseFirestore.instance.collection('products').get();
+      final categoriesSnapshot = await FirebaseFirestore.instance.collection('categories').get();
+      final brandsSnapshot = await FirebaseFirestore.instance.collection('brands').get();
+
+      final categoryMap = {
+        for (var doc in categoriesSnapshot.docs) doc.id: Category.fromFirestore(doc)
+      };
+      final brandMap = {
+        for (var doc in brandsSnapshot.docs) doc.id: Brand.fromFirestore(doc)
+      };
+
+      return productsSnapshot.docs.map((doc) {
+        final category = categoryMap[doc['categoryId']]!;
+        final brand = brandMap[doc['brandId']]!;
+        return Product.fromFirestore(doc, category: category, brand: brand);
+      }).toList();
+    } catch (e) {
+      throw Exception('Failed to load products: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final email = TextEditingController();
@@ -153,14 +178,39 @@ class HomeScreen extends StatelessWidget {
                   const TPromoSlider(banners: TImages.banners),
                   const SizedBox(height: TSizes.spaceBtwSections),
                   TSectionHeading(
-                    title: 'Popular Product',
+                    title: 'Popular Products',
                     onPressed: () {},
                     showActionButton: true,
                   ),
                   const SizedBox(height: TSizes.spaceBtwItems),
-                  TGridLayout(
-                    itemCount: 1,
-                    itemBuilder: (_, index) => const TProductCardVertical(),
+                  FutureBuilder<List<Product>>(
+                    future: _fetchProducts(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      
+                      if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      }
+
+                      final products = snapshot.data ?? [];
+                      
+                      return GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: TSizes.sm,
+                          mainAxisSpacing: TSizes.sm,
+                          childAspectRatio: 0.8,
+                        ),
+                        itemCount: products.length,
+                        itemBuilder: (context, index) {
+                          return TProductCardVertical(product: products[index]);
+                        },
+                      );
+                    },
                   ),
                 ],
               ),
