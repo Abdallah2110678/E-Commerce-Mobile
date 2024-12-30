@@ -64,61 +64,58 @@ class HomeScreen extends StatelessWidget {
   }
 
   void _navigateToChat(BuildContext context, String email) async {
-  if (email.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Please enter your email.')),
-    );
-    return;
-  }
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter your email.')),
+      );
+      return;
+    }
 
-  final role = await _getUserRole(email);
+    final role = await _getUserRole(email);
 
-  if (role == Role.admin) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => UserListScreen(
-          onUserSelected: (userEmail) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChatScreen(
-                  currentUserEmail: email,
-                  targetEmail: userEmail,
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  } else {
-    final adminEmail = await _getAdminEmail();
-    if (adminEmail != null) {
+    if (role == Role.admin) {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ChatScreen(
-            currentUserEmail: email,
-            targetEmail: adminEmail,
+          builder: (context) => UserListScreen(
+            onUserSelected: (userEmail) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChatScreen(
+                    currentUserEmail: email,
+                    targetEmail: userEmail,
+                  ),
+                ),
+              );
+            },
           ),
         ),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No admin available for chat.')),
-      );
+      final adminEmail = await _getAdminEmail();
+      if (adminEmail != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatScreen(
+              currentUserEmail: email,
+              targetEmail: adminEmail,
+            ),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No admin available for chat.')),
+        );
+      }
     }
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
- final email = TextEditingController(); 
-     final controller = UserController.instance;
-   
+    final email = TextEditingController();
+    final controller = UserController.instance;
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -171,14 +168,15 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
-        floatingActionButton: FloatingActionButton(
-        onPressed: () => _navigateToChat(context,controller.user.value.email),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _navigateToChat(context, controller.user.value.email),
         backgroundColor: Colors.blue,
         child: const Icon(Icons.message, color: Colors.white),
       ),
     );
   }
 }
+
 class TPromoSlider extends StatelessWidget {
   const TPromoSlider({
     super.key,
@@ -193,7 +191,12 @@ class TPromoSlider extends StatelessWidget {
     return Column(
       children: [
         CarouselSlider(
-          items: banners.map((url) => TRoundedImage(imageUrl: url,isNetworkImage: true,)).toList(),
+          items: banners
+              .map((url) => TRoundedImage(
+                    imageUrl: url,
+                    isNetworkImage: true,
+                  ))
+              .toList(),
           options: CarouselOptions(
               viewportFraction: 1,
               onPageChanged: (index, _) =>
@@ -316,7 +319,8 @@ class THomeCategories extends StatelessWidget {
             itemBuilder: (_, index) {
               final category = categories[index];
               return TVerticalImageText(
-                image: category.imagUrl, // Replace with dynamic image handling if needed
+                image: category
+                    .imagUrl, // Replace with dynamic image handling if needed
                 title: category.name,
                 onTap: () {
                   // Handle category tap

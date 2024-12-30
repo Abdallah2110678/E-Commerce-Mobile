@@ -3,6 +3,7 @@ import 'package:mobile_project/screens/category_list.dart';
 import 'package:mobile_project/screens/dashboard/dashboard.dart';
 import 'package:mobile_project/screens/dashboard/products/createProduct.dart';
 import 'package:mobile_project/screens/dashboard/products/productsTable.dart';
+import 'package:mobile_project/screens/dashboard/users/users.dart';
 
 // The main screen with a drawer
 class DrawerScreen extends StatefulWidget {
@@ -16,7 +17,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
     const Dashboard(),
     const AddProductView(),
     CategoryManagementPage(),
-    const ProductTableView()
+    const ProductTableView(),
+    Users()
   ];
 
   // List of titles for AppBar
@@ -24,7 +26,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
     "Dashboard",
     "Add Product",
     "Categories",
-    "Products"
+    "Products",
+    "Users"
   ];
 
   // Currently selected index for the drawer
@@ -37,7 +40,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
     });
     Navigator.pop(context); // Close the drawer
   }
- 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,10 +84,16 @@ class _DrawerScreenState extends State<DrawerScreen> {
               onTap: () => _onSelectItem(2),
             ),
             ListTile(
-              leading:const Icon(Icons.category),
+              leading: const Icon(Icons.category),
               title: const Text('Product'),
               selected: _selectedIndex == 3, // Highlight when active
               onTap: () => _onSelectItem(3),
+            ),
+            ListTile(
+              leading: const Icon(Icons.category),
+              title: const Text('Users'),
+              selected: _selectedIndex == 4, // Highlight when active
+              onTap: () => _onSelectItem(4),
             ),
           ],
         ),
