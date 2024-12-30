@@ -6,6 +6,8 @@ import 'package:iconsax/iconsax.dart';
 import 'package:mobile_project/controllers/home_controller.dart';
 import 'package:mobile_project/controllers/user_controller.dart';
 import 'package:mobile_project/models/category.dart';
+import 'package:mobile_project/models/role.dart';
+import 'package:mobile_project/screens/chat/Admin_List.dart';
 import 'package:mobile_project/screens/chat/Chat_Screen.dart';
 import 'package:mobile_project/screens/home/appbar.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
@@ -26,16 +28,14 @@ class HomeScreen extends StatelessWidget {
     try {
       final snapshot = await FirebaseFirestore.instance
           .collection('Users')
-          .where('Role', isEqualTo: 'admin') // Note: Field name must match case
+          .where('Role', isEqualTo: 'admin')
           .limit(1)
           .get();
 
       if (snapshot.docs.isNotEmpty) {
-        final adminEmail = snapshot.docs.first
-            .get('Email'); // Make sure 'Email' matches the field name
-        return adminEmail;
+        return snapshot.docs.first.get('Email');
       } else {
-        return null; // No admin found
+        return null;
       }
     } catch (e) {
       debugPrint('Error fetching admin email: $e');
@@ -43,14 +43,63 @@ class HomeScreen extends StatelessWidget {
     }
   }
 
-  void _navigateToChat(BuildContext context, String currentUserEmail) async {
+  Future<Role> _getUserRole(String email) async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('Users')
+          .where('Email', isEqualTo: email)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        final role = snapshot.docs.first['Role'] as String?;
+        if (role == 'admin') {
+          return Role.admin;
+        }
+      }
+      return Role.user;
+    } catch (e) {
+      debugPrint('Error fetching user role: $e');
+      return Role.user;
+    }
+  }
+
+  void _navigateToChat(BuildContext context, String email) async {
+  if (email.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Please enter your email.')),
+    );
+    return;
+  }
+
+  final role = await _getUserRole(email);
+
+  if (role == Role.admin) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => UserListScreen(
+          onUserSelected: (userEmail) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ChatScreen(
+                  currentUserEmail: email,
+                  targetEmail: userEmail,
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  } else {
     final adminEmail = await _getAdminEmail();
     if (adminEmail != null) {
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => ChatScreen(
-            currentUserEmail: currentUserEmail,
+            currentUserEmail: email,
             targetEmail: adminEmail,
           ),
         ),
@@ -61,10 +110,15 @@ class HomeScreen extends StatelessWidget {
       );
     }
   }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController emailController = TextEditingController();
+ final email = TextEditingController(); 
+     final controller = UserController.instance;
+   
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -117,15 +171,14 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _navigateToChat(context, emailController.text.trim()),
-        backgroundColor: TColors.primary,
-        child: const Icon(Iconsax.message, color: Colors.white),
+        floatingActionButton: FloatingActionButton(
+        onPressed: () => _navigateToChat(context,controller.user.value.email),
+        backgroundColor: Colors.blue,
+        child: const Icon(Icons.message, color: Colors.white),
       ),
     );
   }
 }
-
 class TPromoSlider extends StatelessWidget {
   const TPromoSlider({
     super.key,
