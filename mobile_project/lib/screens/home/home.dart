@@ -115,12 +115,16 @@ class HomeScreen extends StatelessWidget {
 
   Future<List<Product>> _fetchProducts() async {
     try {
-      final productsSnapshot = await FirebaseFirestore.instance.collection('products').get();
-      final categoriesSnapshot = await FirebaseFirestore.instance.collection('categories').get();
-      final brandsSnapshot = await FirebaseFirestore.instance.collection('brands').get();
+      final productsSnapshot =
+          await FirebaseFirestore.instance.collection('products').get();
+      final categoriesSnapshot =
+          await FirebaseFirestore.instance.collection('categories').get();
+      final brandsSnapshot =
+          await FirebaseFirestore.instance.collection('brands').get();
 
       final categoryMap = {
-        for (var doc in categoriesSnapshot.docs) doc.id: Category.fromFirestore(doc)
+        for (var doc in categoriesSnapshot.docs)
+          doc.id: Category.fromFirestore(doc)
       };
       final brandMap = {
         for (var doc in brandsSnapshot.docs) doc.id: Brand.fromFirestore(doc)
@@ -195,7 +199,8 @@ class HomeScreen extends StatelessWidget {
                       return GridView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                           crossAxisSpacing: TSizes.sm,
                           mainAxisSpacing: TSizes.sm,
@@ -332,7 +337,7 @@ class TVerticalImageText extends StatelessWidget {
     required this.image,
     required this.title,
     this.textColor = TColors.white,
-    this.backgroundColor = TColors.white,
+    this.backgroundColor,
     this.onTap,
   });
 

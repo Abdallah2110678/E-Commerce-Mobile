@@ -6,6 +6,7 @@ import 'package:mobile_project/screens/home/profile/settings.dart';
 import 'package:mobile_project/screens/store/store_screen.dart';
 import 'package:mobile_project/controllers/user_controller.dart';
 import 'package:mobile_project/models/role.dart';
+import 'package:mobile_project/screens/wishlist/wishlist.dart';
 
 class NavController extends GetxController {
   final Rx<int> selectIndex = 0.obs;
@@ -34,7 +35,7 @@ class NavController extends GetxController {
       screens.addAll([
         const HomeScreen(),
         const StoreScreen(),
-        Container(color: Colors.orange),
+        const Wishlist(),
         const SettingsScreen(),
       ]);
     }

@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:mobile_project/controllers/wishlist_controller.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_project/bindings/general_binding.dart';
@@ -16,8 +17,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Supabase.initialize(
-    url:'https://nhinkintdaqetmvxmonu.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oaW5raW50ZGFxZXRtdnhtb251Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU0Nzc2OTUsImV4cCI6MjA1MTA1MzY5NX0.SJdpNKFTH4SwYimEpFSuQKFdw3a0yGTkSSh3HRykOkU',
+    url: 'https://nhinkintdaqetmvxmonu.supabase.co',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oaW5raW50ZGFxZXRtdnhtb251Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU0Nzc2OTUsImV4cCI6MjA1MTA1MzY5NX0.SJdpNKFTH4SwYimEpFSuQKFdw3a0yGTkSSh3HRykOkU',
   );
   await Firebase.initializeApp();
   runApp(const MyApp());
@@ -48,5 +50,6 @@ class GeneralBinding extends Bindings {
     // Register NetworkManager
     Get.lazyPut<NetworkManager>(() => NetworkManager());
     Get.lazyPut(() => UserRepository());
+    Get.lazyPut(() => WishlistController());
   }
 }
