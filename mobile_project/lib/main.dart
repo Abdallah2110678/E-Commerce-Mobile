@@ -24,6 +24,7 @@ void main() async {
   await Firebase.initializeApp();
   runApp(const MyApp());
   Get.put(AuthenticationRepository());
+  Get.put(WishlistController());
 }
 
 class MyApp extends StatelessWidget {
@@ -50,6 +51,5 @@ class GeneralBinding extends Bindings {
     // Register NetworkManager
     Get.lazyPut<NetworkManager>(() => NetworkManager());
     Get.lazyPut(() => UserRepository());
-    Get.lazyPut(() => WishlistController());
   }
 }
