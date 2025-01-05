@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mobile_project/controllers/authentication.dart';
-// import 'package:flutter/material.dart';
 import 'package:mobile_project/models/usermodel.dart';
 import 'package:mobile_project/utils/exceptions/firebase_exceptions.dart';
 import 'package:mobile_project/utils/exceptions/format_exceptions.dart';
@@ -13,10 +12,10 @@ class UserRepository extends GetxController {
 
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  //function to save data t firestore
+  // Function to save user data to Firestore
   Future<void> saveUserRecords(UserModel user) async {
     try {
-      return await _db.collection("Users").doc(user.id).set(user.toJson());
+      await _db.collection("Users").doc(user.id).set(user.toJson());
     } on FirebaseException catch (e) {
       throw TFirebaseException(e.code).message;
     } on FormatException catch (_) {
@@ -28,7 +27,7 @@ class UserRepository extends GetxController {
     }
   }
 
-  //fetch all user details based on id
+  // Fetch user details based on the authenticated user's ID
   Future<UserModel> fetchUserDetails() async {
     try {
       final documentSnapshot = await _db
@@ -51,11 +50,13 @@ class UserRepository extends GetxController {
     }
   }
 
+  // Fetch all users from Firestore
   Future<List<UserModel>> getUsers() async {
     try {
-      QuerySnapshot snapshot = await _db.collection("users").get();
+      QuerySnapshot snapshot = await _db.collection("Users").get();
       return snapshot.docs.map((doc) {
-        return UserModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
+        final data = doc.data() as Map<String, dynamic>;
+        return UserModel.fromMap(data, doc.id); // Pass doc.id as the user ID
       }).toList();
     } catch (e) {
       print("Error fetching users: $e");
@@ -63,22 +64,22 @@ class UserRepository extends GetxController {
     }
   }
 
-  // Add a user to Firestore
+  // Add a new user to Firestore
   Future<void> addUser(UserModel user) async {
     try {
-      await _db.collection("users").add(user.toMap());
+      await _db.collection("Users").add(user.toMap());
     } catch (e) {
       print("Error adding user: $e");
     }
   }
 
-  // Update user in Firestore
-  Future<void> updateUserDetails(UserModel updataUser) async {
+  // Update user details in Firestore
+  Future<void> updateUserDetails(UserModel updatedUser) async {
     try {
       await _db
           .collection("Users")
-          .doc(updataUser.id)
-          .update(updataUser.toJson());
+          .doc(updatedUser.id)
+          .update(updatedUser.toJson());
     } on FirebaseException catch (e) {
       throw TFirebaseException(e.code).message;
     } on FormatException catch (_) {
@@ -90,7 +91,7 @@ class UserRepository extends GetxController {
     }
   }
 
-  //updat any field in the user collection
+  // Update a single field in the user document
   Future<void> updateSingleField(Map<String, dynamic> json) async {
     try {
       await _db
@@ -108,10 +109,10 @@ class UserRepository extends GetxController {
     }
   }
 
-//Delete user from Firestore
+  // Delete a user from Firestore
   Future<void> deleteUser(String userId) async {
     try {
-      await _db.collection("user").doc(userId).delete();
+      await _db.collection("Users").doc(userId).delete();
     } on FirebaseException catch (e) {
       throw TFirebaseException(e.code).message;
     } on FormatException catch (_) {
@@ -123,10 +124,10 @@ class UserRepository extends GetxController {
     }
   }
 
-  //remove user from Firestore
+  // Remove a user record from Firestore (alias for deleteUser)
   Future<void> removeUserRecord(String userId) async {
     try {
-      await _db.collection("user").doc(userId).delete();
+      await _db.collection("Users").doc(userId).delete();
     } on FirebaseException catch (e) {
       throw TFirebaseException(e.code).message;
     } on FormatException catch (_) {

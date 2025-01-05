@@ -8,7 +8,7 @@ class UserModel {
   final String email;
   String firstName;
   String lastName;
-  String phoneNumber;
+  String phoneNumber; // Ensure this is a String
   String profilePicture;
   Role role;
 
@@ -65,8 +65,7 @@ class UserModel {
   }
 
   // Factory method to create a UserModel from a Firebase document snapshot.
-  factory UserModel.fromSnapshot(
-      DocumentSnapshot<Map<String, dynamic>> document) {
+  factory UserModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> document) {
     final data = document.data()!;
     return UserModel(
       id: document.id,
@@ -74,7 +73,7 @@ class UserModel {
       lastName: data['LastName'] ?? "",
       username: data['Username'] ?? "",
       email: data['Email'] ?? "",
-      phoneNumber: data['PhoneNumber'] ?? "",
+      phoneNumber: data['PhoneNumber'].toString(), // Convert to String
       profilePicture: data['ProfilePicture'] ?? "",
       role: Role.fromValue(data['Role'] ?? "user"), // Convert string to enum
     );
@@ -88,7 +87,7 @@ class UserModel {
       lastName: map['LastName'] ?? "",
       username: map['Username'] ?? "",
       email: map['Email'] ?? "",
-      phoneNumber: map['PhoneNumber'] ?? "",
+      phoneNumber: map['PhoneNumber'].toString(), // Convert to String
       profilePicture: map['ProfilePicture'] ?? "",
       role: Role.fromValue(map['Role'] ?? "user"), // Convert string to enum
     );

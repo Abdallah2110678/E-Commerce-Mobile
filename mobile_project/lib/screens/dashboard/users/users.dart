@@ -1,106 +1,142 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:get/get.dart';
 import 'package:mobile_project/controllers/user_controller.dart';
 import 'package:mobile_project/models/usermodel.dart';
 
-class Users extends StatefulWidget {
+class UsersPage extends StatefulWidget {
+  const UsersPage({super.key});
+
   @override
-  _UserState createState() => _UserState();
+  _UsersPageState createState() => _UsersPageState();
 }
 
-class _UserState extends State<Users> {
+class _UsersPageState extends State<UsersPage> {
+  final UserController _controller = Get.put(UserController()); // Bind the controller
+  final TextEditingController _searchController = TextEditingController();
+  bool _isLoading = false;
+  String _searchQuery = "";
+
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => context.read<UserController>().loadUsers());
+    _loadUsers();
+  }
+
+  Future<void> _loadUsers() async {
+    setState(() => _isLoading = true);
+    await _controller.loadUsers();
+    setState(() => _isLoading = false);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('User List'),
+        title: const Text('Users Table'),
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              // Navigate to Create User Screen
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => CreateUserScreen()),
-              // );
-            },
+            icon: const Icon(Icons.refresh),
+            onPressed: _loadUsers,
           ),
         ],
       ),
-      body: Consumer<UserController>(
-        builder: (context, userController, child) {
-          if (userController.users.isEmpty) {
-            return Center(
-              child: Text('No users found. Click the + button to add a user.'),
-            );
-          }
-
-          return ListView.builder(
-            itemCount: userController.users.length,
-            itemBuilder: (context, index) {
-              final user = userController.users[index];
-              return ListTile(
-                title: Text('${user.firstName} ${user.lastName}'),
-                subtitle: Text(user.email),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.edit, color: Colors.blue),
-                      onPressed: () {
-                        // Navigate to Update User Screen with the selected user
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) => UpdateUserScreen(user: user),
-                        //   ),
-                        //);
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.delete, color: Colors.red),
-                      onPressed: () async {
-                        // Confirm before deleting the user
-                        final confirm = await showDialog<bool>(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text('Delete User'),
-                            content: Text(
-                                'Are you sure you want to delete ${user.firstName} ${user.lastName}?'),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context, false),
-                                child: Text('Cancel'),
-                              ),
-                              TextButton(
-                                onPressed: () => Navigator.pop(context, true),
-                                child: Text('Delete'),
-                              ),
-                            ],
-                          ),
-                        );
-
-                        if (confirm == true) {
-                          // Delete the user
-                          await context
-                              .read<UserController>()
-                              .deleteUser(user.id);
-                        }
-                      },
-                    ),
-                  ],
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Search Bar
+            TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search by first name or last name...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
                 ),
-              );
-            },
-          );
-        },
+              ),
+              onChanged: (query) {
+                setState(() {
+                  _searchQuery = query.toLowerCase();
+                });
+              },
+            ),
+            const SizedBox(height: 20),
+
+            // DataTable
+            Expanded(
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : Obx(() {
+                      if (_controller.users.isEmpty) {
+                        return const Center(child: Text('No users found.'));
+                      }
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: DataTable(
+                          headingRowColor: MaterialStateProperty.all(
+                            Colors.grey[200],
+                          ),
+                          columns: const [
+                            DataColumn(label: Text('First Name', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(label: Text('Last Name', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(label: Text('Role', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(label: Text('Action', style: TextStyle(fontWeight: FontWeight.bold))),
+                          ],
+                          rows: _controller.users
+                              .where((user) =>
+                                  user.firstName.toLowerCase().contains(_searchQuery) ||
+                                  user.lastName.toLowerCase().contains(_searchQuery))
+                              .map((user) {
+                            return DataRow(cells: [
+                              DataCell(Text(user.firstName)),
+                              DataCell(Text(user.lastName)),
+                              DataCell(Text(user.role.toValue())),
+                              DataCell(
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(Icons.delete, color: Colors.red),
+                                      onPressed: () => _deleteUser(user),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ]);
+                          }).toList(),
+                        ),
+                      );
+                    }),
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  Future<void> _deleteUser(UserModel user) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete User'),
+        content: const Text('Are you sure you want to delete this user?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirm == true) {
+      setState(() => _isLoading = true);
+      await _controller.deleteUser(user.id);
+      _controller.users.remove(user);
+      setState(() => _isLoading = false);
+    }
   }
 }

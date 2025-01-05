@@ -18,7 +18,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
     const AddProductView(),
     CategoryManagementPage(),
     const ProductTableView(),
-    Users()
+    UsersPage()
   ];
 
   // List of titles for AppBar
