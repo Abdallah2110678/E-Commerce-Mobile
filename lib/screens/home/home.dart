@@ -3,12 +3,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:mobile_project/controllers/CartController.dart';
+
 import 'package:mobile_project/controllers/home_controller.dart';
 import 'package:mobile_project/controllers/user_controller.dart';
 import 'package:mobile_project/models/brand.dart';
 import 'package:mobile_project/models/category.dart';
 import 'package:mobile_project/models/product.dart';
 import 'package:mobile_project/models/role.dart';
+import 'package:mobile_project/screens/Cart/Cart_Screen.dart';
+
 import 'package:mobile_project/screens/chat/Admin_List.dart';
 import 'package:mobile_project/screens/chat/Chat_Screen.dart';
 import 'package:mobile_project/screens/home/appbar.dart';
@@ -22,6 +26,8 @@ import 'package:mobile_project/utils/shimmers/shimmer.dart';
 import 'package:mobile_project/widgets/images/rounded_image.dart';
 import 'package:mobile_project/widgets/layout/grid_layout.dart';
 import 'package:mobile_project/widgets/products/product_cards/product_card_vertical.dart';
+import 'package:provider/provider.dart';
+
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -598,6 +604,11 @@ class TPrimaryHeaderContainer extends StatelessWidget {
 }
 
 ///cart
+
+
+
+
+
 class TCartCounterIcon extends StatelessWidget {
   const TCartCounterIcon({super.key, required this.onPressed, this.iconColor});
 
@@ -606,66 +617,89 @@ class TCartCounterIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cartController = Provider.of<CartController>(context); // Use prefixed import
+
     return Stack(
       children: [
+        // Cart Icon Button
         IconButton(
-            onPressed: () {},
-            icon: Icon(Iconsax.shopping_bag, color: iconColor)),
+          onPressed: () {
+            // Navigate to the cart screen
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const CartScreen()),
+            );
+          },
+          icon: Icon(Iconsax.shopping_bag, color: iconColor),
+        ),
+
+        // Cart Item Counter
         Positioned(
           right: 0,
           child: Container(
             width: 18,
             height: 18,
             decoration: BoxDecoration(
-              color: TColors.black.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(100),
+              color: TColors.black.withOpacity(0.5), // Background color of the counter
+              borderRadius: BorderRadius.circular(100), // Circular shape
             ),
             child: Center(
-              child: Text('2',
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelLarge!
-                      .apply(color: TColors.white, fontSizeFactor: 0.8)),
+              child: Text(
+                '${cartController.itemCount}', // Display the number of items in the cart
+                style: Theme.of(context).textTheme.labelLarge!.apply(
+                      color: TColors.white, // Text color
+                      fontSizeFactor: 0.8, // Adjust font size
+                    ),
+              ),
             ),
           ),
-        )
+        ),
       ],
     );
   }
 }
 
 ///home
+
 class THomeAppBar extends StatelessWidget {
   const THomeAppBar({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(UserController());
+    final controller = Get.put(UserController()); // Initialize UserController
+
     return TAppbar(
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(TTexts.homeAppbarTitle,
-              style: Theme.of(context)
-                  .textTheme
-                  .labelMedium!
-                  .apply(color: TColors.grey)),
+          Text(
+            TTexts.homeAppbarTitle,
+            style: Theme.of(context).textTheme.labelMedium!.apply(color: TColors.grey),
+          ),
           Obx(() {
             if (controller.profileLoading.value) {
-              return const TShimmerEffect(width: 80, height: 15);
+              return const TShimmerEffect(width: 80, height: 15); // Show shimmer effect while loading
             } else {
-              return Text(controller.user.value.fullName,
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineSmall!
-                      .apply(color: TColors.white));
+              return Text(
+                controller.user.value.fullName,
+                style: Theme.of(context).textTheme.headlineSmall!.apply(color: TColors.white),
+              );
             }
           }),
         ],
       ),
       actions: [
-        //cart
-        TCartCounterIcon(onPressed: () {}, iconColor: TColors.white),
+        // Cart Icon with Counter
+        TCartCounterIcon(
+          onPressed: () {
+            // Navigate to cart screen
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const CartScreen()),
+            );
+          },
+          iconColor: TColors.white,
+        ),
       ],
     );
   }
