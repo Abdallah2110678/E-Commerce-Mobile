@@ -1,209 +1,249 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
-import 'package:mobile_project/controllers/user_controller.dart';
-import 'package:mobile_project/models/usermodel.dart';
-import 'package:mobile_project/models/role.dart';
-class CreateUserPage extends StatefulWidget {
-  const CreateUserPage({super.key});
+import 'package:iconsax/iconsax.dart';
+import 'package:mobile_project/controllers/signup_controller.dart';
+import 'package:mobile_project/utils/constants/colors.dart';
+import 'package:mobile_project/utils/constants/image_setting.dart';
+import 'package:mobile_project/utils/constants/sizes.dart';
+import 'package:mobile_project/utils/constants/text_strings.dart';
+import 'package:mobile_project/utils/helpers/helper_functions.dart';
+import 'package:mobile_project/utils/validators/validation.dart';
 
-  @override
-  _CreateUserPageState createState() => _CreateUserPageState();
-}
-
-class _CreateUserPageState extends State<CreateUserPage> {
-  final _formKey = GlobalKey<FormState>();
-  final UserController _userController = Get.put(UserController());
-
-  // Text editing controllers
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-
-  // Example roles
-  final List<String> _roles = ['admin','user'];
-  String? _selectedRole;
-
-  @override
-  void initState() {
-    super.initState();
-    // Fetch users when the page loads
-    _userController.loadUsers();
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  void _submitUser() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    if (_selectedRole == null) {
-      _showSnackBar('Please select a role', Colors.red);
-      return;
-    }
-
-    // Create a new user
-    final newUser = UserModel(
-      id: '', // Firebase will generate this
-      username: _nameController.text,
-      email: _emailController.text,
-      firstName: _nameController.text.split(' ')[0],
-      lastName: _nameController.text.split(' ').length > 1
-          ? _nameController.text.split(' ')[1]
-          : '',
-      phoneNumber: '', // You can add a field for this if needed
-      profilePicture: '', // You can add a field for this if needed
-      role: _selectedRole == 'admin'
-          ? Role.admin : Role.user,
-    );
-
-    // Save the user to Firebase
-    await _userController.addUser(newUser);
-    _showSnackBar('User created successfully', Colors.green);
-    _resetForm();
-  }
-
-  void _resetForm() {
-    setState(() {
-      _nameController.clear();
-      _emailController.clear();
-      _passwordController.clear();
-      _selectedRole = null;
-    });
-  }
-
-  void _showSnackBar(String message, Color color) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: color,
-      ),
-    );
-  }
-
-  InputDecoration _buildInputDecoration(String label) {
-    return InputDecoration(
-      labelText: label,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-    );
-  }
+class SignupScreen extends StatelessWidget {
+  const SignupScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final dark = THelperFunctions.isDarkMode(context);
+    final controller = Get.put(SignupController());
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create User'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
+      appBar: AppBar(),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(TSizes.defaultSpace),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // User Creation Form
-              Text(
-                'User Information',
-                style: GoogleFonts.poppins(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _nameController,
-                decoration: _buildInputDecoration('Name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a name';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _emailController,
-                decoration: _buildInputDecoration('Email'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter an email';
-                  }
-                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                    return 'Please enter a valid email';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _passwordController,
-                decoration: _buildInputDecoration('Password'),
-                obscureText: true,
-                validator: (value) {
-                  if (value == null || value.length < 6) {
-                    return 'Password must be at least 6 characters long';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: _selectedRole,
-                items: _roles.map((role) {
-                  return DropdownMenuItem(
-                    value: role,
-                    child: Text(role),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedRole = value;
-                  });
-                },
-                decoration: _buildInputDecoration('Select Role'),
-                validator: (value) =>
-                    value == null ? 'Please select a role' : null,
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _submitUser,
-                child: const Text('Create User'),
-              ),
-              const SizedBox(height: 32),
+              ///title
+              Text(TTexts.signupTitle,
+                  style: Theme.of(context).textTheme.headlineMedium),
+              const SizedBox(height: TSizes.spaceBtwSections),
 
-              // Display Users from Firebase
-              Text(
-                'Users List',
-                style: GoogleFonts.poppins(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+              ///form
+              Form(
+                key: controller.signupFormKey,
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: controller.firstname,
+                            validator: (value) => TValidator.validateEmptyText(
+                                'First name', value),
+                            expands: false,
+                            decoration: const InputDecoration(
+                                labelText: TTexts.firstName,
+                                prefixIcon: Icon(Iconsax.user)),
+                          ),
+                        ),
+                        const SizedBox(width: TSizes.spaceBtwInputFields),
+                        Expanded(
+                          child: TextFormField(
+                            controller: controller.lastname,
+                            validator: (value) => TValidator.validateEmptyText(
+                                'Last name', value),
+                            expands: false,
+                            decoration: const InputDecoration(
+                                labelText: TTexts.lastName,
+                                prefixIcon: Icon(Iconsax.user)),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: TSizes.spaceBtwInputFields),
+
+                    ///username
+
+                    TextFormField(
+                      controller: controller.username,
+                      validator: (value) =>
+                          TValidator.validateEmptyText('Username', value),
+                      expands: false,
+                      decoration: const InputDecoration(
+                          labelText: TTexts.username,
+                          prefixIcon: Icon(Iconsax.user_edit)),
+                    ),
+                    const SizedBox(height: TSizes.spaceBtwInputFields),
+
+                    ///email
+                    ///
+                    TextFormField(
+                      controller: controller.email,
+                      validator: (value) => TValidator.validateEmail(value),
+                      expands: false,
+                      decoration: const InputDecoration(
+                          labelText: TTexts.email,
+                          prefixIcon: Icon(Iconsax.direct)),
+                    ),
+                    const SizedBox(height: TSizes.spaceBtwInputFields),
+
+                    ///phone number
+                    ///
+                    TextFormField(
+                      controller: controller.phonenumber,
+                      validator: (value) =>
+                          TValidator.validatePhoneNumber(value),
+                      expands: false,
+                      decoration: const InputDecoration(
+                          labelText: TTexts.phoneNo,
+                          prefixIcon: Icon(Iconsax.call)),
+                    ),
+                    const SizedBox(height: TSizes.spaceBtwInputFields),
+
+                    ///password
+                    ///
+                    Obx(
+                      () => TextFormField(
+                        controller: controller.password,
+                        validator: (value) =>
+                            TValidator.validatePassword(value),
+                        obscureText: controller.hidepassword.value,
+                        decoration: InputDecoration(
+                          labelText: TTexts.password,
+                          prefixIcon: const Icon(Iconsax.password_check),
+                          suffixIcon: IconButton(
+                              onPressed: () => controller.hidepassword.value =
+                                  !controller.hidepassword.value,
+                              icon: Icon(controller.hidepassword.value
+                                  ? Iconsax.eye_slash
+                                  : Iconsax.eye)),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: TSizes.spaceBtwInputFields),
+
+                    ///terms
+                    Row(
+                      children: [
+                        SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: Obx(() => Checkbox(
+                                value: controller.privacyPolicy.value,
+                                onChanged: (Value) => controller.privacyPolicy
+                                    .value = !controller.privacyPolicy.value))),
+                        const SizedBox(height: TSizes.spaceBtwItems),
+                        Text.rich(
+                          TextSpan(children: [
+                            TextSpan(
+                                text: '${TTexts.iAgreeTo}',
+                                style: Theme.of(context).textTheme.bodySmall),
+                            TextSpan(
+                                text: '${TTexts.privacyPolicy}',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .apply(
+                                      color: dark
+                                          ? TColors.white
+                                          : TColors.primary,
+                                      decoration: TextDecoration.underline,
+                                      decorationColor: dark
+                                          ? TColors.white
+                                          : TColors.primary,
+                                    )),
+                            TextSpan(
+                                text: '${TTexts.and}',
+                                style: Theme.of(context).textTheme.bodySmall),
+                            TextSpan(
+                                text: TTexts.termsOfUse,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .apply(
+                                      color: dark
+                                          ? TColors.white
+                                          : TColors.primary,
+                                      decoration: TextDecoration.underline,
+                                      decorationColor: dark
+                                          ? TColors.white
+                                          : TColors.primary,
+                                    )),
+                          ]),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: TSizes.spaceBtwSections),
+
+                    ///signup button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                          onPressed: () => controller.signup(),
+                          child: const Text(TTexts.createAccount)),
+                    )
+                  ],
                 ),
               ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: Obx(() {
-                  if (_userController.users.isEmpty) {
-                    return const Center(child: Text('No users found'));
-                  }
-                  return ListView.builder(
-                    itemCount: _userController.users.length,
-                    itemBuilder: (context, index) {
-                      final user = _userController.users[index];
-                      return ListTile(
-                        title: Text(user.fullName),
-                        subtitle: Text(user.email),
-                        trailing: Text(user.role.toValue()),
-                      );
-                    },
-                  );
-                }),
+              const SizedBox(width: TSizes.spaceBtwSections),
+
+              ///divider
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Flexible(
+                    child: Divider(
+                        color: dark ? TColors.darkGrey : TColors.grey,
+                        thickness: 0.5,
+                        indent: 60,
+                        endIndent: 5),
+                  ),
+                  Text(TTexts.orSignInWith.capitalize!,
+                      style: Theme.of(context).textTheme.labelMedium),
+                  Flexible(
+                    child: Divider(
+                        color: dark ? TColors.darkGrey : TColors.grey,
+                        thickness: 0.5,
+                        indent: 5,
+                        endIndent: 60),
+                  ),
+                ],
+              ),
+              const SizedBox(width: TSizes.spaceBtwSections),
+
+              ///footer
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(color: TColors.grey),
+                        borderRadius: BorderRadius.circular(100)),
+                    child: IconButton(
+                      onPressed: () {},
+                      icon: const Image(
+                        width: TSizes.iconMd,
+                        height: TSizes.iconMd,
+                        image: AssetImage(TImages.google),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: TSizes.spaceBtwItems),
+                  Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(color: TColors.grey),
+                        borderRadius: BorderRadius.circular(100)),
+                    child: IconButton(
+                      onPressed: () {},
+                      icon: const Image(
+                        width: TSizes.iconMd,
+                        height: TSizes.iconMd,
+                        image: AssetImage(TImages.facebook),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,18 +12,20 @@ import 'package:mobile_project/utils/helpers/network_manager.dart';
 import 'package:mobile_project/utils/popups/full_screen_loader.dart';
 import 'package:mobile_project/utils/popups/loaders.dart';
 import 'package:mobile_project/models/role.dart';
+import 'package:mobile_project/controllers/authentication.dart';
 class UserController extends GetxController {
-  static UserController get instance => Get.find();
-  var users = <UserModel>[].obs; // Reactive list
+  final UserRepository _userRepository = UserRepository();
+  final AuthenticationRepository _authRepository = AuthenticationRepository.instance;
 
+  static UserController get instance => Get.find();
+
+  var users = <UserModel>[].obs; // Reactive list
   Rx<UserModel> user = UserModel.empty().obs;
-  final userRepository = Get.put(UserRepository());
   final profileLoading = false.obs;
 
   final hidePassword = false.obs;
   final verifyEmail = TextEditingController();
   final verifyPassword = TextEditingController();
-  final userrepository = Get.put(UserRepository());
   GlobalKey<FormState> reAuthFormKey = GlobalKey<FormState>();
 
   @override
@@ -36,7 +37,7 @@ class UserController extends GetxController {
   Future<void> fetchUserRecord() async {
     try {
       profileLoading.value = true;
-      final user = await userRepository.fetchUserDetails();
+      final user = await _userRepository.fetchUserDetails();
       this.user(user);
       profileLoading.value = false;
     } catch (e) {
@@ -49,7 +50,7 @@ class UserController extends GetxController {
   // Load users from repository
   Future<void> loadUsers() async {
     try {
-      users.value = await userRepository.getUsers();
+      users.value = await _userRepository.getUsers();
     } catch (e) {
       print("Error loading users in UserController: $e");
     }
@@ -57,55 +58,75 @@ class UserController extends GetxController {
 
   // Add user
   Future<void> addUser(UserModel user) async {
-    await userRepository.addUser(user);
+    await _userRepository.addUser(user);
     await loadUsers(); // Reload users after adding
   }
 
   // Update user
-  // Future<void> updateUser(UserModel user) async {
-  //   await userRepository.updateUser(user);
-  //   await loadUsers(); // Reload users after updating
-  // }
-
-  // Delete user
-  Future<void> deleteUser(String userId) async {
-    await userRepository.deleteUser(userId);
-    await loadUsers(); // Reload users after deleting
-  }
-
-  //save user records from any registeration provider
-  Future<void> saveUserRecord(UserCredential? userCredentials) async {
+  Future<void> updateUser({
+    required UserModel user,
+    String? newPassword,
+  }) async {
     try {
-      if (userCredentials != null) {
-        //convert name to first and last name
-        final nameparts =
-            UserModel.nameParts(userCredentials.user!.displayName ?? '');
-        final username =
-            UserModel.generateUsername(userCredentials.user!.displayName ?? '');
+      // Update Firestore User Data
+      await _userRepository.updateUserDetails(user);
 
-        final user = UserModel(
-            id: userCredentials.user!.uid,
-            username: username,
-            email: userCredentials.user!.email ?? '',
-            firstName: nameparts[0],
-            lastName:
-                nameparts.length > 1 ? nameparts.sublist(1).join('') : ' ',
-            phoneNumber: userCredentials.user!.phoneNumber ?? '',
-            profilePicture: userCredentials.user!.photoURL ?? '',
-            role: Role.user); 
-        //save user data
-        await userRepository.saveUserRecords(user);
+      // Update Firebase Authentication Email (if changed)
+      if (user.email != _authRepository.authUser!.email) {
+        await _authRepository.updateEmail(user.email);
       }
+
+      // Update Firebase Authentication Password (if provided)
+      if (newPassword != null && newPassword.isNotEmpty) {
+        await _authRepository.updatePassword(newPassword);
+      }
+
+      Get.snackbar('Success', 'User updated successfully');
     } catch (e) {
-      TLoaders.warningSnackBar(
-          title: 'Data Not Saved',
-          message:
-              'Something Went Wrong While Saving your Information. You Can re-save your data in your profile');
+      Get.snackbar('Error', 'Failed to update user: $e');
     }
   }
 
-  ///delete Account warrning
-  void deleteAccountWarrningPopup() {
+  // Delete user
+  Future<void> deleteUser(String userId) async {
+    await _userRepository.deleteUser(userId);
+    await loadUsers(); // Reload users after deleting
+  }
+
+  // Save user records from any registration provider
+  Future<void> saveUserRecord(UserCredential? userCredentials) async {
+    try {
+      if (userCredentials != null) {
+        // Convert name to first and last name
+        final nameparts = UserModel.nameParts(userCredentials.user!.displayName ?? '');
+        final username = UserModel.generateUsername(userCredentials.user!.displayName ?? '');
+
+        final user = UserModel(
+          id: userCredentials.user!.uid,
+          username: username,
+          email: userCredentials.user!.email ?? '',
+          firstName: nameparts[0],
+          lastName: nameparts.length > 1 ? nameparts.sublist(1).join('') : ' ',
+          phoneNumber: userCredentials.user!.phoneNumber ?? '',
+          profilePicture: userCredentials.user!.photoURL ?? '',
+          role: Role.user,
+        );
+
+        // Save user data
+        await _userRepository.saveUserRecords(user);
+      }
+    } catch (e) {
+      TLoaders.warningSnackBar(
+        title: 'Data Not Saved',
+        message:
+            'Something Went Wrong While Saving your Information. You Can re-save your data in your profile',
+      );
+    }
+  }
+  
+
+  // Delete account warning popup
+  void deleteAccountWarningPopup() {
     Get.defaultDialog(
       contentPadding: const EdgeInsets.all(TSizes.md),
       title: 'Delete Account',
@@ -114,32 +135,32 @@ class UserController extends GetxController {
       confirm: ElevatedButton(
         onPressed: () async => deleteUserAccount(),
         style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red,
-            side: const BorderSide(color: Colors.red)),
+          backgroundColor: Colors.red,
+          side: const BorderSide(color: Colors.red),
+        ),
         child: const Padding(
           padding: EdgeInsets.symmetric(horizontal: TSizes.lg),
           child: Text('Delete'),
         ),
       ),
       cancel: OutlinedButton(
-          onPressed: () => Navigator.of(Get.overlayContext!).pop(),
-          child: const Text('Cancel')),
+        onPressed: () => Navigator.of(Get.overlayContext!).pop(),
+        child: const Text('Cancel'),
+      ),
     );
   }
 
-  ///delete user account
+  // Delete user account
   void deleteUserAccount() async {
     try {
-      TFullScreenLoader.openLoadingDialog(
-          'Processing...', TImages.docerAnimation);
+      TFullScreenLoader.openLoadingDialog('Processing...', TImages.docerAnimation);
 
-      ///first re-authenticate user
+      // First re-authenticate user
       final auth = AuthenticationRepository.instance;
-      final provider =
-          auth.authUser!.providerData.map((e) => e.providerId).first;
+      final provider = auth.authUser!.providerData.map((e) => e.providerId).first;
 
       if (provider.isNotEmpty) {
-        //Re verify auth email
+        // Re-verify auth email
         if (provider == 'google.com') {
           await auth.signInWithGoogle();
           await auth.deleteAccount();
@@ -156,7 +177,7 @@ class UserController extends GetxController {
     }
   }
 
-  /// -- RE-AUTHENTICATE before deleting
+  // Re-authenticate before deleting
   Future<void> reAuthenticateEmailAndPasswordUser() async {
     try {
       TFullScreenLoader.openLoadingDialog('Processing', TImages.docerAnimation);
@@ -173,12 +194,12 @@ class UserController extends GetxController {
         return;
       }
 
-      await AuthenticationRepository.instance.reAuthenticateEmailAndPassword(
+      await _authRepository.reAuthenticateEmailAndPassword(
         verifyEmail.text.trim(),
         verifyPassword.text.trim(),
       );
 
-      await AuthenticationRepository.instance.deleteAccount();
+      await _authRepository.deleteAccount();
 
       TFullScreenLoader.stopLoading();
       Get.offAll(() => const LoginScreen());

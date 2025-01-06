@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobile_project/controllers/user_controller.dart';
 import 'package:mobile_project/models/usermodel.dart';
-
+import 'package:mobile_project/screens/dashboard/users/updateuser.dart';
 class UsersPage extends StatefulWidget {
   const UsersPage({super.key});
 
@@ -11,7 +11,8 @@ class UsersPage extends StatefulWidget {
 }
 
 class _UsersPageState extends State<UsersPage> {
-  final UserController _controller = Get.put(UserController()); // Bind the controller
+  final UserController _controller =
+      Get.put(UserController()); // Bind the controller
   final TextEditingController _searchController = TextEditingController();
   bool _isLoading = false;
   String _searchQuery = "";
@@ -78,15 +79,31 @@ class _UsersPageState extends State<UsersPage> {
                             Colors.grey[200],
                           ),
                           columns: const [
-                            DataColumn(label: Text('First Name', style: TextStyle(fontWeight: FontWeight.bold))),
-                            DataColumn(label: Text('Last Name', style: TextStyle(fontWeight: FontWeight.bold))),
-                            DataColumn(label: Text('Role', style: TextStyle(fontWeight: FontWeight.bold))),
-                            DataColumn(label: Text('Action', style: TextStyle(fontWeight: FontWeight.bold))),
+                            DataColumn(
+                                label: Text('First Name',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold))),
+                            DataColumn(
+                                label: Text('Last Name',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold))),
+                            DataColumn(
+                                label: Text('Role',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold))),
+                            DataColumn(
+                                label: Text('Action',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold))),
                           ],
                           rows: _controller.users
                               .where((user) =>
-                                  user.firstName.toLowerCase().contains(_searchQuery) ||
-                                  user.lastName.toLowerCase().contains(_searchQuery))
+                                  user.firstName
+                                      .toLowerCase()
+                                      .contains(_searchQuery) ||
+                                  user.lastName
+                                      .toLowerCase()
+                                      .contains(_searchQuery))
                               .map((user) {
                             return DataRow(cells: [
                               DataCell(Text(user.firstName)),
@@ -95,8 +112,20 @@ class _UsersPageState extends State<UsersPage> {
                               DataCell(
                                 Row(
                                   children: [
+                                    // Edit Button
                                     IconButton(
-                                      icon: const Icon(Icons.delete, color: Colors.red),
+                                      icon: const Icon(Icons.edit,
+                                          color: Colors.blue),
+                                      onPressed: () {
+                                        // Navigate to the UpdateUserForm with the selected user
+                                        Get.to(
+                                            () => UpdateUserForm(user: user));
+                                      },
+                                    ),
+                                    // Delete Button
+                                    IconButton(
+                                      icon: const Icon(Icons.delete,
+                                          color: Colors.red),
                                       onPressed: () => _deleteUser(user),
                                     ),
                                   ],

@@ -74,20 +74,12 @@ class UserRepository extends GetxController {
   }
 
   // Update user details in Firestore
-  Future<void> updateUserDetails(UserModel updatedUser) async {
+Future<void> updateUserDetails(UserModel updatedUser) async {
     try {
-      await _db
-          .collection("Users")
-          .doc(updatedUser.id)
-          .update(updatedUser.toJson());
-    } on FirebaseException catch (e) {
-      throw TFirebaseException(e.code).message;
-    } on FormatException catch (_) {
-      throw const TFormatException();
-    } on PlatformException catch (e) {
-      throw TPlatformException(e.code).message;
+      await _db.collection('Users').doc(updatedUser.id).update(updatedUser.toMap());
     } catch (e) {
-      throw 'Something went wrong. Please try again';
+      print("Error updating user: $e");
+      rethrow;
     }
   }
 

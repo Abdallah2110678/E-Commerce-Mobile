@@ -2,15 +2,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:mobile_project/controllers/wishlist_controller.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_project/bindings/general_binding.dart';
 import 'package:mobile_project/controllers/authentication.dart';
-import 'package:mobile_project/screens/home/nav.dart';
 import 'package:mobile_project/services/user_services.dart';
 import 'package:mobile_project/utils/helpers/network_manager.dart';
 import 'package:mobile_project/utils/theme/theme.dart';
 import 'package:mobile_project/screens/boarding_screen/onboarding_screen.dart';
-
-// import 'package:mobile_project/views/login/login.dart';
 import 'package:get/get.dart';
 
 void main() async {
@@ -25,6 +21,9 @@ void main() async {
   runApp(const MyApp());
   Get.put(AuthenticationRepository());
   Get.put(WishlistController());
+  Get.put(AuthenticationRepository());
+  Get.put(NetworkManager());
+  Get.put(UserRepository());
 }
 
 class MyApp extends StatelessWidget {
@@ -38,18 +37,6 @@ class MyApp extends StatelessWidget {
       theme: TAppTheme.lightTheme,
       darkTheme: TAppTheme.darkTheme,
       home: const OnboardingScreen(),
-      initialBinding: GeneralBinding(),
     );
-  }
-}
-
-class GeneralBinding extends Bindings {
-  @override
-  void dependencies() {
-    // Register the AuthenticationRepository
-    Get.lazyPut<AuthenticationRepository>(() => AuthenticationRepository());
-    // Register NetworkManager
-    Get.lazyPut<NetworkManager>(() => NetworkManager());
-    Get.lazyPut(() => UserRepository());
   }
 }
