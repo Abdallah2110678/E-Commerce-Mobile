@@ -32,29 +32,60 @@ class Product {
     return price - (price * (discount / 100));
   }
 
-  
+  // Convert a Product to a Map (for SQFlite)
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'thumbnailUrl': thumbnailUrl,
+      'imageUrls': imageUrls.join(','), // Storing list as comma-separated string
+      'price': price,
+      'discount': discount,
+      'stock': stock,
+      'categoryId': category.id,
+      'brandId': brand.id,
+    };
+  }
+
+  // Convert a Map to a Product (from SQFlite)
+  factory Product.fromMap(Map<String, dynamic> map, {required Category category, required Brand brand}) {
+    return Product(
+      id: map['id'],
+      title: map['title'],
+      description: map['description'],
+      thumbnailUrl: map['thumbnailUrl'],
+      imageUrls: map['imageUrls'].split(','), // Convert back to list
+      price: map['price'],
+      discount: map['discount'],
+      stock: map['stock'],
+      category: category,
+      brand: brand,
+    );
+  }
+
+  // Convert a Firestore DocumentSnapshot to a Product
   factory Product.fromFirestore(
     DocumentSnapshot doc, {
     required Category category,
     required Brand brand,
   }) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    return Product(
+      id: doc.id,
+      title: data['title'] ?? '',
+      description: data['description'] ?? '',
+      thumbnailUrl: data['thumbnailUrl'] ?? '',
+      imageUrls: List<String>.from(data['imageUrls'] ?? []),
+      price: (data['price'] as num).toDouble(),
+      discount: (data['discount'] as num).toDouble(),
+      stock: (data['stock'] as num).toInt(),
+      category: category,
+      brand: brand,
+    );
+  }
 
-  return Product(
-    id: doc.id,
-    title: data['title'] ?? '',
-    description: data['description'] ?? '',
-    thumbnailUrl: data['thumbnailUrl'] ?? '',
-    imageUrls: List<String>.from(data['imageUrls'] ?? []),
-    price: (data['price'] as num).toDouble(),
-    discount: (data['discount'] as num).toDouble(),
-    stock: (data['stock'] as num).toInt(),
-    category: category,
-    brand: brand,
-  );
-}
-
-  // Convert a Product object to a Firestore document
+  // Convert a Product to a Firestore document
   Map<String, dynamic> toFirestore() {
     return {
       'title': title,
