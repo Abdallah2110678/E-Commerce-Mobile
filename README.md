@@ -41,7 +41,7 @@ Our **E-commerce Flutter App** is built using the following technologies:
 
 This project was developed by the following team members:
 
-- **Abdallah Hamdy** - [abdallahhamdy292@gmail.com](mailto:abdallahhamdy292@gmail.com)
+- **Abdallah Hamdy** - [abdallah2110678@miuegypt.edu.eg](mailto:abdallah2110678@miuegypt.edu.eg)
 - **Abdulrahman Abdelmoniem** - [Abdulrahman2111656@miuegypt.edu.eg](mailto:Abdulrahman2111656@miuegypt.edu.eg)
 - **Ahmed Ayman** - [ahmed2107685@miuegypt.edu.eg](mailto:ahmed2107685@miuegypt.edu.eg)
 - **Abo Elala** - [Aboelala2110306@miuegypt.edu.eg](mailto:Aboelala2110306@miuegypt.edu.eg)
