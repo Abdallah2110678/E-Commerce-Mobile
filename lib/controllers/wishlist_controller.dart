@@ -1,7 +1,7 @@
 // lib/controllers/wishlist_controller.dart
 import 'package:get/get.dart';
 import 'package:mobile_project/models/product.dart';
-import 'package:mobile_project/database/DBHelper.dart';
+import 'package:mobile_project/helper/DBHelper.dart';
 import 'package:mobile_project/models/category.dart';
 import 'package:mobile_project/models/brand.dart';
 
