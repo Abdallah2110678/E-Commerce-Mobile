@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:mobile_project/utils/constants/sizes.dart';
 
@@ -8,11 +7,15 @@ class TGridLayout extends StatelessWidget {
     required this.itemCount,
     required this.itemBuilder,
     this.mainAxisExtent = 288,
+    this.crossAxisCount = 2,
+    this.physics = const NeverScrollableScrollPhysics(),
   });
 
   final int itemCount;
+  final crossAxisCount;
   final double? mainAxisExtent;
   final Widget Function(BuildContext, int) itemBuilder;
+  final ScrollPhysics physics;
 
   @override
   Widget build(BuildContext context) {
@@ -20,9 +23,9 @@ class TGridLayout extends StatelessWidget {
       itemCount: itemCount,
       shrinkWrap: true,
       padding: EdgeInsets.zero,
-      physics: const NeverScrollableScrollPhysics(),
+      physics: physics,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
+        crossAxisCount: crossAxisCount,
         mainAxisExtent: mainAxisExtent,
         mainAxisSpacing: TSizes.gridViewSpacing,
         crossAxisSpacing: TSizes.gridViewSpacing,
