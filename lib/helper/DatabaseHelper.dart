@@ -5,7 +5,7 @@ import 'package:mobile_project/models/product.dart';
 import 'package:mobile_project/models/category.dart';
 import 'package:mobile_project/models/brand.dart';
 
-class DBHelper {
+class DatabaseHelper {
   static Database? _database;
 
   // Open or create the database

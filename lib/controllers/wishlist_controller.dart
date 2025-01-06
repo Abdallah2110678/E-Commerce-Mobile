@@ -1,7 +1,7 @@
 // lib/controllers/wishlist_controller.dart
 import 'package:get/get.dart';
 import 'package:mobile_project/models/product.dart';
-import 'package:mobile_project/helper/DBHelper.dart';
+import 'package:mobile_project/helper/DatabaseHelper.dart';
 import 'package:mobile_project/models/category.dart';
 import 'package:mobile_project/models/brand.dart';
 
@@ -20,7 +20,7 @@ class WishlistController extends GetxController {
   Future<void> loadWishlistItems() async {
     try {
       isLoading.value = true;
-      List<Product> items = await DBHelper.getWishlistItems(categories, brands);
+      List<Product> items = await DatabaseHelper.getWishlistItems(categories, brands);
       wishlistItems.assignAll(items);
       isLoading.value = false;
     } catch (e) {
@@ -34,12 +34,12 @@ class WishlistController extends GetxController {
 
       if (isAlreadyInWishlist) {
         // Remove from wishlist
-        await DBHelper.removeProduct(product.id);
+        await DatabaseHelper.removeProduct(product.id);
         wishlistItems.removeWhere((item) => item.id == product.id);
         Get.snackbar('Success', 'Removed from wishlist');
       } else {
         // Add to wishlist
-        await DBHelper.insertProduct(product);
+        await DatabaseHelper.insertProduct(product);
         wishlistItems.add(product);
         Get.snackbar('Success', 'Added to wishlist');
       }
