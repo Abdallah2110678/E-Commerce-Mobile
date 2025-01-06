@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_project/screens/category_list.dart';
+import 'package:mobile_project/screens/dashboard/brands/brandManagement.dart';
 import 'package:mobile_project/screens/dashboard/dashboard.dart';
 import 'package:mobile_project/screens/dashboard/products/createProduct.dart';
 import 'package:mobile_project/screens/dashboard/products/productsTable.dart';
 import 'package:mobile_project/screens/dashboard/users/users.dart';
+import 'package:mobile_project/utils/helpers/helper_functions.dart';
 
 // The main screen with a drawer
 class DrawerScreen extends StatefulWidget {
@@ -18,7 +20,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
     const AddProductView(),
     CategoryManagementPage(),
     const ProductTableView(),
-    UsersPage()
+    UsersPage(),
+    BrandManagementScreen(),
   ];
 
   // List of titles for AppBar
@@ -27,32 +30,47 @@ class _DrawerScreenState extends State<DrawerScreen> {
     "Add Product",
     "Categories",
     "Products",
-    "Users"
+    "Users",
+    "Brand Management"
   ];
 
   // Currently selected index for the drawer
   int _selectedIndex = 0;
 
   // Method to handle navigation
-  void _onSelectItem(int index) {
+// Method to handle navigation
+void _onSelectItem(int index) {
+  if (index >= 0 && index < _screens.length) { // Check for valid index
     setState(() {
       _selectedIndex = index; // Update the selected index
     });
     Navigator.pop(context); // Close the drawer
   }
+}
 
   @override
   Widget build(BuildContext context) {
+      final  dark = THelperFunctions.isDarkMode(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(_titles[_selectedIndex]),
         centerTitle: true,
+        leading: Builder(
+        builder: (context) => IconButton(
+          icon:Icon(Icons.menu,color: dark ? Colors.white : Colors.black, // Adjust color for dark and light modes
+        size: 30),
+          onPressed: () {
+            // Open the drawer when the menu icon is tapped
+            Scaffold.of(context).openDrawer();
+          },
+        ),
+      ),
       ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            DrawerHeader(
+          const  DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.blue,
               ),
@@ -94,6 +112,12 @@ class _DrawerScreenState extends State<DrawerScreen> {
               title: const Text('Users'),
               selected: _selectedIndex == 4, // Highlight when active
               onTap: () => _onSelectItem(4),
+            ),
+              ListTile(
+              leading: const Icon(Icons.category),
+              title: const Text('Brands'),
+              selected: _selectedIndex == 5, // Highlight when active
+              onTap: () => _onSelectItem(5),
             ),
           ],
         ),

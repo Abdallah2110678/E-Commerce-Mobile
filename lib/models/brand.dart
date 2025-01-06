@@ -29,4 +29,20 @@ class Brand {
       'logoUrl': logoUrl,
     };
   }
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'logoUrl': logoUrl,
+    };
+  }
+
+  factory Brand.fromJson(Map<String, dynamic> json) {
+    return Brand(
+      id: json['id'],
+      name: json['name'],
+      logoUrl: json['logoUrl'],
+    );
+  }
+
 }
