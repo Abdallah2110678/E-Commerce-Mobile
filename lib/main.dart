@@ -21,9 +21,6 @@ void main() async {
   runApp(const MyApp());
   Get.put(AuthenticationRepository());
   Get.put(WishlistController());
-  Get.put(AuthenticationRepository());
-  Get.put(NetworkManager());
-  Get.put(UserRepository());
 }
 
 class MyApp extends StatelessWidget {
@@ -37,6 +34,18 @@ class MyApp extends StatelessWidget {
       theme: TAppTheme.lightTheme,
       darkTheme: TAppTheme.darkTheme,
       home: const OnboardingScreen(),
+      initialBinding: GeneralBinding(),
     );
+  }
+}
+
+class GeneralBinding extends Bindings {
+  @override
+  void dependencies() {
+    // Register the AuthenticationRepository
+    Get.lazyPut<AuthenticationRepository>(() => AuthenticationRepository());
+    // Register NetworkManager
+    Get.lazyPut<NetworkManager>(() => NetworkManager());
+    Get.lazyPut(() => UserRepository());
   }
 }
