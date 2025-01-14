@@ -231,7 +231,8 @@ class HomeScreen extends StatelessWidget {
                             ),
                             itemCount: products.length,
                             itemBuilder: (context, index) {
-                              return TProductCardVertical(product: products[index]);
+                              return TProductCardVertical(
+                                  product: products[index]);
                             },
                           ),
                         ],
@@ -464,8 +465,8 @@ class TSearchContainer extends StatelessWidget {
     this.showBorder = true,
     this.onTap,
     this.padding = const EdgeInsets.symmetric(horizontal: TSizes.defaultSpace),
-    this.onChanged, // Add this callback for handling search input
-    this.controller, // Add this for controlling the TextField
+    this.onChanged,
+    this.controller,
   });
 
   final String text;
@@ -473,45 +474,59 @@ class TSearchContainer extends StatelessWidget {
   final bool showBackground, showBorder;
   final VoidCallback? onTap;
   final EdgeInsetsGeometry padding;
-  final Function(String)? onChanged; // Callback for search input
-  final TextEditingController? controller; // Controller for the TextField
+  final Function(String)? onChanged;
+  final TextEditingController? controller;
 
   @override
   Widget build(BuildContext context) {
     final dark = THelperFunctions.isDarkMode(context);
-    return GestureDetector(
-      onTap: onTap,
-      child: Padding(
-        padding: padding,
-        child: Container(
-          width: TDeviceUtils.getScreenWidth(context),
-          padding: const EdgeInsets.all(TSizes.md),
-          decoration: BoxDecoration(
-            color: showBackground
-                ? dark
-                    ? TColors.dark
-                    : TColors.light
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(TSizes.cardRadiusLg),
-            border: showBorder ? Border.all(color: TColors.grey) : null,
+
+    return Padding(
+      padding: padding,
+      child: Container(
+        width: TDeviceUtils.getScreenWidth(context),
+        decoration: BoxDecoration(
+          color: showBackground
+              ? dark
+                  ? Colors.grey[800]
+                  : Colors.grey[200]
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(TSizes.borderRadiusLg),
+          border: showBorder && !showBackground
+              ? Border.all(color: TColors.grey)
+              : null,
+        ),
+        child: TextField(
+          controller: controller,
+          onChanged: onChanged,
+          onTap: onTap,
+          decoration: InputDecoration(
+            hintText: text,
+            hintStyle: TextStyle(
+              color: dark ? Colors.white54 : Colors.black54,
+              fontSize: 14,
+            ),
+            prefixIcon: Icon(
+              icon,
+              color: dark ? Colors.white54 : Colors.black54,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(TSizes.borderRadiusLg),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(TSizes.borderRadiusLg),
+              borderSide: BorderSide.none,
+            ),
+            filled: true,
+            fillColor: Colors.transparent,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: TSizes.md,
+              vertical: TSizes.sm,
+            ),
           ),
-          child: Row(
-            children: [
-              Icon(icon, color: TColors.darkGrey),
-              const SizedBox(
-                  width: TSizes.spaceBtwItems), // Use width instead of height
-              Expanded(
-                child: TextField(
-                  controller: controller, // Pass the controller
-                  onChanged: onChanged, // Pass the onChanged callback
-                  decoration: InputDecoration(
-                    hintText: text,
-                    border: InputBorder.none, // Remove the default border
-                    hintStyle: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ),
-              ),
-            ],
+          style: TextStyle(
+            color: dark ? Colors.white : Colors.black,
           ),
         ),
       ),
@@ -638,7 +653,6 @@ class TPrimaryHeaderContainer extends StatelessWidget {
 }
 
 ///cart
-
 
 class TCartCounterIcon extends ConsumerWidget {
   const TCartCounterIcon({super.key, required this.onPressed, this.iconColor});
