@@ -57,7 +57,7 @@ class _AddProductViewState extends State<AddProductView> {
     try {
       final categories = await _categoryController.fetchCategories();
       setState(() {
-        _categories = categories;
+        // _categories = categories;
       });
     } catch (e) {
       _showErrorSnackBar('Failed to fetch categories: $e');

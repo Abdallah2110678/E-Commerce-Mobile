@@ -1,46 +1,52 @@
-// views/brand_view.dart
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:mobile_project/controllers/category_controller.dart';
 import 'package:get/get.dart';
-import 'package:mobile_project/controllers/brand_controller.dart';
 import 'package:mobile_project/screens/dashboard/brands/createBrand.dart';
-import 'package:mobile_project/screens/dashboard/brands/editBrand.dart';
-import 'package:mobile_project/screens/dashboard/brands/listBrand.dart';
-
+import 'package:mobile_project/screens/dashboard/category/createCategory.dart';
+import 'package:mobile_project/screens/dashboard/category/editCategory.dart';
+import 'package:mobile_project/screens/dashboard/category/listCategory.dart';
+import 'package:mobile_project/utils/constants/colors.dart';
+import 'package:mobile_project/utils/constants/enum.dart';
+import 'package:mobile_project/utils/constants/sizes.dart';
+import 'package:mobile_project/utils/helpers/helper_functions.dart';
+import 'package:mobile_project/widgets/custom_shapes/rounded_container.dart';
+import 'package:mobile_project/widgets/images/circular_image.dart';
 import 'package:mobile_project/widgets/layout/grid_layout.dart';
+import 'package:mobile_project/widgets/texts/brand_title_text_with_varified_icon.dart';
+class CategoryManagementScreen extends StatefulWidget {
+  const CategoryManagementScreen({super.key});
 
-
-class BrandManagementScreen extends StatefulWidget {
   @override
-  _BrandManagementScreenState createState() => _BrandManagementScreenState();
+  State<CategoryManagementScreen> createState() => _CategoryManagementScreenState();
 }
 
-class _BrandManagementScreenState extends State<BrandManagementScreen> {
-  final BrandController brandController = Get.put(BrandController());
+class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
 
+final CategoryController categoryController = Get.put(CategoryController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Obx(() {
         // Display loading indicator if data is not yet loaded
-        if (brandController.brands.isEmpty) {
+        if (categoryController.categories.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        // Display the list of brands
+        // Display the list of categories
         return Padding(
           padding: const EdgeInsets.all(16.0),
           child: TGridLayout(
             crossAxisCount: 1,
             physics: const BouncingScrollPhysics(),
-            itemCount: brandController.brands.length,
+            itemCount: categoryController.categories.length,
             mainAxisExtent: 80,
             itemBuilder: (_, index) {
-              final brand = brandController.brands[index];
+              final category = categoryController.categories[index];
 
               return Dismissible(
-                key: Key(brand['id'].toString()),
+                key: Key(category['id'].toString()),
                 direction: DismissDirection.horizontal,
                 onDismissed: (direction) {
                   if (direction == DismissDirection.startToEnd) {
@@ -52,7 +58,7 @@ class _BrandManagementScreenState extends State<BrandManagementScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => EditBrandScreen(brand: brand),
+                        builder: (context) => EditCategoryScreen(category: category),
                       ),
                     );
                   } else if (direction == DismissDirection.endToStart) {
@@ -61,7 +67,7 @@ class _BrandManagementScreenState extends State<BrandManagementScreen> {
                       builder: (context) => AlertDialog(
                         title: const Text("Confirm Delete"),
                         content: Text(
-                            "Are you sure you want to delete ${brand['name']}?"),
+                            "Are you sure you want to delete ${category['name']}?"),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(false),
@@ -70,8 +76,8 @@ class _BrandManagementScreenState extends State<BrandManagementScreen> {
                           TextButton(
                             onPressed: () async {
                               Navigator.of(context).pop(false);
-                              await brandController.deleteBrandIfNotUsed(
-                                  brand['id'], brand['logoUrl']);
+                              await categoryController.deleteCategoryIfNotUsed(
+                                  category['id'], category['imagUrl']);
                             },
                             child: const Text("Delete"),
                           ),
@@ -112,7 +118,7 @@ class _BrandManagementScreenState extends State<BrandManagementScreen> {
                     ],
                   ),
                 ),
-                child: ListBrandScreen(brand: brand),
+                child: ListCategoryScreen(category: category),
               );
             },
           ),
@@ -123,7 +129,7 @@ class _BrandManagementScreenState extends State<BrandManagementScreen> {
           // Show dialog to add a new brand
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => CreateBrandScreen()),
+            MaterialPageRoute(builder: (context) => CreateCategoryScreen()),
           );
         },
         child: const Icon(Icons.add),
@@ -131,4 +137,25 @@ class _BrandManagementScreenState extends State<BrandManagementScreen> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
