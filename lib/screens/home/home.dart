@@ -160,14 +160,20 @@ class HomeScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const TPrimaryHeaderContainer(
+            TPrimaryHeaderContainer(
               child: Column(
                 children: [
-                  THomeAppBar(),
-                  SizedBox(height: TSizes.spaceBtwSections),
-                  TSearchContainer(text: 'Search in Store'),
-                  SizedBox(height: TSizes.spaceBtwSections),
-                  Padding(
+                  const THomeAppBar(),
+                  const SizedBox(height: TSizes.spaceBtwSections),
+                  TSearchContainer(
+                    text: 'Search in Store',
+                    controller: _searchController,
+                    onChanged: (value) {
+                      _searchQuery.value = value;
+                    },
+                  ),
+                  const SizedBox(height: TSizes.spaceBtwSections),
+                  const Padding(
                     padding: EdgeInsets.only(left: TSizes.defaultSpace),
                     child: Column(
                       children: [
@@ -181,7 +187,7 @@ class HomeScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(height: TSizes.spaceBtwSections),
+                  const SizedBox(height: TSizes.spaceBtwSections),
                 ],
               ),
             ),
@@ -191,54 +197,83 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   const TPromoSlider(banners: TImages.banners),
                   const SizedBox(height: TSizes.spaceBtwSections),
-                  FutureBuilder<List<Product>>(
-                    future: _fetchProducts(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      if (snapshot.hasError) {
-                        return Center(child: Text('Error: ${snapshot.error}'));
-                      }
-                      final products = snapshot.data ?? [];
-                      return Column(
-                        children: [
-                          TSectionHeading(
-                            title: 'Popular Products',
-                            onPressed: () {
-                              // Navigate to AllProductsScreen with the fetched products
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => AllProductsScreen(
-                                    products: products,
-                                  ),
+
+                  // Updated Products Section with Search
+                  Obx(() => StreamBuilder<QuerySnapshot>(
+                        stream: _searchQuery.value.isNotEmpty
+                            ? _storeController
+                                .searchProducts(_searchQuery.value)
+                            : FirebaseFirestore.instance
+                                .collection('products')
+                                .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                          if (snapshot.hasError) {
+                            return Center(
+                                child: Text('Error: ${snapshot.error}'));
+                          }
+
+                          if (!snapshot.hasData ||
+                              snapshot.data!.docs.isEmpty) {
+                            return const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(TSizes.defaultSpace),
+                                child: Text('No products found'),
+                              ),
+                            );
+                          }
+
+                          // Convert Firestore documents to Product objects
+                          final products = snapshot.data!.docs
+                              .map((doc) =>
+                                  _storeController.productFromSnapshot(doc))
+                              .toList();
+
+                          return Column(
+                            children: [
+                              TSectionHeading(
+                                title: _searchQuery.value.isEmpty
+                                    ? 'Popular Products'
+                                    : 'Search Results',
+                                onPressed: () {
+                                  if (_searchQuery.value.isEmpty) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => AllProductsScreen(
+                                          products: products,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                                showActionButton: _searchQuery.value.isEmpty,
+                              ),
+                              const SizedBox(height: TSizes.spaceBtwItems),
+                              GridView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: TSizes.sm,
+                                  mainAxisSpacing: TSizes.sm,
+                                  childAspectRatio: 0.8,
                                 ),
-                              );
-                            },
-                            showActionButton: true,
-                          ),
-                          const SizedBox(height: TSizes.spaceBtwItems),
-                          GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: TSizes.sm,
-                              mainAxisSpacing: TSizes.sm,
-                              childAspectRatio: 0.8,
-                            ),
-                            itemCount: products.length,
-                            itemBuilder: (context, index) {
-                              return TProductCardVertical(
-                                  product: products[index]);
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  ),
+                                itemCount: products.length,
+                                itemBuilder: (context, index) {
+                                  return TProductCardVertical(
+                                      product: products[index]);
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      )),
                 ],
               ),
             ),
