@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:mobile_project/models/category.dart';
-import 'package:mobile_project/models/product.dart'; // Import Product model
-import 'package:mobile_project/models/brand.dart'; // Import Brand model
+import 'package:mobile_project/controllers/store_controller.dart'; // Import StoreController
 import 'package:mobile_project/screens/home/appbar.dart';
 import 'package:mobile_project/screens/home/home.dart';
 import 'package:mobile_project/utils/constants/enum.dart';
@@ -19,34 +17,7 @@ import 'package:mobile_project/widgets/texts/brand_title_text_with_varified_icon
 class StoreScreen extends StatelessWidget {
   StoreScreen({super.key});
 
-  final RxString selectedBrandId = ''.obs;
-  final RxString selectedBrandName = ''.obs;
-
-  // Fetch featured brands from Firestore
-  Future<List<Map<String, dynamic>>> _fetchFeaturedBrands() async {
-    final brandsSnapshot =
-        await FirebaseFirestore.instance.collection('brands').get();
-
-    final featuredBrands = await Future.wait(
-      brandsSnapshot.docs.map((doc) async {
-        final brandId = doc.id;
-        final productCount = await FirebaseFirestore.instance
-            .collection('products')
-            .where('brandId', isEqualTo: brandId)
-            .get()
-            .then((snapshot) => snapshot.docs.length);
-
-        return {
-          'id': brandId,
-          'name': doc['name'],
-          'logoUrl': doc['logoUrl'],
-          'productCount': productCount,
-        };
-      }),
-    );
-
-    return featuredBrands;
-  }
+  final StoreController _storeController = Get.find<StoreController>();
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +52,7 @@ class StoreScreen extends StatelessWidget {
 
               // Brands Grid
               FutureBuilder<List<Map<String, dynamic>>>(
-                future: _fetchFeaturedBrands(),
+                future: _storeController.fetchFeaturedBrands(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -103,19 +74,15 @@ class StoreScreen extends StatelessWidget {
                           return Obx(
                             () => GestureDetector(
                               onTap: () {
-                                if (selectedBrandId.value == brand['id']) {
-                                  selectedBrandId.value = '';
-                                  selectedBrandName.value = '';
-                                } else {
-                                  selectedBrandId.value = brand['id'];
-                                  selectedBrandName.value = brand['name'];
-                                }
+                                _storeController.selectBrand(
+                                    brand['id'], brand['name']);
                               },
                               child: TRoundedContainer(
                                 padding: const EdgeInsets.all(TSizes.sm),
                                 showBorder: true,
                                 backgroundColor:
-                                    selectedBrandId.value == brand['id']
+                                    _storeController.selectedBrandId.value ==
+                                            brand['id']
                                         ? TColors.primary.withOpacity(0.1)
                                         : Colors.transparent,
                                 child: Row(
@@ -166,7 +133,7 @@ class StoreScreen extends StatelessWidget {
 
                       /// -- Products Section
                       Obx(() {
-                        if (selectedBrandId.value.isEmpty) {
+                        if (_storeController.selectedBrandId.value.isEmpty) {
                           return const SizedBox.shrink();
                         }
 
@@ -174,16 +141,14 @@ class StoreScreen extends StatelessWidget {
                           children: [
                             const SizedBox(height: TSizes.spaceBtwSections),
                             TSectionHeading(
-                              title: '${selectedBrandName.value} Products',
+                              title:
+                                  '${_storeController.selectedBrandName.value} Products',
                               onPressed: () {},
                             ),
                             const SizedBox(height: TSizes.spaceBtwItems),
                             StreamBuilder<QuerySnapshot>(
-                              stream: FirebaseFirestore.instance
-                                  .collection('products')
-                                  .where('brandId',
-                                      isEqualTo: selectedBrandId.value)
-                                  .snapshots(),
+                              stream: _storeController.fetchProductsByBrand(
+                                  _storeController.selectedBrandId.value),
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState ==
                                     ConnectionState.waiting) {
@@ -210,30 +175,8 @@ class StoreScreen extends StatelessWidget {
 
                                 // Convert Firestore documents to Product objects
                                 final products = snapshot.data!.docs.map((doc) {
-                                  final data =
-                                      doc.data() as Map<String, dynamic>;
-                                  return Product(
-                                    id: doc.id,
-                                    title: data['title'] ?? 'Unnamed Product',
-                                    description: data['description'] ?? '',
-                                    thumbnailUrl: data['thumbnailUrl'] ?? '',
-                                    imageUrls: List<String>.from(
-                                        data['imageUrls'] ?? []),
-                                    price: (data['price'] ?? 0.0).toDouble(),
-                                    discount:
-                                        (data['discount'] ?? 0.0).toDouble(),
-                                    stock: (data['stock'] ?? 0).toInt(),
-                                    category: Category(
-                                      id: data['categoryId'] ?? '',
-                                      name: data['categoryName'] ?? '',
-                                      imagUrl: data['categoryImageUrl'] ?? '',
-                                    ),
-                                    brand: Brand(
-                                      id: data['brandId'] ?? '',
-                                      name: data['brandName'] ?? '',
-                                      logoUrl: data['brandLogoUrl'] ?? '',
-                                    ),
-                                  );
+                                  return _storeController
+                                      .productFromSnapshot(doc);
                                 }).toList();
 
                                 // Display products using TGridLayout and TProductCardVertical
