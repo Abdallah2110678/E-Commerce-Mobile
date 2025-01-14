@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart'; // Import Provider
-import 'package:mobile_project/controllers/CartController.dart'; // Import CartController
-import 'package:mobile_project/models/product.dart'; // Import Product model
-import 'package:mobile_project/models/brand.dart'; // Import Brand model
-import 'package:mobile_project/models/category.dart'; // Import Category model
+import 'package:mobile_project/controllers/CartController.dart';
+import 'package:mobile_project/models/product.dart';
+import 'package:mobile_project/models/brand.dart';
+import 'package:mobile_project/models/category.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:mobile_project/utils/helpers/helper_functions.dart';
@@ -13,7 +13,7 @@ import 'package:mobile_project/widgets/texts/brand_title_text_with_varified_icon
 import 'package:mobile_project/widgets/texts/product_price_text.dart';
 import 'package:mobile_project/widgets/custom_shapes/rounded_container.dart';
 
-class ProductDescriptionPage extends StatelessWidget {
+class ProductDescriptionPage extends ConsumerWidget {
   final String productId;
 
   const ProductDescriptionPage({
@@ -57,9 +57,8 @@ class ProductDescriptionPage extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final dark = THelperFunctions.isDarkMode(context);
-    final cartController = Provider.of<CartController>(context); // Access CartController
 
     return Scaffold(
       appBar: AppBar(
@@ -173,8 +172,8 @@ class ProductDescriptionPage extends StatelessWidget {
                 /// Add to Cart Button
                 ElevatedButton(
                   onPressed: () {
-                    // Add the product to the cart
-                    cartController.addItem(product);
+                    // Use .read to access the CartController and add the product to the cart
+                    ref.read(cartControllerProvider.notifier).addItem(product);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Product added to cart')),
                     );

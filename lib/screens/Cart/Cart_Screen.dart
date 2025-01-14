@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:mobile_project/controllers/CartController.dart'; // Import CartController
 import 'package:mobile_project/models/product.dart'; // Import Product model
@@ -7,12 +7,13 @@ import 'package:mobile_project/utils/constants/colors.dart'; // Import colors
 import 'package:mobile_project/utils/constants/sizes.dart'; // Import sizes
 import 'package:mobile_project/widgets/images/rounded_image.dart'; // Import RoundedImage widget
 
-class CartScreen extends StatelessWidget {
+class CartScreen extends ConsumerWidget {
   const CartScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final cartController = Provider.of<CartController>(context); // Access CartController
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Use .watch to listen to the cart state
+    final cartItems = ref.watch(cartControllerProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -21,7 +22,8 @@ class CartScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Iconsax.trash),
             onPressed: () {
-              cartController.clearCart();
+              // Use .read to clear the cart
+              ref.read(cartControllerProvider.notifier).clearCart();
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text("Your cart has been cleared")),
               );
@@ -29,7 +31,7 @@ class CartScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: cartController.items.isEmpty
+      body: cartItems.isEmpty
           ? const Center(
               child: Text(
                 "Your cart is empty",
@@ -40,9 +42,9 @@ class CartScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: ListView.builder(
-                    itemCount: cartController.items.length,
+                    itemCount: cartItems.length,
                     itemBuilder: (context, index) {
-                      final cartItem = cartController.items.values.toList()[index];
+                      final cartItem = cartItems.values.toList()[index];
                       final productId = cartItem.product.id;
 
                       // Use Dismissible for swipe-to-delete functionality
@@ -59,16 +61,16 @@ class CartScreen extends StatelessWidget {
                           ),
                         ),
                         onDismissed: (direction) {
-                          // Remove the item from the cart
-                          cartController.removeItem(productId);
+                          // Use .read to remove the item from the cart
+                          ref.read(cartControllerProvider.notifier).removeItem(productId);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text("${cartItem.product.title} removed from cart"),
                               action: SnackBarAction(
                                 label: "Undo",
                                 onPressed: () {
-                                  // Add the item back to the cart
-                                  cartController.addItem(cartItem.product);
+                                  // Use .read to add the item back to the cart
+                                  ref.read(cartControllerProvider.notifier).addItem(cartItem.product);
                                 },
                               ),
                             ),
@@ -124,7 +126,7 @@ class CartScreen extends StatelessWidget {
                                   children: [
                                     IconButton(
                                       icon: const Icon(Iconsax.minus_cirlce, size: 20),
-                                      onPressed: () => cartController.decreaseQuantity(productId),
+                                      onPressed: () => ref.read(cartControllerProvider.notifier).decreaseQuantity(productId),
                                     ),
                                     Text(
                                       '${cartItem.quantity}',
@@ -132,7 +134,7 @@ class CartScreen extends StatelessWidget {
                                     ),
                                     IconButton(
                                       icon: const Icon(Iconsax.add_circle, size: 20),
-                                      onPressed: () => cartController.addItem(cartItem.product),
+                                      onPressed: () => ref.read(cartControllerProvider.notifier).addItem(cartItem.product),
                                     ),
                                   ],
                                 ),
@@ -173,7 +175,7 @@ class CartScreen extends StatelessWidget {
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                           Text(
-                            '\$${cartController.totalAmount.toStringAsFixed(2)}',
+                            '\$${ref.read(cartControllerProvider.notifier).totalAmount.toStringAsFixed(2)}',
                             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                   color: TColors.primary,
                                   fontWeight: FontWeight.bold,

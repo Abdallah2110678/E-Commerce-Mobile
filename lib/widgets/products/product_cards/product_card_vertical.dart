@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:mobile_project/controllers/CartController.dart';
-import 'package:mobile_project/screens/Cart/Cart_Screen.dart';
-import 'package:provider/provider.dart'; // Import Provider for CartController
+import 'package:mobile_project/controllers/CartController.dart'; // Import CartController
 import 'package:mobile_project/controllers/wishlist_controller.dart'; // Import WishlistController
 import 'package:mobile_project/models/product.dart'; // Import Product model
+import 'package:mobile_project/screens/Cart/Cart_Screen.dart'; // Import CartScreen
 import 'package:mobile_project/screens/styles/shadows.dart'; // Import shadows
 import 'package:mobile_project/utils/constants/colors.dart'; // Import colors
 import 'package:mobile_project/utils/constants/sizes.dart'; // Import sizes
@@ -16,7 +16,7 @@ import 'package:mobile_project/widgets/images/rounded_image.dart'; // Import Rou
 import 'package:mobile_project/widgets/products/product_cards/product_decription.dart'; // Import ProductDescriptionPage
 import 'package:mobile_project/widgets/texts/product_price_text.dart'; // Import ProductPriceText
 
-class TProductCardVertical extends StatelessWidget {
+class TProductCardVertical extends ConsumerWidget {
   final Product product;
   final bool isHomeScreen;
 
@@ -29,7 +29,7 @@ class TProductCardVertical extends StatelessWidget {
   final WishlistController _wishlistController = Get.find<WishlistController>();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final darkMode = THelperFunctions.isDarkMode(context);
 
     return GestureDetector(
@@ -67,7 +67,7 @@ class TProductCardVertical extends StatelessWidget {
                     _buildProductTitle(context, darkMode),
                     if (!isHomeScreen) _buildProductBrand(context, darkMode),
                     const Spacer(),
-                    _buildPriceAndCartButton(context),
+                    _buildPriceAndCartButton(context, ref),
                   ],
                 ),
               ),
@@ -170,10 +170,7 @@ class TProductCardVertical extends StatelessWidget {
     );
   }
 
-  Widget _buildPriceAndCartButton(BuildContext context) {
-    final cartController = Provider.of<CartController>(
-        context); // Access CartController using Provider
-
+  Widget _buildPriceAndCartButton(BuildContext context, WidgetRef ref) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -194,7 +191,8 @@ class TProductCardVertical extends StatelessWidget {
           ),
           child: IconButton(
             onPressed: () {
-              cartController.addItem(product);
+              // Use .read to add the product to the cart
+              ref.read(cartControllerProvider.notifier).addItem(product);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Added to cart')),
               );

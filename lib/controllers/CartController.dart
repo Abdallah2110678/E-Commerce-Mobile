@@ -1,66 +1,61 @@
-import 'package:flutter/material.dart';
-import 'package:mobile_project/models/product.dart'; // Import Product model
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile_project/models/cart.dart';
+import 'package:mobile_project/models/product.dart';
 
-class CartController extends ChangeNotifier {
-  final Map<String, CartItem> _items = {};
+class CartController extends StateNotifier<Map<String, CartItem>> {
+  CartController() : super({});
 
-  Map<String, CartItem> get items => _items;
-
-  int get itemCount => _items.length;
-
-  double get totalAmount {
-    return _items.values.fold(0.0, (sum, item) => sum + item.totalPrice);
-  }
-
+  // Add a product to the cart
   void addItem(Product product) {
-    if (_items.containsKey(product.id)) {
-      _items.update(
-        product.id,
-        (existingItem) => CartItem(
-          product: existingItem.product,
-          quantity: existingItem.quantity + 1,
+    if (state.containsKey(product.id)) {
+      state = {
+        ...state,
+        product.id: CartItem(
+          product: product,
+          quantity: state[product.id]!.quantity + 1,
         ),
-      );
+      };
     } else {
-      _items[product.id] = CartItem(product: product);
+      state = {
+        ...state,
+        product.id: CartItem(product: product),
+      };
     }
-    notifyListeners(); // Notify listeners when the cart changes
   }
 
+  // Remove a product from the cart
   void removeItem(String productId) {
-    _items.remove(productId);
-    notifyListeners(); // Notify listeners when the cart changes
+    state = {...state};
+    state.remove(productId);
   }
 
+  // Decrease the quantity of a product in the cart
   void decreaseQuantity(String productId) {
-    if (_items[productId]!.quantity > 1) {
-      _items.update(
-        productId,
-        (existingItem) => CartItem(
-          product: existingItem.product,
-          quantity: existingItem.quantity - 1,
+    if (state[productId]!.quantity > 1) {
+      state = {
+        ...state,
+        productId: CartItem(
+          product: state[productId]!.product,
+          quantity: state[productId]!.quantity - 1,
         ),
-      );
+      };
     } else {
       removeItem(productId);
     }
-    notifyListeners(); // Notify listeners when the cart changes
   }
 
+  // Clear the cart
   void clearCart() {
-    _items.clear();
-    notifyListeners(); // Notify listeners when the cart changes
+    state = {};
+  }
+
+  // Get the total amount of the cart
+  double get totalAmount {
+    return state.values.fold(0.0, (sum, item) => sum + item.totalPrice);
   }
 }
 
-class CartItem {
-  final Product product;
-  int quantity;
-
-  CartItem({
-    required this.product,
-    this.quantity = 1,
-  });
-
-  double get totalPrice => product.discountedPrice * quantity;
-}
+// Create a StateNotifierProvider for the CartController
+final cartControllerProvider = StateNotifierProvider<CartController, Map<String, CartItem>>((ref) {
+  return CartController();
+});

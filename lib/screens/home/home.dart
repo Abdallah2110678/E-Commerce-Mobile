@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:mobile_project/controllers/CartController.dart';
@@ -623,16 +624,17 @@ class TPrimaryHeaderContainer extends StatelessWidget {
 
 ///cart
 
-class TCartCounterIcon extends StatelessWidget {
+
+class TCartCounterIcon extends ConsumerWidget {
   const TCartCounterIcon({super.key, required this.onPressed, this.iconColor});
 
   final Color? iconColor;
   final VoidCallback onPressed;
 
   @override
-  Widget build(BuildContext context) {
-    final cartController =
-        Provider.of<CartController>(context); // Use prefixed import
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Use .watch to listen to the cart state
+    final cartItems = ref.watch(cartControllerProvider);
 
     return Stack(
       children: [
@@ -661,7 +663,7 @@ class TCartCounterIcon extends StatelessWidget {
             ),
             child: Center(
               child: Text(
-                '${cartController.itemCount}', // Display the number of items in the cart
+                '${cartItems.length}', // Display the number of items in the cart
                 style: Theme.of(context).textTheme.labelLarge!.apply(
                       color: TColors.white, // Text color
                       fontSizeFactor: 0.8, // Adjust font size

@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_project/controllers/CartController.dart';
 import 'package:mobile_project/controllers/store_controller.dart';
 
@@ -24,12 +25,8 @@ void main() async {
   );
   await Firebase.initializeApp();
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-            create: (_) => CartController()), // Provide CartController
-      ],
-      child: const MyApp(),
+    ProviderScope(
+      child: MyApp(),
     ),
   );
   Get.put(AuthenticationRepository());

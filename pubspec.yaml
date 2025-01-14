@@ -55,6 +55,7 @@ dependencies:
   supabase_flutter: ^2.8.2
   flutter_express: ^0.8.4
   belatuk_body_parser: ^5.4.1
+  flutter_riverpod: ^2.6.1
 
 
   #--------------- ./ PACKAGES END ------------------#
