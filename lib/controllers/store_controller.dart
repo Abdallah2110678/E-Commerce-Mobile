@@ -42,6 +42,15 @@ class StoreController extends GetxController {
         .snapshots();
   }
 
+  // Search products by title
+  Stream<QuerySnapshot> searchProducts(String query) {
+    return FirebaseFirestore.instance
+        .collection('products')
+        .where('title', isGreaterThanOrEqualTo: query)
+        .where('title', isLessThan: query + 'z')
+        .snapshots();
+  }
+
   // Convert Firestore document to Product object
   Product productFromSnapshot(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;

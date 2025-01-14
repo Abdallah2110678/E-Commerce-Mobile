@@ -43,7 +43,7 @@ class AuthenticationRepository extends GetxController {
     try {
       final userCredential = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
-      Get.offAll(() => const HomeScreen());
+      Get.offAll(() => HomeScreen());
       return userCredential;
     } on FirebaseAuthException catch (e) {
       throw TFirebaseAuthException(e.code).message;
@@ -76,6 +76,7 @@ class AuthenticationRepository extends GetxController {
       throw 'Something went wrong. Please try again';
     }
   }
+
 //verifyBeforeUpdateEmail
   Future<void> updateEmail(String newEmail) async {
     try {

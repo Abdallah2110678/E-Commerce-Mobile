@@ -18,6 +18,8 @@ class StoreScreen extends StatelessWidget {
   StoreScreen({super.key});
 
   final StoreController _storeController = Get.find<StoreController>();
+  final TextEditingController _searchController = TextEditingController();
+  final RxString _searchQuery = ''.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -33,13 +35,17 @@ class StoreScreen extends StatelessWidget {
           padding: const EdgeInsets.all(TSizes.defaultSpace),
           child: Column(
             children: [
-              /// -- Search bar (if needed)
+              /// -- Search Bar
               const SizedBox(height: TSizes.spaceBtwItems),
-              const TSearchContainer(
+              TSearchContainer(
                 text: 'Search in Store',
                 showBorder: true,
                 showBackground: false,
                 padding: EdgeInsets.zero,
+                onChanged: (value) {
+                  _searchQuery.value = value; // Update search query
+                },
+                controller: _searchController,
               ),
               const SizedBox(height: TSizes.spaceBtwSections),
 
@@ -133,7 +139,8 @@ class StoreScreen extends StatelessWidget {
 
                       /// -- Products Section
                       Obx(() {
-                        if (_storeController.selectedBrandId.value.isEmpty) {
+                        if (_storeController.selectedBrandId.value.isEmpty &&
+                            _searchQuery.value.isEmpty) {
                           return const SizedBox.shrink();
                         }
 
@@ -141,14 +148,18 @@ class StoreScreen extends StatelessWidget {
                           children: [
                             const SizedBox(height: TSizes.spaceBtwSections),
                             TSectionHeading(
-                              title:
-                                  '${_storeController.selectedBrandName.value} Products',
+                              title: _searchQuery.value.isNotEmpty
+                                  ? 'Search Results'
+                                  : '${_storeController.selectedBrandName.value} Products',
                               onPressed: () {},
                             ),
                             const SizedBox(height: TSizes.spaceBtwItems),
                             StreamBuilder<QuerySnapshot>(
-                              stream: _storeController.fetchProductsByBrand(
-                                  _storeController.selectedBrandId.value),
+                              stream: _searchQuery.value.isNotEmpty
+                                  ? _storeController
+                                      .searchProducts(_searchQuery.value)
+                                  : _storeController.fetchProductsByBrand(
+                                      _storeController.selectedBrandId.value),
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState ==
                                     ConnectionState.waiting) {
@@ -167,8 +178,7 @@ class StoreScreen extends StatelessWidget {
                                     child: Padding(
                                       padding:
                                           EdgeInsets.all(TSizes.defaultSpace),
-                                      child: Text(
-                                          'No products found for this brand'),
+                                      child: Text('No products found'),
                                     ),
                                   );
                                 }

@@ -6,6 +6,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:mobile_project/controllers/CartController.dart';
 
 import 'package:mobile_project/controllers/home_controller.dart';
+import 'package:mobile_project/controllers/store_controller.dart';
 import 'package:mobile_project/controllers/user_controller.dart';
 import 'package:mobile_project/models/brand.dart';
 import 'package:mobile_project/models/category.dart';
@@ -28,10 +29,12 @@ import 'package:mobile_project/widgets/layout/grid_layout.dart';
 import 'package:mobile_project/widgets/products/product_cards/product_card_vertical.dart';
 import 'package:provider/provider.dart';
 
-
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  HomeScreen({super.key});
 
+  final TextEditingController _searchController = TextEditingController();
+  final RxString _searchQuery = ''.obs;
+  final StoreController _storeController = Get.find<StoreController>();
   Future<String?> _getAdminEmail() async {
     try {
       final snapshot = await FirebaseFirestore.instance
@@ -445,6 +448,8 @@ class TSearchContainer extends StatelessWidget {
     this.showBorder = true,
     this.onTap,
     this.padding = const EdgeInsets.symmetric(horizontal: TSizes.defaultSpace),
+    this.onChanged, // Add this callback for handling search input
+    this.controller, // Add this for controlling the TextField
   });
 
   final String text;
@@ -452,6 +457,8 @@ class TSearchContainer extends StatelessWidget {
   final bool showBackground, showBorder;
   final VoidCallback? onTap;
   final EdgeInsetsGeometry padding;
+  final Function(String)? onChanged; // Callback for search input
+  final TextEditingController? controller; // Controller for the TextField
 
   @override
   Widget build(BuildContext context) {
@@ -475,8 +482,19 @@ class TSearchContainer extends StatelessWidget {
           child: Row(
             children: [
               Icon(icon, color: TColors.darkGrey),
-              const SizedBox(height: TSizes.spaceBtwItems),
-              Text(text, style: Theme.of(context).textTheme.bodySmall),
+              const SizedBox(
+                  width: TSizes.spaceBtwItems), // Use width instead of height
+              Expanded(
+                child: TextField(
+                  controller: controller, // Pass the controller
+                  onChanged: onChanged, // Pass the onChanged callback
+                  decoration: InputDecoration(
+                    hintText: text,
+                    border: InputBorder.none, // Remove the default border
+                    hintStyle: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -605,10 +623,6 @@ class TPrimaryHeaderContainer extends StatelessWidget {
 
 ///cart
 
-
-
-
-
 class TCartCounterIcon extends StatelessWidget {
   const TCartCounterIcon({super.key, required this.onPressed, this.iconColor});
 
@@ -617,7 +631,8 @@ class TCartCounterIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cartController = Provider.of<CartController>(context); // Use prefixed import
+    final cartController =
+        Provider.of<CartController>(context); // Use prefixed import
 
     return Stack(
       children: [
@@ -640,7 +655,8 @@ class TCartCounterIcon extends StatelessWidget {
             width: 18,
             height: 18,
             decoration: BoxDecoration(
-              color: TColors.black.withOpacity(0.5), // Background color of the counter
+              color: TColors.black
+                  .withOpacity(0.5), // Background color of the counter
               borderRadius: BorderRadius.circular(100), // Circular shape
             ),
             child: Center(
@@ -674,15 +690,22 @@ class THomeAppBar extends StatelessWidget {
         children: [
           Text(
             TTexts.homeAppbarTitle,
-            style: Theme.of(context).textTheme.labelMedium!.apply(color: TColors.grey),
+            style: Theme.of(context)
+                .textTheme
+                .labelMedium!
+                .apply(color: TColors.grey),
           ),
           Obx(() {
             if (controller.profileLoading.value) {
-              return const TShimmerEffect(width: 80, height: 15); // Show shimmer effect while loading
+              return const TShimmerEffect(
+                  width: 80, height: 15); // Show shimmer effect while loading
             } else {
               return Text(
                 controller.user.value.fullName,
-                style: Theme.of(context).textTheme.headlineSmall!.apply(color: TColors.white),
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineSmall!
+                    .apply(color: TColors.white),
               );
             }
           }),
