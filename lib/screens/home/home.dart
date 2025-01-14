@@ -13,6 +13,7 @@ import 'package:mobile_project/models/brand.dart';
 import 'package:mobile_project/models/category.dart';
 import 'package:mobile_project/models/product.dart';
 import 'package:mobile_project/models/role.dart';
+import 'package:mobile_project/screens/All_product/All_Product%20_Screen.dart';
 import 'package:mobile_project/screens/Cart/Cart_Screen.dart';
 
 import 'package:mobile_project/screens/chat/Admin_List.dart';
@@ -190,12 +191,6 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   const TPromoSlider(banners: TImages.banners),
                   const SizedBox(height: TSizes.spaceBtwSections),
-                  TSectionHeading(
-                    title: 'Popular Products',
-                    onPressed: () {},
-                    showActionButton: true,
-                  ),
-                  const SizedBox(height: TSizes.spaceBtwItems),
                   FutureBuilder<List<Product>>(
                     future: _fetchProducts(),
                     builder: (context, snapshot) {
@@ -206,20 +201,40 @@ class HomeScreen extends StatelessWidget {
                         return Center(child: Text('Error: ${snapshot.error}'));
                       }
                       final products = snapshot.data ?? [];
-                      return GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: TSizes.sm,
-                          mainAxisSpacing: TSizes.sm,
-                          childAspectRatio: 0.8,
-                        ),
-                        itemCount: products.length,
-                        itemBuilder: (context, index) {
-                          return TProductCardVertical(product: products[index]);
-                        },
+                      return Column(
+                        children: [
+                          TSectionHeading(
+                            title: 'Popular Products',
+                            onPressed: () {
+                              // Navigate to AllProductsScreen with the fetched products
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AllProductsScreen(
+                                    products: products,
+                                  ),
+                                ),
+                              );
+                            },
+                            showActionButton: true,
+                          ),
+                          const SizedBox(height: TSizes.spaceBtwItems),
+                          GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: TSizes.sm,
+                              mainAxisSpacing: TSizes.sm,
+                              childAspectRatio: 0.8,
+                            ),
+                            itemCount: products.length,
+                            itemBuilder: (context, index) {
+                              return TProductCardVertical(product: products[index]);
+                            },
+                          ),
+                        ],
                       );
                     },
                   ),
