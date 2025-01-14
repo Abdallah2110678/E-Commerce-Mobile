@@ -1,5 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile_project/controllers/CartController.dart';
+import 'package:mobile_project/controllers/store_controller.dart';
+
 import 'package:mobile_project/controllers/wishlist_controller.dart';
+import 'package:mobile_project/screens/Cart/Cart_Screen.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_project/controllers/authentication.dart';
@@ -18,9 +24,14 @@ void main() async {
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwZHBtbHFtc296dHBja2NhZXFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU1ODM4NzAsImV4cCI6MjA1MTE1OTg3MH0.CfP5HlweWYu3h5oVJM5InzXVWce0OPx-_lEQzPYHLx4',
   );
   await Firebase.initializeApp();
-  runApp(const MyApp());
+  runApp(
+    ProviderScope(
+      child: MyApp(),
+    ),
+  );
   Get.put(AuthenticationRepository());
   Get.put(WishlistController());
+  Get.put(StoreController());
 }
 
 class MyApp extends StatelessWidget {

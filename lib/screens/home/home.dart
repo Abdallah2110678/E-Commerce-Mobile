@@ -1,14 +1,21 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:mobile_project/controllers/CartController.dart';
+
 import 'package:mobile_project/controllers/home_controller.dart';
+import 'package:mobile_project/controllers/store_controller.dart';
 import 'package:mobile_project/controllers/user_controller.dart';
 import 'package:mobile_project/models/brand.dart';
 import 'package:mobile_project/models/category.dart';
 import 'package:mobile_project/models/product.dart';
 import 'package:mobile_project/models/role.dart';
+import 'package:mobile_project/screens/All_product/All_Product%20_Screen.dart';
+import 'package:mobile_project/screens/Cart/Cart_Screen.dart';
+
 import 'package:mobile_project/screens/chat/Admin_List.dart';
 import 'package:mobile_project/screens/chat/Chat_Screen.dart';
 import 'package:mobile_project/screens/home/appbar.dart';
@@ -22,10 +29,14 @@ import 'package:mobile_project/utils/shimmers/shimmer.dart';
 import 'package:mobile_project/widgets/images/rounded_image.dart';
 import 'package:mobile_project/widgets/layout/grid_layout.dart';
 import 'package:mobile_project/widgets/products/product_cards/product_card_vertical.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  HomeScreen({super.key});
 
+  final TextEditingController _searchController = TextEditingController();
+  final RxString _searchQuery = ''.obs;
+  final StoreController _storeController = Get.find<StoreController>();
   Future<String?> _getAdminEmail() async {
     try {
       final snapshot = await FirebaseFirestore.instance
@@ -149,14 +160,20 @@ class HomeScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const TPrimaryHeaderContainer(
+            TPrimaryHeaderContainer(
               child: Column(
                 children: [
-                  THomeAppBar(),
-                  SizedBox(height: TSizes.spaceBtwSections),
-                  TSearchContainer(text: 'Search in Store'),
-                  SizedBox(height: TSizes.spaceBtwSections),
-                  Padding(
+                  const THomeAppBar(),
+                  const SizedBox(height: TSizes.spaceBtwSections),
+                  TSearchContainer(
+                    text: 'Search in Store',
+                    controller: _searchController,
+                    onChanged: (value) {
+                      _searchQuery.value = value;
+                    },
+                  ),
+                  const SizedBox(height: TSizes.spaceBtwSections),
+                  const Padding(
                     padding: EdgeInsets.only(left: TSizes.defaultSpace),
                     child: Column(
                       children: [
@@ -170,7 +187,7 @@ class HomeScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(height: TSizes.spaceBtwSections),
+                  const SizedBox(height: TSizes.spaceBtwSections),
                 ],
               ),
             ),
@@ -180,39 +197,83 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   const TPromoSlider(banners: TImages.banners),
                   const SizedBox(height: TSizes.spaceBtwSections),
-                  TSectionHeading(
-                    title: 'Popular Products',
-                    onPressed: () {},
-                    showActionButton: true,
-                  ),
-                  const SizedBox(height: TSizes.spaceBtwItems),
-                  FutureBuilder<List<Product>>(
-                    future: _fetchProducts(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      if (snapshot.hasError) {
-                        return Center(child: Text('Error: ${snapshot.error}'));
-                      }
-                      final products = snapshot.data ?? [];
-                      return GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: TSizes.sm,
-                          mainAxisSpacing: TSizes.sm,
-                          childAspectRatio: 0.8,
-                        ),
-                        itemCount: products.length,
-                        itemBuilder: (context, index) {
-                          return TProductCardVertical(product: products[index]);
+
+                  // Updated Products Section with Search
+                  Obx(() => StreamBuilder<QuerySnapshot>(
+                        stream: _searchQuery.value.isNotEmpty
+                            ? _storeController
+                                .searchProducts(_searchQuery.value)
+                            : FirebaseFirestore.instance
+                                .collection('products')
+                                .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                          if (snapshot.hasError) {
+                            return Center(
+                                child: Text('Error: ${snapshot.error}'));
+                          }
+
+                          if (!snapshot.hasData ||
+                              snapshot.data!.docs.isEmpty) {
+                            return const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(TSizes.defaultSpace),
+                                child: Text('No products found'),
+                              ),
+                            );
+                          }
+
+                          // Convert Firestore documents to Product objects
+                          final products = snapshot.data!.docs
+                              .map((doc) =>
+                                  _storeController.productFromSnapshot(doc))
+                              .toList();
+
+                          return Column(
+                            children: [
+                              TSectionHeading(
+                                title: _searchQuery.value.isEmpty
+                                    ? 'Popular Products'
+                                    : 'Search Results',
+                                onPressed: () {
+                                  if (_searchQuery.value.isEmpty) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => AllProductsScreen(
+                                          products: products,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                                showActionButton: _searchQuery.value.isEmpty,
+                              ),
+                              const SizedBox(height: TSizes.spaceBtwItems),
+                              GridView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: TSizes.sm,
+                                  mainAxisSpacing: TSizes.sm,
+                                  childAspectRatio: 0.8,
+                                ),
+                                itemCount: products.length,
+                                itemBuilder: (context, index) {
+                                  return TProductCardVertical(
+                                      product: products[index]);
+                                },
+                              ),
+                            ],
+                          );
                         },
-                      );
-                    },
-                  ),
+                      )),
                 ],
               ),
             ),
@@ -439,6 +500,8 @@ class TSearchContainer extends StatelessWidget {
     this.showBorder = true,
     this.onTap,
     this.padding = const EdgeInsets.symmetric(horizontal: TSizes.defaultSpace),
+    this.onChanged,
+    this.controller,
   });
 
   final String text;
@@ -446,32 +509,59 @@ class TSearchContainer extends StatelessWidget {
   final bool showBackground, showBorder;
   final VoidCallback? onTap;
   final EdgeInsetsGeometry padding;
+  final Function(String)? onChanged;
+  final TextEditingController? controller;
 
   @override
   Widget build(BuildContext context) {
     final dark = THelperFunctions.isDarkMode(context);
-    return GestureDetector(
-      onTap: onTap,
-      child: Padding(
-        padding: padding,
-        child: Container(
-          width: TDeviceUtils.getScreenWidth(context),
-          padding: const EdgeInsets.all(TSizes.md),
-          decoration: BoxDecoration(
-            color: showBackground
-                ? dark
-                    ? TColors.dark
-                    : TColors.light
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(TSizes.cardRadiusLg),
-            border: showBorder ? Border.all(color: TColors.grey) : null,
+
+    return Padding(
+      padding: padding,
+      child: Container(
+        width: TDeviceUtils.getScreenWidth(context),
+        decoration: BoxDecoration(
+          color: showBackground
+              ? dark
+                  ? Colors.grey[800]
+                  : Colors.grey[200]
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(TSizes.borderRadiusLg),
+          border: showBorder && !showBackground
+              ? Border.all(color: TColors.grey)
+              : null,
+        ),
+        child: TextField(
+          controller: controller,
+          onChanged: onChanged,
+          onTap: onTap,
+          decoration: InputDecoration(
+            hintText: text,
+            hintStyle: TextStyle(
+              color: dark ? Colors.white54 : Colors.black54,
+              fontSize: 14,
+            ),
+            prefixIcon: Icon(
+              icon,
+              color: dark ? Colors.white54 : Colors.black54,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(TSizes.borderRadiusLg),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(TSizes.borderRadiusLg),
+              borderSide: BorderSide.none,
+            ),
+            filled: true,
+            fillColor: Colors.transparent,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: TSizes.md,
+              vertical: TSizes.sm,
+            ),
           ),
-          child: Row(
-            children: [
-              Icon(icon, color: TColors.darkGrey),
-              const SizedBox(height: TSizes.spaceBtwItems),
-              Text(text, style: Theme.of(context).textTheme.bodySmall),
-            ],
+          style: TextStyle(
+            color: dark ? Colors.white : Colors.black,
           ),
         ),
       ),
@@ -598,74 +688,107 @@ class TPrimaryHeaderContainer extends StatelessWidget {
 }
 
 ///cart
-class TCartCounterIcon extends StatelessWidget {
+
+class TCartCounterIcon extends ConsumerWidget {
   const TCartCounterIcon({super.key, required this.onPressed, this.iconColor});
 
   final Color? iconColor;
   final VoidCallback onPressed;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Use .watch to listen to the cart state
+    final cartItems = ref.watch(cartControllerProvider);
+
     return Stack(
       children: [
+        // Cart Icon Button
         IconButton(
-            onPressed: () {},
-            icon: Icon(Iconsax.shopping_bag, color: iconColor)),
+          onPressed: () {
+            // Navigate to the cart screen
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const CartScreen()),
+            );
+          },
+          icon: Icon(Iconsax.shopping_bag, color: iconColor),
+        ),
+
+        // Cart Item Counter
         Positioned(
           right: 0,
           child: Container(
             width: 18,
             height: 18,
             decoration: BoxDecoration(
-              color: TColors.black.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(100),
+              color: TColors.black
+                  .withOpacity(0.5), // Background color of the counter
+              borderRadius: BorderRadius.circular(100), // Circular shape
             ),
             child: Center(
-              child: Text('2',
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelLarge!
-                      .apply(color: TColors.white, fontSizeFactor: 0.8)),
+              child: Text(
+                '${cartItems.length}', // Display the number of items in the cart
+                style: Theme.of(context).textTheme.labelLarge!.apply(
+                      color: TColors.white, // Text color
+                      fontSizeFactor: 0.8, // Adjust font size
+                    ),
+              ),
             ),
           ),
-        )
+        ),
       ],
     );
   }
 }
 
 ///home
+
 class THomeAppBar extends StatelessWidget {
   const THomeAppBar({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(UserController());
+    final controller = Get.put(UserController()); // Initialize UserController
+
     return TAppbar(
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(TTexts.homeAppbarTitle,
-              style: Theme.of(context)
-                  .textTheme
-                  .labelMedium!
-                  .apply(color: TColors.grey)),
+          Text(
+            TTexts.homeAppbarTitle,
+            style: Theme.of(context)
+                .textTheme
+                .labelMedium!
+                .apply(color: TColors.grey),
+          ),
           Obx(() {
             if (controller.profileLoading.value) {
-              return const TShimmerEffect(width: 80, height: 15);
+              return const TShimmerEffect(
+                  width: 80, height: 15); // Show shimmer effect while loading
             } else {
-              return Text(controller.user.value.fullName,
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineSmall!
-                      .apply(color: TColors.white));
+              return Text(
+                controller.user.value.fullName,
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineSmall!
+                    .apply(color: TColors.white),
+              );
             }
           }),
         ],
       ),
       actions: [
-        //cart
-        TCartCounterIcon(onPressed: () {}, iconColor: TColors.white),
+        // Cart Icon with Counter
+        TCartCounterIcon(
+          onPressed: () {
+            // Navigate to cart screen
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const CartScreen()),
+            );
+          },
+          iconColor: TColors.white,
+        ),
       ],
     );
   }

@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mobile_project/controllers/CartController.dart';
+import 'package:mobile_project/models/product.dart';
+import 'package:mobile_project/models/brand.dart';
+import 'package:mobile_project/models/category.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:mobile_project/utils/helpers/helper_functions.dart';
@@ -8,7 +13,7 @@ import 'package:mobile_project/widgets/texts/brand_title_text_with_varified_icon
 import 'package:mobile_project/widgets/texts/product_price_text.dart';
 import 'package:mobile_project/widgets/custom_shapes/rounded_container.dart';
 
-class ProductDescriptionPage extends StatelessWidget {
+class ProductDescriptionPage extends ConsumerWidget {
   final String productId;
 
   const ProductDescriptionPage({
@@ -35,24 +40,30 @@ class ProductDescriptionPage extends StatelessWidget {
         .get();
 
     final brandData = brandDoc.exists ? brandDoc.data() : null;
-    
+
+    // Fetch the category details
+    final categoryDoc = await FirebaseFirestore.instance
+        .collection('categories')
+        .doc(productData['categoryId'])
+        .get();
+
+    final categoryData = categoryDoc.exists ? categoryDoc.data() : null;
 
     return {
       'product': productData,
       'brand': brandData,
+      'category': categoryData,
     };
   }
 
   @override
-  Widget build(BuildContext context) {
-       final dark = THelperFunctions.isDarkMode(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dark = THelperFunctions.isDarkMode(context);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Product Details'),
-        backgroundColor: THelperFunctions.isDarkMode(context)
-            ? TColors.black
-            : TColors.white,
+        backgroundColor: dark ? TColors.black : TColors.white,
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _fetchProductDetails(),
@@ -60,13 +71,40 @@ class ProductDescriptionPage extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return const Center(child: Text('Error loading product details'));
+            return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData) {
             return const Center(child: Text('Product not found'));
           }
 
           final productData = snapshot.data!['product'];
           final brandData = snapshot.data!['brand'];
+          final categoryData = snapshot.data!['category'];
+
+          // Create Product, Brand, and Category objects
+          final brand = Brand(
+            id: productData['brandId'],
+            name: brandData?['name'] ?? 'Unknown Brand',
+            logoUrl: brandData?['logoUrl'] ?? '',
+          );
+
+          final category = Category(
+            id: productData['categoryId'],
+            name: categoryData?['name'] ?? 'Unknown Category',
+            imagUrl: categoryData?['imagUrl'] ?? '',
+          );
+
+          final product = Product(
+            id: productId,
+            title: productData['title'],
+            description: productData['description'],
+            thumbnailUrl: productData['thumbnailUrl'],
+            imageUrls: List<String>.from(productData['imageUrls'] ?? []),
+            price: (productData['price'] as num).toDouble(),
+            discount: (productData['discount'] as num).toDouble(),
+            stock: (productData['stock'] as num).toInt(),
+            category: category,
+            brand: brand,
+          );
 
           return Padding(
             padding: const EdgeInsets.all(TSizes.defaultSpace),
@@ -75,7 +113,7 @@ class ProductDescriptionPage extends StatelessWidget {
                 /// Product Thumbnail
                 TRoundedImage(
                   isNetworkImage: true,
-                  imageUrl: productData['thumbnailUrl'],
+                  imageUrl: product.thumbnailUrl,
                   height: 250,
                   applyImageRadius: true,
                 ),
@@ -86,14 +124,13 @@ class ProductDescriptionPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      productData['title'] ?? 'No title',
+                      product.title,
                       style: Theme.of(context).textTheme.headlineMedium,
                     ),
                     const SizedBox(height: TSizes.sm),
-                    if (brandData != null)
-                      TBrandTitleWithVerifiedIcon(
-                        title: brandData['name'] ?? 'Unknown Brand',
-                      ),
+                    TBrandTitleWithVerifiedIcon(
+                      title: brand.name,
+                    ),
                   ],
                 ),
                 const SizedBox(height: TSizes.spaceBtwSections),
@@ -103,9 +140,9 @@ class ProductDescriptionPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TProductPriceText(
-                      price: productData['price'].toStringAsFixed(2),
+                      price: product.price.toStringAsFixed(2),
                     ),
-                    if (productData['discount'] > 0)
+                    if (product.discount > 0)
                       TRoundedContainer(
                         radius: TSizes.sm,
                         backgroundColor: TColors.secondary.withOpacity(0.8),
@@ -114,7 +151,7 @@ class ProductDescriptionPage extends StatelessWidget {
                           vertical: TSizes.xs,
                         ),
                         child: Text(
-                          '${productData['discount']}% Off',
+                          '${product.discount}% Off',
                           style: Theme.of(context)
                               .textTheme
                               .labelLarge!
@@ -127,7 +164,7 @@ class ProductDescriptionPage extends StatelessWidget {
 
                 /// Product Description
                 Text(
-                  productData['description'] ?? 'No description available',
+                  product.description,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: TSizes.spaceBtwSections),
@@ -135,31 +172,20 @@ class ProductDescriptionPage extends StatelessWidget {
                 /// Add to Cart Button
                 ElevatedButton(
                   onPressed: () {
-                    // Handle add to cart functionality
-                    print('Product added to cart');
+                    // Use .read to access the CartController and add the product to the cart
+                    ref.read(cartControllerProvider.notifier).addItem(product);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Product added to cart')),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                         vertical: TSizes.defaultSpace),
                     backgroundColor: TColors.dark,
+                    minimumSize: const Size(double.infinity, 50), // Full width
                   ),
                   child: const Text(
-                    'Add to Wishlist',
-                    style: TextStyle(color: TColors.white),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    // Handle add to Wishlist functionality
-                    print('Product added to Wishlist');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: TSizes.defaultSpace),
-                    backgroundColor: TColors.dark,
-                  ),
-                  child: const Text(
-                    'Add to Wishlist',
+                    'Add to Cart',
                     style: TextStyle(color: TColors.white),
                   ),
                 ),
