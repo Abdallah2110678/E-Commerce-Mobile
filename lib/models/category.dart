@@ -20,7 +20,15 @@ class Category {
       imagUrl: data['imagUrl'] ?? '', // Default value if name is null
     );
   }
+@override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Category &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
 
+  @override
+  int get hashCode => id.hashCode;
   // Convert a Category object to a Firestore document
   Map<String, dynamic> toFirestore() {
     return {

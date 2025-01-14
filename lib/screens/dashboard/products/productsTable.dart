@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:mobile_project/controllers/product_controller.dart';
 import 'package:mobile_project/models/product.dart';
 import 'package:mobile_project/screens/dashboard/products/updateProduct.dart';
+import 'package:mobile_project/utils/constants/colors.dart';
+import 'package:mobile_project/utils/helpers/helper_functions.dart';
 
 class ProductTableView extends StatefulWidget {
   const ProductTableView({super.key});
@@ -102,8 +104,13 @@ class _ProductTableViewState extends State<ProductTableView> {
                   : SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: DataTable(
+                    
                         headingRowColor: MaterialStateProperty.all(
-                          Colors.grey[200],
+                        
+                                                    THelperFunctions.isDarkMode(
+                                                            context)
+                                                        ? TColors.darkGrey
+                                                        : TColors.lightGrey,
                         ),
                         columns: const [
                           DataColumn(label: Text('Name', style: TextStyle(fontWeight: FontWeight.bold))),
@@ -120,7 +127,11 @@ class _ProductTableViewState extends State<ProductTableView> {
                             DataCell(Text(product.title)),
                             DataCell(Text(product.stock.toString())),
                             DataCell(Center(child: Image.network(product.thumbnailUrl,width: 70,))),
-                            DataCell(Center(child: Image.network(product.brand.logoUrl,width: 70,))),
+                            DataCell(Center(child: Image.network(product.brand.logoUrl,width: 70,color:
+                                                    THelperFunctions.isDarkMode(
+                                                            context)
+                                                        ? TColors.light
+                                                        : TColors.dark,))),
                             DataCell(Text('\$${product.price.toStringAsFixed(2)}')),
                             DataCell(
                               Row(
