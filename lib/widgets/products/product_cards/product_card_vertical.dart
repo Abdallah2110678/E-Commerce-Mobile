@@ -171,7 +171,8 @@ class TProductCardVertical extends StatelessWidget {
   }
 
   Widget _buildPriceAndCartButton(BuildContext context) {
-    final cartController = Provider.of<CartController>(context); // Access CartController using Provider
+    final cartController = Provider.of<CartController>(
+        context); // Access CartController using Provider
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

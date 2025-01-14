@@ -26,7 +26,7 @@ class NavController extends GetxController {
       // If the user is an admin, add the Dashboard screen
       screens.addAll([
         const HomeScreen(),
-        const StoreScreen(),
+        StoreScreen(),
         DrawerScreen(),
         const SettingsScreen(),
       ]);
@@ -34,7 +34,7 @@ class NavController extends GetxController {
       // If the user is not an admin, exclude the Dashboard screen
       screens.addAll([
         const HomeScreen(),
-        const StoreScreen(),
+        StoreScreen(),
         const Wishlist(),
         const SettingsScreen(),
       ]);
