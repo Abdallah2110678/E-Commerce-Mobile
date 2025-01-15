@@ -27,6 +27,17 @@ class UserRepository extends GetxController {
     }
   }
 
+  Future<void> updateUserRole(String userId, String newRole) async {
+    try {
+      await _db
+          .collection('Users')
+          .doc(userId)
+          .update({'Role': newRole});
+    } catch (e) {
+      throw Exception('Failed to update user role: $e');
+    }
+  }
+
   // Fetch user details based on the authenticated user's ID
   Future<UserModel> fetchUserDetails() async {
     try {
@@ -74,9 +85,12 @@ class UserRepository extends GetxController {
   }
 
   // Update user details in Firestore
-Future<void> updateUserDetails(UserModel updatedUser) async {
+  Future<void> updateUserDetails(UserModel updatedUser) async {
     try {
-      await _db.collection('Users').doc(updatedUser.id).update(updatedUser.toMap());
+      await _db
+          .collection('Users')
+          .doc(updatedUser.id)
+          .update(updatedUser.toMap());
     } catch (e) {
       print("Error updating user: $e");
       rethrow;

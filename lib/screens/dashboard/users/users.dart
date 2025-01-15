@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:mobile_project/controllers/user_controller.dart';
 import 'package:mobile_project/models/usermodel.dart';
 import 'package:mobile_project/screens/dashboard/users/updateuser.dart';
+
 class UsersPage extends StatefulWidget {
   const UsersPage({super.key});
 
@@ -11,8 +12,7 @@ class UsersPage extends StatefulWidget {
 }
 
 class _UsersPageState extends State<UsersPage> {
-  final UserController _controller =
-      Get.put(UserController()); // Bind the controller
+  final UserController _controller = Get.put(UserController()); // Bind the controller
   final TextEditingController _searchController = TextEditingController();
   bool _isLoading = false;
   String _searchQuery = "";
@@ -118,8 +118,7 @@ class _UsersPageState extends State<UsersPage> {
                                           color: Colors.blue),
                                       onPressed: () {
                                         // Navigate to the UpdateUserForm with the selected user
-                                        Get.to(
-                                            () => UpdateUserForm(user: user));
+                                        Get.to(() => UpdateUserForm(user: user));
                                       },
                                     ),
                                     // Delete Button
@@ -128,6 +127,14 @@ class _UsersPageState extends State<UsersPage> {
                                           color: Colors.red),
                                       onPressed: () => _deleteUser(user),
                                     ),
+                                    // Promote to Admin Button
+                                    if (user.role.toValue() != 'Admin')
+                                      IconButton(
+                                        icon: const Icon(Icons.upgrade,
+                                            color: Colors.green),
+                                        tooltip: 'Promote to Admin',
+                                        onPressed: () => _promoteUserToAdmin(user),
+                                      ),
                                   ],
                                 ),
                               ),
@@ -166,6 +173,30 @@ class _UsersPageState extends State<UsersPage> {
       await _controller.deleteUser(user.id);
       _controller.users.remove(user);
       setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _promoteUserToAdmin(UserModel user) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Promote to Admin'),
+        content: const Text('Are you sure you want to promote this user to Admin?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Promote'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      await _controller.promoteUserToAdmin(user.id);
     }
   }
 }
