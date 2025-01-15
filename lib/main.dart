@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_project/controllers/store_controller.dart';
@@ -12,7 +12,6 @@ import 'package:mobile_project/utils/helpers/network_manager.dart';
 import 'package:mobile_project/utils/theme/theme.dart';
 import 'package:mobile_project/screens/boarding_screen/onboarding_screen.dart';
 import 'package:mobile_project/screens/home/nav.dart';
-import 'package:mobile_project/screens/login/login.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
