@@ -1,11 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile_project/controllers/CartController.dart';
 import 'package:mobile_project/controllers/store_controller.dart';
-
 import 'package:mobile_project/controllers/wishlist_controller.dart';
-import 'package:mobile_project/screens/Cart/Cart_Screen.dart';
-import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_project/controllers/authentication.dart';
@@ -20,10 +16,14 @@ void main() async {
 
   await Supabase.initialize(
     url: 'https://bpdpmlqmsoztpckcaeqq.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwZHBtbHFtc296dHBja2NhZXFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU1ODM4NzAsImV4cCI6MjA1MTE1OTg3MH0.CfP5HlweWYu3h5oVJM5InzXVWce0OPx-_lEQzPYHLx4',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwZHBtbHFtc296dHBja2NhZXFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU1ODM4NzAsImV4cCI6MjA1MTE1OTg3MH0.CfP5HlweWYu3h5oVJM5InzXVWce0OPx-_lEQzPYHLx4',
   );
-  await Firebase.initializeApp();
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    debugPrint("Firebase Initialization Error: $e");
+  }
+
   runApp(
     ProviderScope(
       child: MyApp(),
@@ -53,10 +53,10 @@ class MyApp extends StatelessWidget {
 class GeneralBinding extends Bindings {
   @override
   void dependencies() {
-    // Register the AuthenticationRepository
-    Get.lazyPut<AuthenticationRepository>(() => AuthenticationRepository());
-    // Register NetworkManager
-    Get.lazyPut<NetworkManager>(() => NetworkManager());
+    Get.put(AuthenticationRepository());
+    Get.put(WishlistController());
+    Get.put(StoreController());
+    Get.put(NetworkManager());
     Get.lazyPut(() => UserRepository());
   }
 }
