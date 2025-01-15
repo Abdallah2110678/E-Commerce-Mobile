@@ -124,7 +124,7 @@ class SettingsScreen extends StatelessWidget {
                         onPressed: () async {
                           try {
                             await AuthenticationRepository.instance.logout();
-                            Get.offAll(() => const LoginScreen());
+                            Get.offAll(() => LoginScreen());
                           } catch (e) {
                             Get.snackbar(
                               "Error",
