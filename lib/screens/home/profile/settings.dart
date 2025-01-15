@@ -1,13 +1,14 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 // import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:mobile_project/controllers/authentication.dart';
 import 'package:mobile_project/controllers/user_controller.dart';
+import 'package:mobile_project/screens/Cart/Cart_Screen.dart';
 import 'package:mobile_project/screens/home/account_settings.dart';
 import 'package:mobile_project/screens/home/appbar.dart';
 import 'package:mobile_project/screens/home/home.dart';
+import 'package:mobile_project/screens/home/profile/notification.dart';
 import 'package:mobile_project/screens/home/profile/profile.dart';
 import 'package:mobile_project/screens/login/login.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
@@ -55,65 +56,26 @@ class SettingsScreen extends StatelessWidget {
                       title: 'Account Settings', showActionButton: false),
                   const SizedBox(height: TSizes.spaceBtwItems),
 
-                  const AccountSettings(
-                    icon: Iconsax.safe_home,
-                    title: 'My Addresses',
-                    subtitle: 'Set shopping delivery addresses',
-                  ),
-                  const AccountSettings(
+                  AccountSettings(
                     icon: Iconsax.shopping_cart,
                     title: 'My Cart',
                     subtitle: 'Add, remove products',
+                    onTap: () => Get.to(() => const CartScreen()),
                   ),
                   const AccountSettings(
                       icon: Iconsax.bag_tick,
                       title: 'My Orders',
                       subtitle: 'In-progress and Completed Orders'),
-                  const AccountSettings(
-                      icon: Iconsax.bank,
-                      title: 'Bank Account',
-                      subtitle: 'Withdraw balance to registered bank account'),
+
                   const AccountSettings(
                       icon: Iconsax.discount_shape,
                       title: 'My Coupons',
                       subtitle: 'List of all the discounted coupons'),
-                  const AccountSettings(
-                      icon: Iconsax.notification,
-                      title: 'Notifications',
-                      subtitle: 'Set any kind of notification message'),
-                  const AccountSettings(
-                      icon: Iconsax.security_card,
-                      title: 'Account Privacy',
-                      subtitle: 'Manage data usage and connected accounts'),
-
-                  //app settings
-                  const SizedBox(height: TSizes.spaceBtwSections),
-                  const TSectionHeading(
-                      title: 'App Settings', showActionButton: false),
-                  const SizedBox(height: TSizes.spaceBtwItems),
-                  const AccountSettings(
-                      icon: Iconsax.document_upload,
-                      title: 'Load Data',
-                      subtitle: 'Upload Data to your Cloud Firebase'),
                   AccountSettings(
-                    icon: Iconsax.location,
-                    title: 'Geolocation',
-                    subtitle: 'Set recommendation based on location',
-                    trailing: Switch(value: true, onChanged: (value) {}),
-                  ),
-
-                  AccountSettings(
-                    icon: Iconsax.security_user,
-                    title: 'Safe Mode',
-                    subtitle: 'Search result is safe for all ages',
-                    trailing: Switch(value: false, onChanged: (value) {}),
-                  ),
-
-                  AccountSettings(
-                    icon: Iconsax.image,
-                    title: 'HD Image Quality',
-                    subtitle: 'Set image quality to be seen',
-                    trailing: Switch(value: false, onChanged: (value) {}),
+                    icon: Iconsax.notification,
+                    title: 'Notifications',
+                    subtitle: 'Set any kind of notification message',
+                    onTap: () => Get.to(() => const NotificationScreen()),
                   ),
 
                   //Logout button
