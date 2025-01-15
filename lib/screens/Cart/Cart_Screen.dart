@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:mobile_project/controllers/CartController.dart'; // Import CartController
-import 'package:mobile_project/models/product.dart'; // Import Product model
-import 'package:mobile_project/utils/constants/colors.dart'; // Import colors
-import 'package:mobile_project/utils/constants/sizes.dart'; // Import sizes
-import 'package:mobile_project/widgets/images/rounded_image.dart'; // Import RoundedImage widget
+import 'package:mobile_project/controllers/CartController.dart';
+import 'package:mobile_project/models/product.dart';
+import 'package:mobile_project/utils/constants/colors.dart';
+import 'package:mobile_project/utils/constants/sizes.dart';
+import 'package:mobile_project/widgets/images/rounded_image.dart';
 
 class CartScreen extends ConsumerWidget {
   const CartScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Use .watch to listen to the cart state
     final cartItems = ref.watch(cartControllerProvider);
 
     return Scaffold(
@@ -22,7 +21,6 @@ class CartScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Iconsax.trash),
             onPressed: () {
-              // Use .read to clear the cart
               ref.read(cartControllerProvider.notifier).clearCart();
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text("Your cart has been cleared")),
@@ -47,21 +45,19 @@ class CartScreen extends ConsumerWidget {
                       final cartItem = cartItems.values.toList()[index];
                       final productId = cartItem.product.id;
 
-                      // Use Dismissible for swipe-to-delete functionality
                       return Dismissible(
-                        key: Key(productId), // Unique key for each item
-                        direction: DismissDirection.endToStart, // Swipe from right to left
+                        key: Key(productId),
+                        direction: DismissDirection.endToStart,
                         background: Container(
                           alignment: Alignment.centerRight,
                           padding: const EdgeInsets.symmetric(horizontal: TSizes.defaultSpace),
-                          color: Colors.red, // Background color when swiping
+                          color: Colors.red,
                           child: const Icon(
                             Iconsax.trash,
                             color: TColors.white,
                           ),
                         ),
                         onDismissed: (direction) {
-                          // Use .read to remove the item from the cart
                           ref.read(cartControllerProvider.notifier).removeItem(productId);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -69,7 +65,6 @@ class CartScreen extends ConsumerWidget {
                               action: SnackBarAction(
                                 label: "Undo",
                                 onPressed: () {
-                                  // Use .read to add the item back to the cart
                                   ref.read(cartControllerProvider.notifier).addItem(cartItem.product);
                                 },
                               ),
@@ -86,7 +81,6 @@ class CartScreen extends ConsumerWidget {
                             padding: const EdgeInsets.all(TSizes.sm),
                             child: Row(
                               children: [
-                                // Product Image
                                 TRoundedImage(
                                   isNetworkImage: true,
                                   imageUrl: cartItem.product.thumbnailUrl,
@@ -96,8 +90,6 @@ class CartScreen extends ConsumerWidget {
                                   backgroundColor: TColors.light,
                                 ),
                                 const SizedBox(width: TSizes.spaceBtwItems),
-
-                                // Product Details
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,8 +111,6 @@ class CartScreen extends ConsumerWidget {
                                     ],
                                   ),
                                 ),
-
-                                // Quantity Controls
                                 Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
@@ -146,8 +136,6 @@ class CartScreen extends ConsumerWidget {
                     },
                   ),
                 ),
-
-                // Checkout Section
                 Container(
                   padding: const EdgeInsets.all(TSizes.defaultSpace),
                   decoration: BoxDecoration(
