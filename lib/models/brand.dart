@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
-// First, let's create the Brand model
 class Brand {
   String id;
   String name;
@@ -15,7 +13,6 @@ class Brand {
 
   factory Brand.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    
     return Brand(
       id: doc.id,
       name: data['name'] ?? '',
@@ -29,6 +26,7 @@ class Brand {
       'logoUrl': logoUrl,
     };
   }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -45,4 +43,12 @@ class Brand {
     );
   }
 
+  // Static method to return an empty Brand
+  static Brand empty() {
+    return Brand(
+      id: '',
+      name: '',
+      logoUrl: '',
+    );
+  }
 }

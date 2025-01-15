@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_project/screens/category_list.dart';
 import 'package:mobile_project/screens/dashboard/brands/brandManagement.dart';
 import 'package:mobile_project/screens/dashboard/category/categoryManagement.dart';
 import 'package:mobile_project/screens/dashboard/dashboard.dart';

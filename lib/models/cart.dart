@@ -1,4 +1,3 @@
-
 import 'package:mobile_project/models/product.dart';
 
 class CartItem {
@@ -11,4 +10,18 @@ class CartItem {
   });
 
   double get totalPrice => product.discountedPrice * quantity;
+
+  Map<String, dynamic> toMap() {
+    return {
+      'product': product.toFirestore(),
+      'quantity': quantity,
+    };
+  }
+
+  factory CartItem.fromMap(Map<String, dynamic> map, {required Product product}) {
+    return CartItem(
+      product: product,
+      quantity: map['quantity'] ?? 1,
+    );
+  }
 }
