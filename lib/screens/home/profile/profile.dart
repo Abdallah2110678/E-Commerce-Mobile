@@ -6,6 +6,7 @@ import 'package:mobile_project/screens/home/appbar.dart';
 import 'package:mobile_project/screens/home/home.dart';
 import 'package:mobile_project/screens/home/profile/changename.dart';
 import 'package:mobile_project/screens/home/profile/changepassword.dart';
+import 'package:mobile_project/screens/home/profile/changeusername.dart';
 import 'package:mobile_project/utils/constants/image_setting.dart';
 import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:mobile_project/widgets/images/circular_image.dart';
@@ -58,7 +59,7 @@ class ProfileScreen extends StatelessWidget {
               profileMenu(
                   title: 'Username',
                   value: controller.user.value.username,
-                  onPressed: () {}),
+                  onPressed: () => Get.to(() => const ChangeUsername())),
               profileMenu(
                   title: 'Password',
                   value: '********',
