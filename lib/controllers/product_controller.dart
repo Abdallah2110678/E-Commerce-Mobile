@@ -15,7 +15,6 @@ import 'package:get/get.dart';
 
 class ProductController extends GetxController {
   final formKey = GlobalKey<FormState>();
-
   final SupabaseClient _supabase = Supabase.instance.client;
 
   // Text Controllers
@@ -35,6 +34,21 @@ class ProductController extends GetxController {
       Rxn<Category>(); // Observable for selected category
   RxList<Brand> brands = <Brand>[].obs; // Observable list of brands
   Rxn<Brand> selectedBrand = Rxn<Brand>(); // Observable for selected brand
+
+
+
+
+final editTitleController = TextEditingController();
+  final editDescriptionController = TextEditingController();
+  final editPriceController = TextEditingController();
+  final editDiscountController = TextEditingController();
+  final editStockController = TextEditingController();
+
+  // Observable values
+  final editSelectedThumbnail = ''.obs;
+  Rxn<Category> editSelectedCategory = Rxn<Category>();
+  Rxn<Brand> editSelectedBrand = Rxn<Brand>();
+
 
   @override
   void onInit() {
@@ -124,6 +138,138 @@ class ProductController extends GetxController {
   }
 
 
+
+Future<void> updateProduct(Product product) async {
+  try {
+    isLoading.value = true;
+
+    // Validate required fields
+    if (editTitleController.text.trim().isEmpty) {
+      throw 'Product title is required';
+    }
+    if (editDescriptionController.text.trim().isEmpty) {
+      throw 'Product description is required';
+    }
+    if (double.tryParse(editPriceController.text) == null || double.parse(editPriceController.text) <= 0) {
+      throw 'Price must be greater than 0';
+    }
+    if (double.tryParse(editDiscountController.text) == null || double.parse(editDiscountController.text) < 0 || double.parse(editDiscountController.text) > 100) {
+      throw 'Discount must be between 0 and 100';
+    }
+    if (int.tryParse(editStockController.text) == null || int.parse(editStockController.text) < 0) {
+      throw 'Stock cannot be negative';
+    }
+    if (editSelectedThumbnail.value.isEmpty) {
+      throw 'Please select a thumbnail image';
+    }
+    if (editSelectedCategory.value == null) {
+      throw 'Please select a category';
+    }
+    if (editSelectedBrand.value == null) {
+      throw 'Please select a brand';
+    }
+
+    String updatedThumbnailUrl = product.thumbnailUrl;
+
+    // Handle new thumbnail upload if it's different from the current one
+    if (editSelectedThumbnail.value.isNotEmpty && editSelectedThumbnail.value != product.thumbnailUrl) {
+      await ensureBucketExists();
+
+      final String fileExtension = path.extension(editSelectedThumbnail.value);
+      final String uniqueFileName = 'product_images/${DateTime.now().millisecondsSinceEpoch}$fileExtension';
+
+      final File imageFile = File(editSelectedThumbnail.value);
+
+      // Validate image size and type
+      if (await imageFile.length() > 2 * 1024 * 1024) {
+        throw 'Image size must be less than 2MB';
+      }
+      if (!['.jpg', '.jpeg', '.png', '.gif'].contains(fileExtension.toLowerCase())) {
+        throw 'Only JPG, PNG, and GIF files are allowed';
+      }
+
+      try {
+        // Upload the new thumbnail to Supabase
+        await _supabase.storage.from('products').upload(
+          uniqueFileName,
+          imageFile,
+          fileOptions: FileOptions(
+            contentType: 'image/${fileExtension.substring(1)}',
+            upsert: true,
+          ),
+        );
+
+        // Get the public URL of the uploaded image
+        updatedThumbnailUrl = _supabase.storage.from('products').getPublicUrl(uniqueFileName);
+
+        // Delete the old thumbnail from Supabase if it exists
+        if (product.thumbnailUrl.isNotEmpty) {
+          final String filePath = Uri.parse(product.thumbnailUrl).pathSegments.skip(1).join('/');
+          await _supabase.storage.from('products').remove([filePath]);
+        }
+      } catch (e) {
+        print('Error uploading image: $e');
+        throw 'Failed to upload the new thumbnail.';
+      }
+    }
+
+    // Update product in Firestore
+    final updatedProduct = Product(
+      id: product.id,
+      title: editTitleController.text.trim(),
+      description: editDescriptionController.text.trim(),
+      thumbnailUrl: updatedThumbnailUrl,
+      price: double.parse(editPriceController.text),
+      discount: double.parse(editDiscountController.text),
+      stock: int.parse(editStockController.text),
+      category: editSelectedCategory.value!,
+      brand: editSelectedBrand.value!,
+      imageUrls: product.imageUrls, // Keep existing images
+    );
+
+    await _firestore.collection('products').doc(product.id).update(updatedProduct.toFirestore());
+
+    // Show success message
+    Get.snackbar(
+      'Success',
+      'Product updated successfully',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.green,
+      colorText: Colors.white,
+    );
+
+    // Fetch updated products (if needed)
+    fetchProducts();
+
+    // Reset form or navigate back
+    
+    Get.back(result: updatedProduct);
+  } catch (e) {
+    // Show error message
+    Get.snackbar(
+      'Error',
+      e.toString(),
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+  Future<void> editPickThumbnail() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      editSelectedThumbnail.value = pickedFile.path;
+    }
+  }
+
+
+
+
   
 
   Future<void> pickThumbnail() async {
@@ -166,7 +312,7 @@ class ProductController extends GetxController {
             upsert: true,
           ),
         );
-           final String imagUrl = _supabase.storage.from('products').getPublicUrl(uniqueFileName);
+          final String imagUrl = _supabase.storage.from('products').getPublicUrl(uniqueFileName);
 
 
 

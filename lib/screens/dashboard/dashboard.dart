@@ -2,9 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mobile_project/controllers/dashboard_controller.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 // import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:get/get.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -14,10 +16,10 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  final DashboardController controller = Get.put(DashboardController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Column(
@@ -66,33 +68,44 @@ class _DashboardState extends State<Dashboard> {
               ),
             ),
             //status secction
-            GridView.count(
+            Obx(() {
+              return GridView.count(
                 crossAxisCount: 2,
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 childAspectRatio: 1.4,
                 children: [
-                  _buildStatCard(context,
-                      title: 'Total Sales',
-                      value: '\$24,780',
-                      icon: Icons.attach_email_rounded,
-                      color: Color(0xff4caf50)),
-                  _buildStatCard(context,
-                      title: 'Total Orders',
-                      value: '\$12,780',
-                      icon: Icons.shopping_cart_rounded,
-                      color: Color(0xff2196f3)),
-                  _buildStatCard(context,
-                      title: 'Total products',
-                      value: '780',
-                      icon: Icons.inventory_rounded,
-                      color: Color(0xffff5722)),
-                  _buildStatCard(context,
-                      title: 'Total Customer',
-                      value: '\$5,780',
-                      icon: Icons.groups_rounded,
-                      color: Color(0xff9c2780))
-                ]),
+                  _buildStatCard(
+                    context,
+                    title: 'Total Sales',
+                    value: '\$24,780',
+                    icon: Icons.attach_email_rounded,
+                    color: Color(0xff4caf50),
+                  ),
+                  _buildStatCard(
+                    context,
+                    title: 'Total Orders',
+                    value: '\$12,780',
+                    icon: Icons.shopping_cart_rounded,
+                    color: Color(0xff2196f3),
+                  ),
+                  _buildStatCard(
+                    context,
+                    title: 'Total products',
+                    value: controller.productCount.toString(),
+                    icon: Icons.inventory_rounded,
+                    color: Color(0xffff5722),
+                  ),
+                  _buildStatCard(
+                    context,
+                    title: 'Total Customer',
+                    value: controller.userCount.toString(),
+                    icon: Icons.groups_rounded,
+                    color: Color(0xff9c2780),
+                  ),
+                ],
+              );
+            }),
             // revenue Section
 
             Card(
