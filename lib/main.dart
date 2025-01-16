@@ -76,6 +76,6 @@ class GeneralBinding extends Bindings {
     Get.put(StoreController());
     Get.put(NetworkManager());
     Get.put(UserController());
-    Get.lazyPut(() => UserRepository());
+    Get.put(UserRepository());
   }
 }
