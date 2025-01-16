@@ -7,22 +7,29 @@ import 'package:mobile_project/screens/store/store_screen.dart';
 import 'package:mobile_project/controllers/user_controller.dart';
 import 'package:mobile_project/models/role.dart';
 import 'package:mobile_project/screens/wishlist/wishlist.dart';
-
 class NavController extends GetxController {
   final Rx<int> selectIndex = 0.obs;
 
   // Assuming you have a UserController that holds user info including the role
   final UserController userController = Get.find<UserController>();
 
-  // Define the screens list with role-based conditional logic
-  final screens = <Widget>[];
+  // Define a reactive list of screens
+  final RxList<Widget> screens = <Widget>[].obs;
 
   @override
   void onInit() {
     super.onInit();
+    _updateScreens(userController.user.value.role);
 
-    // Check the user role and adjust the screens accordingly
-    if (userController.user.value.role == Role.admin) {
+    // Watch for changes in the user's role and update the screens dynamically
+    ever(userController.user, (user) {
+      _updateScreens(user.role);
+    });
+  }
+
+  void _updateScreens(Role role) {
+    screens.clear();
+    if (role == Role.admin) {
       // If the user is an admin, add the Dashboard screen
       screens.addAll([
         HomeScreen(),
