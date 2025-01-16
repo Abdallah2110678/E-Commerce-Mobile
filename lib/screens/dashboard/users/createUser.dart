@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:mobile_project/controllers/signup_controller.dart';
+import 'package:mobile_project/controllers/registration_controller.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:mobile_project/utils/constants/image_setting.dart';
 import 'package:mobile_project/utils/constants/sizes.dart';
@@ -15,7 +15,8 @@ class SignupScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dark = THelperFunctions.isDarkMode(context);
-    final controller = Get.put(SignupController());
+    final controller = Get.put(RegistrationController());
+
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
@@ -24,12 +25,9 @@ class SignupScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ///title
               Text(TTexts.signupTitle,
                   style: Theme.of(context).textTheme.headlineMedium),
               const SizedBox(height: TSizes.spaceBtwSections),
-
-              ///form
               Form(
                 key: controller.signupFormKey,
                 child: Column(
@@ -62,9 +60,6 @@ class SignupScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: TSizes.spaceBtwInputFields),
-
-                    ///username
-
                     TextFormField(
                       controller: controller.username,
                       validator: (value) =>
@@ -75,9 +70,6 @@ class SignupScreen extends StatelessWidget {
                           prefixIcon: Icon(Iconsax.user_edit)),
                     ),
                     const SizedBox(height: TSizes.spaceBtwInputFields),
-
-                    ///email
-                    ///
                     TextFormField(
                       controller: controller.email,
                       validator: (value) => TValidator.validateEmail(value),
@@ -87,9 +79,6 @@ class SignupScreen extends StatelessWidget {
                           prefixIcon: Icon(Iconsax.direct)),
                     ),
                     const SizedBox(height: TSizes.spaceBtwInputFields),
-
-                    ///phone number
-                    ///
                     TextFormField(
                       controller: controller.phonenumber,
                       validator: (value) =>
@@ -100,30 +89,28 @@ class SignupScreen extends StatelessWidget {
                           prefixIcon: Icon(Iconsax.call)),
                     ),
                     const SizedBox(height: TSizes.spaceBtwInputFields),
-
-                    ///password
-                    ///
                     Obx(
                       () => TextFormField(
                         controller: controller.password,
                         validator: (value) =>
                             TValidator.validatePassword(value),
-                        obscureText: controller.hidepassword.value,
+                        obscureText: controller
+                            .hidePassword.value, // Updated variable name
                         decoration: InputDecoration(
                           labelText: TTexts.password,
                           prefixIcon: const Icon(Iconsax.password_check),
                           suffixIcon: IconButton(
-                              onPressed: () => controller.hidepassword.value =
-                                  !controller.hidepassword.value,
-                              icon: Icon(controller.hidepassword.value
+                              onPressed: () => controller.hidePassword.value =
+                                  !controller.hidePassword
+                                      .value, // Updated variable name
+                              icon: Icon(controller.hidePassword
+                                      .value // Updated variable name
                                   ? Iconsax.eye_slash
                                   : Iconsax.eye)),
                         ),
                       ),
                     ),
                     const SizedBox(height: TSizes.spaceBtwInputFields),
-
-                    ///terms
                     Row(
                       children: [
                         SizedBox(
@@ -131,16 +118,16 @@ class SignupScreen extends StatelessWidget {
                             height: 24,
                             child: Obx(() => Checkbox(
                                 value: controller.privacyPolicy.value,
-                                onChanged: (Value) => controller.privacyPolicy
+                                onChanged: (value) => controller.privacyPolicy
                                     .value = !controller.privacyPolicy.value))),
-                        const SizedBox(height: TSizes.spaceBtwItems),
+                        const SizedBox(width: TSizes.spaceBtwItems),
                         Text.rich(
                           TextSpan(children: [
                             TextSpan(
-                                text: '${TTexts.iAgreeTo}',
+                                text: TTexts.iAgreeTo,
                                 style: Theme.of(context).textTheme.bodySmall),
                             TextSpan(
-                                text: '${TTexts.privacyPolicy}',
+                                text: TTexts.privacyPolicy,
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyMedium!
@@ -154,7 +141,7 @@ class SignupScreen extends StatelessWidget {
                                           : TColors.primary,
                                     )),
                             TextSpan(
-                                text: '${TTexts.and}',
+                                text: TTexts.and,
                                 style: Theme.of(context).textTheme.bodySmall),
                             TextSpan(
                                 text: TTexts.termsOfUse,
@@ -175,8 +162,6 @@ class SignupScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: TSizes.spaceBtwSections),
-
-                    ///signup button
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -186,9 +171,7 @@ class SignupScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: TSizes.spaceBtwSections),
-
-              ///divider
+              const SizedBox(height: TSizes.spaceBtwSections),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -210,9 +193,7 @@ class SignupScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(width: TSizes.spaceBtwSections),
-
-              ///footer
+              const SizedBox(height: TSizes.spaceBtwSections),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -221,7 +202,7 @@ class SignupScreen extends StatelessWidget {
                         border: Border.all(color: TColors.grey),
                         borderRadius: BorderRadius.circular(100)),
                     child: IconButton(
-                      onPressed: () {},
+                      onPressed: () => controller.googleSignIn(),
                       icon: const Image(
                         width: TSizes.iconMd,
                         height: TSizes.iconMd,

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:mobile_project/screens/home/nav.dart';
 import 'package:mobile_project/screens/styles/spacing_styles.dart';
-import 'package:mobile_project/controllers/login_controller.dart';
+import 'package:mobile_project/controllers/registration_controller.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:mobile_project/utils/constants/image_setting.dart';
 import 'package:mobile_project/utils/constants/sizes.dart';
@@ -18,7 +17,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dark = THelperFunctions.isDarkMode(context);
-    final controller = Get.put(LoginController());
+    final controller = Get.put(RegistrationController());
 
     controller.resetFields();
 
@@ -28,7 +27,7 @@ class LoginScreen extends StatelessWidget {
           padding: TSpacingStyles.paddingWithAppBarHeight,
           child: Column(
             children: [
-              /////logo, title
+              // Logo and Title
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -44,7 +43,8 @@ class LoginScreen extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodyMedium),
                 ],
               ),
-              ////form
+
+              // Form
               Form(
                 key: controller.loginFormKey,
                 child: Padding(
@@ -52,7 +52,7 @@ class LoginScreen extends StatelessWidget {
                       vertical: TSizes.spaceBtwSections),
                   child: Column(
                     children: [
-                      ///Email
+                      // Email
                       TextFormField(
                         controller: controller.email,
                         validator: (value) => TValidator.validateEmail(value),
@@ -62,7 +62,7 @@ class LoginScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: TSizes.spaceBtwInputFields),
 
-                      ///Password
+                      // Password
                       Obx(
                         () => TextFormField(
                           controller: controller.password,
@@ -83,23 +83,24 @@ class LoginScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: TSizes.spaceBtwInputFields / 2),
 
-                      ///Remember me & forget password
+                      // Remember Me & Forget Password
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          //remember me
+                          // Remember Me
                           Row(
                             children: [
                               Obx(
                                 () => Checkbox(
-                                    value: controller.rememberMe.value,
-                                    onChanged: (Value) => controller.rememberMe
-                                        .value = !controller.rememberMe.value),
+                                  value: controller.rememberMe.value,
+                                  onChanged: (value) => controller.rememberMe
+                                      .value = !controller.rememberMe.value,
+                                ),
                               ),
                               const Text(TTexts.rememberMe),
                             ],
                           ),
-                          //forget password
+                          // Forget Password
                           TextButton(
                             onPressed: () {},
                             child: const Text(TTexts.forgetPassword),
@@ -108,38 +109,33 @@ class LoginScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: TSizes.spaceBtwSections),
 
-                      ///sign in button
+                      // Sign In Button
                       SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                              onPressed: () async {
-                                // Check if the form is valid
-                                if (controller.loginFormKey.currentState!
-                                    .validate()) {
-                                  try {
-                                    await controller.emailAndPasswordSignIn();
-                                  } catch (e) {
-                                    print('Sign-in failed: $e');
-                                  }
-                                } else {
-                                  print(
-                                      'Please enter valid email and password');
-                                }
-                              },
-                              child: const Text(TTexts.signIn))),
+                        width: double.infinity,
+                        child: ElevatedButton(
+                            onPressed: () async {
+                              if (controller.loginFormKey.currentState!
+                                  .validate()) {
+                                await controller.emailAndPasswordSignIn();
+                              }
+                            },
+                            child: const Text(TTexts.signIn)),
+                      ),
                       const SizedBox(height: TSizes.spaceBtwItems),
 
-                      ///create account button
+                      // Create Account Button
                       SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton(
-                              onPressed: () =>
-                                  Get.to(() => const SignupScreen()),
-                              child: const Text(TTexts.createAccount))),
+                        width: double.infinity,
+                        child: OutlinedButton(
+                            onPressed: () => Get.to(() => const SignupScreen()),
+                            child: const Text(TTexts.createAccount)),
+                      ),
                     ],
                   ),
                 ),
               ),
+
+              // Divider
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -161,10 +157,10 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(width: TSizes.spaceBtwSections),
+              const SizedBox(height: TSizes.spaceBtwSections),
 
-              ///footer
-              socialButtons(),
+              // Social Buttons
+              const SocialButtons(),
             ],
           ),
         ),
@@ -173,14 +169,12 @@ class LoginScreen extends StatelessWidget {
   }
 }
 
-class socialButtons extends StatelessWidget {
-  const socialButtons({
-    super.key,
-  });
+class SocialButtons extends StatelessWidget {
+  const SocialButtons({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(LoginController());
+    final controller = Get.put(RegistrationController());
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

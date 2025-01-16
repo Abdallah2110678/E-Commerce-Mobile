@@ -1,32 +1,42 @@
-// import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mobile_project/controllers/authentication.dart';
 import 'package:mobile_project/controllers/user_controller.dart';
+import 'package:mobile_project/services/user_services.dart';
+import 'package:mobile_project/models/usermodel.dart';
 import 'package:mobile_project/screens/home/nav.dart';
 import 'package:mobile_project/utils/constants/image_setting.dart';
 import 'package:mobile_project/utils/helpers/network_manager.dart';
 import 'package:mobile_project/utils/popups/full_screen_loader.dart';
 import 'package:mobile_project/utils/popups/loaders.dart';
+import 'package:mobile_project/models/role.dart';
 
-class LoginController extends GetxController {
-  static LoginController get instance => Get.find();
+class RegistrationController extends GetxController {
+  static RegistrationController get instance => Get.find();
 
-  // Variables
-  final rememberMe = false.obs;
+  // Variables for both login and signup
   final hidePassword = true.obs;
-  final localStorage = GetStorage();
   final email = TextEditingController();
   final password = TextEditingController();
-  GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
 
+  // Login specific variables
+  final rememberMe = false.obs;
+  final localStorage = GetStorage();
+  GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
   final userController = Get.put(UserController());
+
+  // Signup specific variables
+  final privacyPolicy = true.obs;
+  final lastname = TextEditingController();
+  final username = TextEditingController();
+  final firstname = TextEditingController();
+  final phonenumber = TextEditingController();
+  GlobalKey<FormState> signupFormKey = GlobalKey<FormState>();
 
   @override
   void onInit() {
-    // Safeguard against null values
+    // Initialize remembered login credentials
     email.text = localStorage.read('REMEMBER_ME_EMAIL') ?? '';
     password.text = localStorage.read('REMEMBER_ME_PASSWORD') ?? '';
     super.onInit();
@@ -35,15 +45,18 @@ class LoginController extends GetxController {
   void resetFields() {
     email.clear();
     password.clear();
+    lastname.clear();
+    username.clear();
+    firstname.clear();
+    phonenumber.clear();
   }
 
+  // Login Methods
   Future<void> emailAndPasswordSignIn() async {
     try {
-      // Start loading
       TFullScreenLoader.openLoadingDialog(
           'Logging you in...', TImages.docerAnimation);
 
-      // Check internet connection
       final isConnected = await NetworkManager.instance.isConnected();
       if (!isConnected) {
         TFullScreenLoader.stopLoading();
@@ -53,27 +66,21 @@ class LoginController extends GetxController {
         return;
       }
 
-      // Form validation
       if (!loginFormKey.currentState!.validate()) {
         TFullScreenLoader.stopLoading();
         return;
       }
 
-      // Save data if "Remember Me" is selected
       if (rememberMe.value) {
         localStorage.write('REMEMBER_ME_EMAIL', email.text.trim());
         localStorage.write('REMEMBER_ME_PASSWORD', password.text.trim());
       }
 
-      // Login using email and password
       final userCredential = await AuthenticationRepository.instance
           .loginWithEmailAndPassword(email.text.trim(), password.text.trim());
 
-      // Check if login was successful
       if (userCredential.user != null) {
-        // Remove loader
         TFullScreenLoader.stopLoading();
-        // Navigate to home screen only on successful authentication
         Get.offAll(() => Nav());
       } else {
         TFullScreenLoader.stopLoading();
@@ -82,39 +89,77 @@ class LoginController extends GetxController {
             message: 'Login failed. Please check your credentials.');
       }
     } catch (e) {
-      // Stop loader and show error
       TFullScreenLoader.stopLoading();
       TLoaders.errorSnackBar(title: "Oh Snap!", message: e.toString());
     }
   }
 
-//google sign in
+  // Signup Methods
+  Future<void> signup() async {
+    try {
+      TFullScreenLoader.openLoadingDialog(
+          "We are processing your information", TImages.docerAnimation);
+
+      final isConnect = await NetworkManager.instance.isConnected();
+      if (!isConnect) return;
+
+      if (!signupFormKey.currentState!.validate()) return;
+
+      if (!privacyPolicy.value) {
+        TLoaders.warningSnackBar(
+            title: 'Accept Privacy Policy',
+            message:
+                'In order to create account, you must have read and accept the Privacy Policy & Terms of Use');
+        return;
+      }
+
+      final userCredential = await AuthenticationRepository.instance
+          .registerWithEmailAndPassword(
+              email.text.trim(), password.text.trim());
+
+      final newUser = UserModel(
+        id: userCredential.user!.uid,
+        username: username.text.trim(),
+        email: email.text.trim(),
+        firstName: firstname.text.trim(),
+        lastName: lastname.text.trim(),
+        phoneNumber: phonenumber.text.trim(),
+        profilePicture: '',
+        role: Role.user,
+      );
+
+      await UserRepository.instance.saveUserRecords(newUser);
+
+      TFullScreenLoader.stopLoading();
+
+      TLoaders.successSnackBar(
+          title: 'Congratulations', message: 'Your account has been created!');
+    } catch (e) {
+      TLoaders.errorSnackBar(title: "Oh Snap!", message: e.toString());
+    } finally {
+      TFullScreenLoader.stopLoading();
+    }
+  }
+
+  // Google Sign In
   Future<void> googleSignIn() async {
     try {
-      // Start loading
       TFullScreenLoader.openLoadingDialog(
           'Logging you in...', TImages.docerAnimation);
 
-      // Check internet connection
       final isConnected = await NetworkManager.instance.isConnected();
       if (!isConnected) {
         TFullScreenLoader.stopLoading();
         return;
       }
 
-      //google authentication
       final userCredential =
           await AuthenticationRepository.instance.signInWithGoogle();
-
-      //save user records
       await userController.saveUserRecord(userCredential);
 
-      // Remove loader
       TFullScreenLoader.stopLoading();
-
       Get.offAll(() => Nav());
     } catch (e) {
-      // Stop loader and show error
       TFullScreenLoader.stopLoading();
       TLoaders.errorSnackBar(title: "Oh Snap!", message: e.toString());
     }
