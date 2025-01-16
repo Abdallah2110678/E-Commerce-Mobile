@@ -43,8 +43,12 @@ class AuthenticationRepository extends GetxController {
     try {
       final userCredential = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
-      Get.offAll(() => HomeScreen());
-      return userCredential;
+      // Only navigate if authentication is successful
+      if (userCredential.user != null) {
+        return userCredential;
+      } else {
+        throw 'Authentication failed';
+      }
     } on FirebaseAuthException catch (e) {
       throw TFirebaseAuthException(e.code).message;
     } on FirebaseException catch (e) {

@@ -47,6 +47,9 @@ class LoginController extends GetxController {
       final isConnected = await NetworkManager.instance.isConnected();
       if (!isConnected) {
         TFullScreenLoader.stopLoading();
+        TLoaders.errorSnackBar(
+            title: 'No Internet Connection',
+            message: 'Please check your internet connection');
         return;
       }
 
@@ -63,14 +66,21 @@ class LoginController extends GetxController {
       }
 
       // Login using email and password
-      await AuthenticationRepository.instance
+      final userCredential = await AuthenticationRepository.instance
           .loginWithEmailAndPassword(email.text.trim(), password.text.trim());
 
-      // Remove loader
-      TFullScreenLoader.stopLoading();
-
-      // Redirect to appropriate screen
-      // AuthenticationRepository.instance.screenRedirect();
+      // Check if login was successful
+      if (userCredential.user != null) {
+        // Remove loader
+        TFullScreenLoader.stopLoading();
+        // Navigate to home screen only on successful authentication
+        Get.offAll(() => Nav());
+      } else {
+        TFullScreenLoader.stopLoading();
+        TLoaders.errorSnackBar(
+            title: 'Error',
+            message: 'Login failed. Please check your credentials.');
+      }
     } catch (e) {
       // Stop loader and show error
       TFullScreenLoader.stopLoading();

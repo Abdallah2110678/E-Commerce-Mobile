@@ -118,8 +118,6 @@ class LoginScreen extends StatelessWidget {
                                     .validate()) {
                                   try {
                                     await controller.emailAndPasswordSignIn();
-
-                                    Get.to(() => Nav());
                                   } catch (e) {
                                     print('Sign-in failed: $e');
                                   }
