@@ -20,7 +20,8 @@ class Category {
       imagUrl: data['imagUrl'] ?? '', // Default value if name is null
     );
   }
-@override
+
+  @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is Category &&
@@ -29,6 +30,7 @@ class Category {
 
   @override
   int get hashCode => id.hashCode;
+
   // Convert a Category object to a Firestore document
   Map<String, dynamic> toFirestore() {
     return {
@@ -38,11 +40,20 @@ class Category {
   }
 
   // Add copyWith method to create a new instance with optional modifications
-  Category copyWith({String? id, String? name,String? imagUrl }) {
+  Category copyWith({String? id, String? name, String? imagUrl}) {
     return Category(
       id: id ?? this.id,
       name: name ?? this.name,
       imagUrl: imagUrl ?? this.imagUrl,
+    );
+  }
+
+  // Static method to return an empty Category
+  static Category empty() {
+    return Category(
+      id: '',
+      name: '',
+      imagUrl: '',
     );
   }
 }

@@ -20,7 +20,7 @@ class OnboardingScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          ///horizontal scroll page
+          /// Horizontal scroll page
           PageView(
             controller: controller.pageController,
             onPageChanged: controller.updatePageIndicator,
@@ -43,13 +43,13 @@ class OnboardingScreen extends StatelessWidget {
             ],
           ),
 
-          ///skip button
+          /// Skip button
           const onBoardingSkip(),
 
-          ///dot navigation
+          /// Dot navigation
           const onBoardingDotNavigator(),
 
-          ///circular button
+          /// Circular button
           const onBoardingNextButton(),
         ],
       ),
@@ -57,11 +57,8 @@ class OnboardingScreen extends StatelessWidget {
   }
 }
 
-///next button
 class onBoardingNextButton extends StatelessWidget {
-  const onBoardingNextButton({
-    super.key,
-  });
+  const onBoardingNextButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -72,19 +69,17 @@ class onBoardingNextButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: () => OnboardingController.instance.nextPage(),
         style: ElevatedButton.styleFrom(
-            shape: const CircleBorder(),
-            backgroundColor: dark ? TColors.primary : Colors.black),
+          shape: const CircleBorder(),
+          backgroundColor: dark ? TColors.primary : Colors.black,
+        ),
         child: const Icon(Iconsax.arrow_right_3),
       ),
     );
   }
 }
 
-///dot navigation
 class onBoardingDotNavigator extends StatelessWidget {
-  const onBoardingDotNavigator({
-    super.key,
-  });
+  const onBoardingDotNavigator({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -99,31 +94,30 @@ class onBoardingDotNavigator extends StatelessWidget {
         onDotClicked: controller.dotNavigationClick,
         count: 3,
         effect: ExpandingDotsEffect(
-            activeDotColor: dark ? TColors.light : TColors.dark, dotHeight: 6),
+          activeDotColor: dark ? TColors.light : TColors.dark,
+          dotHeight: 6,
+        ),
       ),
     );
   }
 }
 
-///skip button
 class onBoardingSkip extends StatelessWidget {
-  const onBoardingSkip({
-    super.key,
-  });
+  const onBoardingSkip({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
-        top: TDeviceUtils.getAppBarHeight(),
-        right: TSizes.defaultSpace,
-        child: TextButton(
-          onPressed: () => OnboardingController.instance.skipPage(),
-          child: const Text('Skip'),
-        ));
+      top: TDeviceUtils.getAppBarHeight(),
+      right: TSizes.defaultSpace,
+      child: TextButton(
+        onPressed: () => OnboardingController.instance.skipPage(),
+        child: const Text('Skip'),
+      ),
+    );
   }
 }
 
-///horizontal scroll page
 class onBoardingPage extends StatelessWidget {
   const onBoardingPage({
     super.key,
@@ -141,9 +135,10 @@ class onBoardingPage extends StatelessWidget {
       child: Column(
         children: [
           Image(
-              width: THelperFunctions.screenWidth() * 0.8,
-              height: THelperFunctions.screenHeight() * 0.6,
-              image: AssetImage(image)),
+            width: THelperFunctions.screenWidth() * 0.8,
+            height: THelperFunctions.screenHeight() * 0.6,
+            image: AssetImage(image),
+          ),
           Text(title,
               style: Theme.of(context).textTheme.headlineMedium,
               textAlign: TextAlign.center),

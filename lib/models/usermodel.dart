@@ -8,7 +8,7 @@ class UserModel {
   final String email;
   String firstName;
   String lastName;
-  String phoneNumber; // Ensure this is a String
+  String phoneNumber;
   String profilePicture;
   Role role;
 
@@ -60,12 +60,13 @@ class UserModel {
       'Email': email,
       'PhoneNumber': phoneNumber,
       'ProfilePicture': profilePicture,
-      'Role': role.toValue(), // Convert enum to string
+      'Role': role.toValue(),
     };
   }
 
   // Factory method to create a UserModel from a Firebase document snapshot.
-  factory UserModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> document) {
+  factory UserModel.fromSnapshot(
+      DocumentSnapshot<Map<String, dynamic>> document) {
     final data = document.data()!;
     return UserModel(
       id: document.id,
@@ -76,6 +77,28 @@ class UserModel {
       phoneNumber: data['PhoneNumber'].toString(), // Convert to String
       profilePicture: data['ProfilePicture'] ?? "",
       role: Role.fromValue(data['Role'] ?? "user"), // Convert string to enum
+    );
+  }
+
+  UserModel copyWith({
+    String? id,
+    String? username,
+    String? email,
+    String? firstName,
+    String? lastName,
+    String? phoneNumber,
+    String? profilePicture,
+    Role? role,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      username: username ?? this.username,
+      email: email ?? this.email,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      profilePicture: profilePicture ?? this.profilePicture,
+      role: role ?? this.role,
     );
   }
 

@@ -5,6 +5,8 @@ import 'package:mobile_project/controllers/user_controller.dart';
 import 'package:mobile_project/screens/home/appbar.dart';
 import 'package:mobile_project/screens/home/home.dart';
 import 'package:mobile_project/screens/home/profile/changename.dart';
+import 'package:mobile_project/screens/home/profile/changepassword.dart';
+import 'package:mobile_project/screens/home/profile/changeusername.dart';
 import 'package:mobile_project/utils/constants/image_setting.dart';
 import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:mobile_project/widgets/images/circular_image.dart';
@@ -26,6 +28,7 @@ class ProfileScreen extends StatelessWidget {
           padding: const EdgeInsets.all(TSizes.defaultSpace),
           child: Column(
             children: [
+              // Profile Picture Section
               SizedBox(
                 width: double.infinity,
                 child: Column(
@@ -47,6 +50,7 @@ class ProfileScreen extends StatelessWidget {
                   title: 'Profile Information', showActionButton: false),
               const SizedBox(height: TSizes.spaceBtwItems),
 
+              // Profile Information Section
               profileMenu(
                 title: 'Name',
                 value: controller.user.value.fullName,
@@ -55,12 +59,16 @@ class ProfileScreen extends StatelessWidget {
               profileMenu(
                   title: 'Username',
                   value: controller.user.value.username,
-                  onPressed: () {}),
+                  onPressed: () => Get.to(() => const ChangeUsername())),
+              profileMenu(
+                  title: 'Password',
+                  value: '********',
+                  onPressed: () => Get.to(() => const ChangePassword())),
               const SizedBox(height: TSizes.spaceBtwItems),
               const Divider(),
               const SizedBox(height: TSizes.spaceBtwItems),
 
-              /// Heading Personal Info
+              /// Personal Information Section
               const TSectionHeading(
                   title: 'Personal Information', showActionButton: false),
               const SizedBox(height: TSizes.spaceBtwItems),
@@ -80,6 +88,7 @@ class ProfileScreen extends StatelessWidget {
               const Divider(),
               const SizedBox(height: TSizes.spaceBtwItems),
 
+              // Delete Account Section
               Center(
                 child: TextButton(
                   onPressed: () => controller.deleteAccountWarningPopup(),

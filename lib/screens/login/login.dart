@@ -142,7 +142,6 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              ////divider
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

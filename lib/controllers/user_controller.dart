@@ -13,9 +13,11 @@ import 'package:mobile_project/utils/popups/full_screen_loader.dart';
 import 'package:mobile_project/utils/popups/loaders.dart';
 import 'package:mobile_project/models/role.dart';
 import 'package:mobile_project/controllers/authentication.dart';
+
 class UserController extends GetxController {
   final UserRepository _userRepository = UserRepository();
-  final AuthenticationRepository _authRepository = AuthenticationRepository.instance;
+  final AuthenticationRepository _authRepository =
+      AuthenticationRepository.instance;
 
   static UserController get instance => Get.find();
 
@@ -62,6 +64,20 @@ class UserController extends GetxController {
     await loadUsers(); // Reload users after adding
   }
 
+  Future<void> promoteUserToAdmin(String userId) async {
+    try {
+      await _userRepository.updateUserRole(userId, 'admin');
+      final index = users.indexWhere((user) => user.id == userId);
+      if (index != -1) {
+        users[index] = users[index].copyWith(role: Role.admin);
+        users.refresh();
+      }
+      Get.snackbar('Success', 'User has been promoted to Admin');
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to promote user: $e');
+    }
+  }
+
   // Update user
   Future<void> updateUser({
     required UserModel user,
@@ -98,8 +114,10 @@ class UserController extends GetxController {
     try {
       if (userCredentials != null) {
         // Convert name to first and last name
-        final nameparts = UserModel.nameParts(userCredentials.user!.displayName ?? '');
-        final username = UserModel.generateUsername(userCredentials.user!.displayName ?? '');
+        final nameparts =
+            UserModel.nameParts(userCredentials.user!.displayName ?? '');
+        final username =
+            UserModel.generateUsername(userCredentials.user!.displayName ?? '');
 
         final user = UserModel(
           id: userCredentials.user!.uid,
@@ -123,7 +141,6 @@ class UserController extends GetxController {
       );
     }
   }
-  
 
   // Delete account warning popup
   void deleteAccountWarningPopup() {
@@ -153,11 +170,13 @@ class UserController extends GetxController {
   // Delete user account
   void deleteUserAccount() async {
     try {
-      TFullScreenLoader.openLoadingDialog('Processing...', TImages.docerAnimation);
+      TFullScreenLoader.openLoadingDialog(
+          'Processing...', TImages.docerAnimation);
 
       // First re-authenticate user
       final auth = AuthenticationRepository.instance;
-      final provider = auth.authUser!.providerData.map((e) => e.providerId).first;
+      final provider =
+          auth.authUser!.providerData.map((e) => e.providerId).first;
 
       if (provider.isNotEmpty) {
         // Re-verify auth email
