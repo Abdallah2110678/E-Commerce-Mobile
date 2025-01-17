@@ -25,8 +25,8 @@ class UpdateNameController extends GetxController {
 
   ///fetch user record
   Future<void> initializeUser() async {
-    firstName.text = userController.user.value.firstName;
-    lastName.text = userController.user.value.lastName;
+    firstName.text = userController.user.value!.firstName;
+    lastName.text = userController.user.value!.lastName;
   }
 
   Future<void> updateUserName() async {
@@ -56,8 +56,8 @@ class UpdateNameController extends GetxController {
       userRepository.update();
 
       //update RX user value
-      userController.user.value.firstName = firstName.text.trim();
-      userController.user.value.lastName = lastName.text.trim();
+      userController.user.value!.firstName = firstName.text.trim();
+      userController.user.value!.lastName = lastName.text.trim();
 
       //remove loader
       TFullScreenLoader.stopLoading();

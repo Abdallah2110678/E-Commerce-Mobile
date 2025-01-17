@@ -60,6 +60,33 @@ class UserRepository extends GetxController {
       throw 'Something went wrong. Please try again';
     }
   }
+  Future<UserModel> fetchUserDetails1({String? userId}) async {
+  try {
+    // If userId is not provided, default to the current authenticated user's ID
+    final id = userId ?? AuthenticationRepository.instance.authUser?.uid;
+
+    if (id == null) {
+      throw 'No authenticated user found.';
+    }
+
+    final documentSnapshot = await _db.collection("Users").doc(id).get();
+
+    if (documentSnapshot.exists) {
+      return UserModel.fromSnapshot(documentSnapshot);
+    } else {
+      return UserModel.empty();
+    }
+  } on FirebaseException catch (e) {
+    throw TFirebaseException(e.code).message;
+  } on FormatException catch (_) {
+    throw const TFormatException();
+  } on PlatformException catch (e) {
+    throw TPlatformException(e.code).message;
+  } catch (e) {
+    throw 'Something went wrong. Please try again';
+  }
+}
+
 
   // Fetch all users from Firestore
   Future<List<UserModel>> getUsers() async {

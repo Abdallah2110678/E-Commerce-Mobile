@@ -20,7 +20,7 @@ class UserController extends GetxController {
       AuthenticationRepository.instance;
 
   static UserController get instance => Get.find();
-
+  final _auth = FirebaseAuth.instance;
   var users = <UserModel>[].obs; // Reactive list
   Rx<UserModel> user = UserModel.empty().obs;
   final profileLoading = false.obs;
@@ -29,6 +29,26 @@ class UserController extends GetxController {
   final verifyEmail = TextEditingController();
   final verifyPassword = TextEditingController();
   GlobalKey<FormState> reAuthFormKey = GlobalKey<FormState>();
+
+  Future<void> fetchCurrentUser() async {
+    try {
+      final userId = _auth.currentUser?.uid;
+
+      if (userId != null) {
+        final userData = await _userRepository.fetchUserDetails1(userId: userId);
+        user.value = userData; // Update the current user state
+      } else {
+        clearUser(); // Clear the user if no user is logged in
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to fetch user data: $e');
+    }
+  }
+
+  // Clear the current user data
+  void clearUser() {
+    user.value = UserModel.empty();
+  }
 
   @override
   void onInit() {

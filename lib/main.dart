@@ -34,7 +34,7 @@ void main() async {
     ),
   );
 
-  Get.put(AuthenticationRepository());
+  Get.lazyPut(() =>AuthenticationRepository());
   Get.put(WishlistController());
   Get.put(StoreController());
 }
@@ -73,9 +73,8 @@ class GeneralBinding extends Bindings {
   @override
   void dependencies() {
     Get.put(WishlistController());
-    Get.put(StoreController());
     Get.put(NetworkManager());
-    Get.put(UserController());
-    Get.put(UserRepository());
+    Get.lazyPut(() =>UserController());
+    Get.lazyPut(() =>UserRepository());
   }
 }
