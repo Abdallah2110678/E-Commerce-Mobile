@@ -45,6 +45,8 @@ class AuthenticationRepository extends GetxController {
       final userCredential = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       if (userCredential.user != null) {
+        // Initialize and refresh UserController after successful login
+        await Get.find<UserController>().initializeUser();
         return userCredential;
       } else {
         throw 'Authentication failed';
@@ -163,31 +165,30 @@ class AuthenticationRepository extends GetxController {
     }
   }
 
-Future<void> logout() async {
-  try {
-    await GoogleSignIn().signOut();
-    await FirebaseAuth.instance.signOut();
-    final userController = Get.find<UserController>();
-    userController.clearUser();
-    Get.offAll(() => const LoginScreen());
+  Future<void> logout() async {
+    try {
+      await GoogleSignIn().signOut();
+      await FirebaseAuth.instance.signOut();
+      final userController = Get.find<UserController>();
+      userController.clearUser();
+      Get.offAll(() => const LoginScreen());
 
-    // Optional: Show a success message
-    Get.snackbar('Logged Out', 'You have been successfully logged out.');
-  } on FirebaseAuthException catch (e) {
-    // Handle Firebase-specific errors
-    Get.snackbar('Logout Error', TFirebaseAuthException(e.code).message);
-  } on FirebaseException catch (e) {
-    // Handle general Firebase errors
-    Get.snackbar('Logout Error', TFirebaseException(e.code).message);
-  } on PlatformException catch (e) {
-    // Handle platform-specific errors
-    Get.snackbar('Logout Error', TPlatformException(e.code).message);
-  } catch (e) {
-    // Handle any other errors
-    Get.snackbar('Logout Error', 'Something went wrong: $e');
+      // Optional: Show a success message
+      Get.snackbar('Logged Out', 'You have been successfully logged out.');
+    } on FirebaseAuthException catch (e) {
+      // Handle Firebase-specific errors
+      Get.snackbar('Logout Error', TFirebaseAuthException(e.code).message);
+    } on FirebaseException catch (e) {
+      // Handle general Firebase errors
+      Get.snackbar('Logout Error', TFirebaseException(e.code).message);
+    } on PlatformException catch (e) {
+      // Handle platform-specific errors
+      Get.snackbar('Logout Error', TPlatformException(e.code).message);
+    } catch (e) {
+      // Handle any other errors
+      Get.snackbar('Logout Error', 'Something went wrong: $e');
+    }
   }
-}
-
 
   Future<void> deleteAccount() async {
     try {

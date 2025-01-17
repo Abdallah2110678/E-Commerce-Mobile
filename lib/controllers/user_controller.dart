@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -30,12 +31,39 @@ class UserController extends GetxController {
   final verifyPassword = TextEditingController();
   GlobalKey<FormState> reAuthFormKey = GlobalKey<FormState>();
 
+  Future<void> initializeUser() async {
+    try {
+      profileLoading.value = true;
+
+      // Get current user ID
+      final userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId == null) throw 'User ID not found';
+
+      // Fetch user data from Firestore
+      final userDoc = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(userId)
+          .get();
+
+      if (userDoc.exists) {
+        // Update user data in controller
+        user.value = UserModel.fromSnapshot(userDoc);
+      }
+    } catch (e) {
+      // Handle error appropriately
+      debugPrint('Error initializing user: $e');
+    } finally {
+      profileLoading.value = false;
+    }
+  }
+
   Future<void> fetchCurrentUser() async {
     try {
       final userId = _auth.currentUser?.uid;
 
       if (userId != null) {
-        final userData = await _userRepository.fetchUserDetails1(userId: userId);
+        final userData =
+            await _userRepository.fetchUserDetails1(userId: userId);
         user.value = userData; // Update the current user state
       } else {
         clearUser(); // Clear the user if no user is logged in
@@ -46,8 +74,10 @@ class UserController extends GetxController {
   }
 
   // Clear the current user data
+// In UserController
   void clearUser() {
     user.value = UserModel.empty();
+    profileLoading.value = false;
   }
 
   @override
