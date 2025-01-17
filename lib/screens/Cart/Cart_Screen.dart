@@ -3,14 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:mobile_project/controllers/CartController.dart';
 import 'package:mobile_project/models/product.dart';
+import 'package:mobile_project/screens/orders/checkout.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:mobile_project/widgets/images/rounded_image.dart';
 
 class CartScreen extends ConsumerWidget {
   const CartScreen({Key? key}) : super(key: key);
-
-  @override
+@override
   Widget build(BuildContext context, WidgetRef ref) {
     final cartItems = ref.watch(cartControllerProvider);
 
@@ -174,7 +174,15 @@ class CartScreen extends ConsumerWidget {
                       const SizedBox(height: TSizes.spaceBtwItems),
                       ElevatedButton(
                         onPressed: () {
-                          // Implement checkout logic
+                          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CheckoutScreen(), // Replace with your screen
+              ),
+            );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Order placed successfully")),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: TColors.primary,

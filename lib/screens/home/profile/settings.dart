@@ -11,6 +11,7 @@ import 'package:mobile_project/screens/home/home.dart';
 import 'package:mobile_project/screens/home/profile/notification.dart';
 import 'package:mobile_project/screens/home/profile/profile.dart';
 import 'package:mobile_project/screens/login/login.dart';
+import 'package:mobile_project/screens/orders/myOrders.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:mobile_project/utils/constants/image_setting.dart';
 import 'package:mobile_project/utils/constants/sizes.dart';
@@ -62,10 +63,11 @@ class SettingsScreen extends StatelessWidget {
                     subtitle: 'Add, remove products',
                     onTap: () => Get.to(() => const CartScreen()),
                   ),
-                  const AccountSettings(
+                   AccountSettings(
                       icon: Iconsax.bag_tick,
                       title: 'My Orders',
-                      subtitle: 'In-progress and Completed Orders'),
+                      subtitle: 'In-progress and Completed Orders',
+                      onTap : () => Get.to(() =>  MyOrdersScreen()),),
 
                   const AccountSettings(
                       icon: Iconsax.discount_shape,
