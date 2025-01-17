@@ -8,6 +8,10 @@ import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 // import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mobile_project/controllers/user_controller.dart';
+import 'package:mobile_project/screens/boarding_screen/onboarding_screen.dart';
+import 'package:mobile_project/screens/home/home.dart';
+import 'package:mobile_project/screens/home/nav.dart';
 import 'package:mobile_project/screens/login/login.dart';
 import 'package:mobile_project/services/user_services.dart';
 // import 'package:mobile_project/main.dart';
@@ -40,8 +44,9 @@ class AuthenticationRepository extends GetxController {
     try {
       final userCredential = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
-      // Only navigate if authentication is successful
       if (userCredential.user != null) {
+        // Initialize and refresh UserController after successful login
+        await Get.find<UserController>().initializeUser();
         return userCredential;
       } else {
         throw 'Authentication failed';
@@ -160,24 +165,29 @@ class AuthenticationRepository extends GetxController {
     }
   }
 
-  //logout
   Future<void> logout() async {
     try {
       await GoogleSignIn().signOut();
       await FirebaseAuth.instance.signOut();
+      final userController = Get.find<UserController>();
+      userController.clearUser();
       Get.offAll(() => const LoginScreen());
+
+      // Optional: Show a success message
+      Get.snackbar('Logged Out', 'You have been successfully logged out.');
     } on FirebaseAuthException catch (e) {
-      throw TFirebaseAuthException(e.code).message;
+      // Handle Firebase-specific errors
+      Get.snackbar('Logout Error', TFirebaseAuthException(e.code).message);
     } on FirebaseException catch (e) {
-      throw TFirebaseException(e.code).message;
-    } on FormatException catch (_) {
-      throw const TFormatException();
+      // Handle general Firebase errors
+      Get.snackbar('Logout Error', TFirebaseException(e.code).message);
     } on PlatformException catch (e) {
-      throw TPlatformException(e.code).message;
+      // Handle platform-specific errors
+      Get.snackbar('Logout Error', TPlatformException(e.code).message);
     } catch (e) {
-      throw 'Something went wrong. Please try again';
+      // Handle any other errors
+      Get.snackbar('Logout Error', 'Something went wrong: $e');
     }
-    return;
   }
 
   Future<void> deleteAccount() async {

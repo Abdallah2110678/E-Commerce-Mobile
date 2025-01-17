@@ -34,9 +34,9 @@ void main() async {
     ),
   );
 
-  Get.put(AuthenticationRepository());
-  Get.put(WishlistController());
-  Get.put(StoreController());
+  Get.lazyPut(() =>AuthenticationRepository());
+  Get.lazyPut(() =>WishlistController());
+  Get.lazyPut(() =>StoreController());
 }
 
 class MyApp extends StatelessWidget {
@@ -72,10 +72,9 @@ class AuthCheck extends StatelessWidget {
 class GeneralBinding extends Bindings {
   @override
   void dependencies() {
-    Get.put(WishlistController());
-    Get.put(StoreController());
-    Get.put(NetworkManager());
-    Get.put(UserController());
-    Get.lazyPut(() => UserRepository());
+    Get.lazyPut(() =>WishlistController());
+    Get.lazyPut(() =>NetworkManager());
+    Get.lazyPut(() =>UserController());
+    Get.lazyPut(() =>UserRepository());
   }
 }

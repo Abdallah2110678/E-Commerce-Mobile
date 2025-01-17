@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,7 +21,7 @@ class UserController extends GetxController {
       AuthenticationRepository.instance;
 
   static UserController get instance => Get.find();
-
+  final _auth = FirebaseAuth.instance;
   var users = <UserModel>[].obs; // Reactive list
   Rx<UserModel> user = UserModel.empty().obs;
   final profileLoading = false.obs;
@@ -29,6 +30,55 @@ class UserController extends GetxController {
   final verifyEmail = TextEditingController();
   final verifyPassword = TextEditingController();
   GlobalKey<FormState> reAuthFormKey = GlobalKey<FormState>();
+
+  Future<void> initializeUser() async {
+    try {
+      profileLoading.value = true;
+
+      final userId = _auth.currentUser?.uid;
+      if (userId == null) throw 'User ID not found';
+
+      final userDoc = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(userId)
+          .get();
+
+      if (userDoc.exists) {
+        // Update user data in controller
+        user.value = UserModel.fromSnapshot(userDoc);
+      } else {
+        throw 'User document not found';
+      }
+    } catch (e) {
+      debugPrint('Error initializing user: $e');
+      user.value = UserModel.empty();
+    } finally {
+      profileLoading.value = false;
+    }
+  }
+
+  Future<void> fetchCurrentUser() async {
+    try {
+      final userId = _auth.currentUser?.uid;
+
+      if (userId != null) {
+        final userData =
+            await _userRepository.fetchUserDetails1(userId: userId);
+        user.value = userData; // Update the current user state
+      } else {
+        clearUser(); // Clear the user if no user is logged in
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to fetch user data: $e');
+    }
+  }
+
+  // Clear the current user data
+// In UserController
+  void clearUser() {
+    user.value = UserModel.empty();
+    profileLoading.value = false;
+  }
 
   @override
   void onInit() {
@@ -112,32 +162,49 @@ class UserController extends GetxController {
   // Save user records from any registration provider
   Future<void> saveUserRecord(UserCredential? userCredentials) async {
     try {
-      if (userCredentials != null) {
-        // Convert name to first and last name
-        final nameparts =
-            UserModel.nameParts(userCredentials.user!.displayName ?? '');
-        final username =
-            UserModel.generateUsername(userCredentials.user!.displayName ?? '');
+      if (userCredentials?.user == null) return;
 
-        final user = UserModel(
-          id: userCredentials.user!.uid,
-          username: username,
-          email: userCredentials.user!.email ?? '',
-          firstName: nameparts[0],
-          lastName: nameparts.length > 1 ? nameparts.sublist(1).join('') : ' ',
-          phoneNumber: userCredentials.user!.phoneNumber ?? '',
-          profilePicture: userCredentials.user!.photoURL ?? '',
-          role: Role.user,
-        );
+      // Get the current user from Firebase Auth
+      final currentUser = userCredentials!.user!;
 
-        // Save user data
-        await _userRepository.saveUserRecords(user);
+      // Get existing user data if any
+      final existingUserDoc = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(currentUser.uid)
+          .get();
+
+      // If user already exists, just refresh the user data
+      if (existingUserDoc.exists) {
+        await initializeUser();
+        return;
       }
+
+      // For new users, create a new UserModel
+      final nameparts = UserModel.nameParts(currentUser.displayName ?? '');
+      final username =
+          UserModel.generateUsername(currentUser.displayName ?? '');
+
+      final user = UserModel(
+        id: currentUser.uid,
+        username: username,
+        email: currentUser.email ?? '',
+        firstName: nameparts[0],
+        lastName: nameparts.length > 1 ? nameparts.sublist(1).join(' ') : '',
+        phoneNumber: currentUser.phoneNumber ?? '',
+        profilePicture: currentUser.photoURL ?? '',
+        role: Role.user,
+      );
+
+      // Save user data to Firestore
+      await _userRepository.saveUserRecords(user);
+
+      // Initialize user data in the controller
+      await initializeUser();
     } catch (e) {
       TLoaders.warningSnackBar(
         title: 'Data Not Saved',
         message:
-            'Something Went Wrong While Saving your Information. You Can re-save your data in your profile',
+            'Something went wrong while saving your information. You can re-save your data in your profile',
       );
     }
   }

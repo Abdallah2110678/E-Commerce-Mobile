@@ -79,6 +79,9 @@ class RegistrationController extends GetxController {
       final userCredential = await AuthenticationRepository.instance
           .loginWithEmailAndPassword(email.text.trim(), password.text.trim());
 
+      final userController = Get.find<UserController>();
+      await userController.initializeUser();
+      // Check if login was successful
       if (userCredential.user != null) {
         TFullScreenLoader.stopLoading();
         Get.offAll(() => Nav());

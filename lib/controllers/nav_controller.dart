@@ -19,11 +19,13 @@ class NavController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _updateScreens(userController.user.value.role);
+    _updateScreens(userController.user.value?.role ?? Role.user);
 
     // Watch for changes in the user's role and update the screens dynamically
     ever(userController.user, (user) {
-      _updateScreens(user.role);
+      if (user != null) {
+        _updateScreens(user.role);
+      }
     });
   }
 

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:mobile_project/controllers/user_controller.dart';
+import 'package:mobile_project/screens/home/nav.dart';
 import 'package:mobile_project/screens/styles/spacing_styles.dart';
 import 'package:mobile_project/controllers/registration_controller.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
@@ -8,6 +10,8 @@ import 'package:mobile_project/utils/constants/image_setting.dart';
 import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:mobile_project/utils/constants/text_strings.dart';
 import 'package:mobile_project/utils/helpers/helper_functions.dart';
+import 'package:mobile_project/utils/popups/full_screen_loader.dart';
+import 'package:mobile_project/utils/popups/loaders.dart';
 import 'package:mobile_project/utils/validators/validation.dart';
 import 'package:mobile_project/screens/signup/signup.dart';
 
@@ -111,16 +115,37 @@ class LoginScreen extends StatelessWidget {
 
                       // Sign In Button
                       SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                            onPressed: () async {
-                              if (controller.loginFormKey.currentState!
-                                  .validate()) {
-                                await controller.emailAndPasswordSignIn();
-                              }
-                            },
-                            child: const Text(TTexts.signIn)),
-                      ),
+                          width: double.infinity,
+                          child: ElevatedButton(
+                              onPressed: () async {
+                                if (controller.loginFormKey.currentState!
+                                    .validate()) {
+                                  try {
+                                    // Show loading
+                                    TFullScreenLoader.openLoadingDialog(
+                                        'Signing In...',
+                                        TImages.docerAnimation);
+
+                                    // Initialize UserController before login
+                                    Get.put(UserController());
+
+                                    await controller.emailAndPasswordSignIn();
+
+                                    // Close loading
+                                    TFullScreenLoader.stopLoading();
+
+                                    // Navigate to home screen
+                                    Get.offAll(() => const Nav());
+                                  } catch (e) {
+                                    TFullScreenLoader.stopLoading();
+                                    TLoaders.errorSnackBar(
+                                      title: 'Sign In Failed',
+                                      message: e.toString(),
+                                    );
+                                  }
+                                }
+                              },
+                              child: const Text(TTexts.signIn))),
                       const SizedBox(height: TSizes.spaceBtwItems),
 
                       // Create Account Button
