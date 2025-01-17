@@ -2,7 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile_project/controllers/dashboard_controller.dart';
+import 'package:mobile_project/screens/home/home.dart';
+import 'package:mobile_project/screens/orders/orders.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 // import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -78,14 +81,14 @@ class _DashboardState extends State<Dashboard> {
                   _buildStatCard(
                     context,
                     title: 'Total Sales',
-                    value: '\$24,780',
+                    value: '\$ ${controller.totalAmount.toString()}',
                     icon: Icons.attach_email_rounded,
                     color: Color(0xff4caf50),
                   ),
                   _buildStatCard(
                     context,
                     title: 'Total Orders',
-                    value: '\$12,780',
+                    value: controller.orderCount.toString(),
                     icon: Icons.shopping_cart_rounded,
                     color: Color(0xff2196f3),
                   ),
@@ -107,68 +110,123 @@ class _DashboardState extends State<Dashboard> {
               );
             }),
             // revenue Section
-
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Revenue Overview",
-                            style: GoogleFonts.poppins(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: TColors.primary),
-                          )
-                        ])
-                  ],
-                ),
-              ),
+            TSectionHeading(
+              title: 'Last Orders',
+              onPressed: () {
+                Get.to(() => Orders());
+              },
+              showActionButton: true,
             ),
-            // recent Orders
-            Card(
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Recent Orders",
-                                style: GoogleFonts.poppins(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: TColors.primary),
+            Obx(() {
+              if (controller.isLoading.value) {
+                return Center(child: CircularProgressIndicator());
+              }
+
+              if (controller.orders.isEmpty) {
+                return Center(child: Text('No orders found'));
+              }
+               return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columns: [
+                    DataColumn(label: Text('Order ID')),
+                    DataColumn(label: Text('Date')),
+                    DataColumn(label: Text('Status')),
+                    DataColumn(label: Text('Total')),
+                    DataColumn(label: Text('Items')),
+                    DataColumn(label: Text('Address')),
+                  ],
+                  rows: controller.orders.map((order) {
+                    return DataRow(
+                      cells: [
+                        DataCell(Text(order.id.substring(0, 8))),
+                        DataCell(Text(DateFormat('yyyy-MM-dd HH:mm')
+                            .format(order.timestamp))),
+                        DataCell(
+                          InkWell(
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text('Update Order Status'),
+                                  content: DropdownButton<String>(
+                                    value: order.status,
+                                    items: [
+                                      DropdownMenuItem(
+                                          value: 'pending',
+                                          child: Text('Pending')),
+                                      DropdownMenuItem(
+                                          value: 'delivered',
+                                          child: Text('Delivered')),
+                                      DropdownMenuItem(
+                                          value: 'cancelled',
+                                          child: Text('Cancelled')),
+                                    ],
+                                    onChanged: (newStatus) {
+                                      if (newStatus != null) {
+                                        controller.updateOrderStatus(
+                                            order.id, newStatus);
+                                        Navigator.pop(context);
+                                      }
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
                               ),
-                              TextButton(
-                                  onPressed: () {},
-                                  child: Text("view All",
-                                      style: GoogleFonts.poppins(
-                                          color: TColors.accent)))
-                            ]),
-                        SizedBox(
-                          height: 10,
+                              decoration: BoxDecoration(
+                                color: _getStatusColor(order.status),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    order.status,
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  SizedBox(width: 4),
+                                  Icon(
+                                    Icons.arrow_drop_down,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
+                        DataCell(
+                            Text('\$${order.totalAmount.toStringAsFixed(2)}')),
+                        DataCell(Text('${order.items.length} items')),
+                        DataCell(Text('${order.address}, ${order.city}')),
                       ],
-                    )))
+                    );
+                  }).toList(),
+                ),
+              );
+            }),
+            // recent Orders
           ],
         ),
       ),
     );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return Colors.orange;
+      case 'completed':
+        return Colors.green;
+      case 'cancelled':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
   }
 
   Widget _buildStatCard(BuildContext context,

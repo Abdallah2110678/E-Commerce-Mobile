@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mobile_project/models/orderItem.dart';
 
 class Orders {
@@ -39,7 +40,24 @@ class Orders {
       'phone': phone,
     };
   }
-
+  factory Orders.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return Orders(
+      id: doc.id,
+      userId: data['userId'],
+      items: (data['items'] as List).map((item) => OrderItem.fromMap(item)).toList(),
+      totalAmount: data['totalAmount'].toDouble(),
+      status: data['status'],
+      // Handle timestamp that might be stored as String
+      timestamp: data['timestamp'] is Timestamp 
+          ? (data['timestamp'] as Timestamp).toDate()
+          : DateTime.parse(data['timestamp'].toString()),
+      address: data['address'],
+      city: data['city'],
+      postalCode: data['postalCode'],
+      phone: data['phone'],
+    );
+}
   factory Orders.fromMap(Map<String, dynamic> map) {
     return Orders(
       id: map['id'],
