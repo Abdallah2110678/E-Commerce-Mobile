@@ -5,21 +5,15 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/get_instance.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
-// import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mobile_project/controllers/user_controller.dart';
-import 'package:mobile_project/screens/boarding_screen/onboarding_screen.dart';
-import 'package:mobile_project/screens/home/home.dart';
-import 'package:mobile_project/screens/home/nav.dart';
 import 'package:mobile_project/screens/login/login.dart';
 import 'package:mobile_project/services/user_services.dart';
-// import 'package:mobile_project/main.dart';
 import 'package:mobile_project/utils/exceptions/firebase_auth_exceptions.dart';
 import 'package:mobile_project/utils/exceptions/firebase_exceptions.dart';
 import 'package:mobile_project/utils/exceptions/format_exceptions.dart';
 import 'package:mobile_project/utils/exceptions/platform_exceptions.dart';
-// import 'package:mobile_project/views/login/login.dart';
 
 class AuthenticationRepository extends GetxController {
   static AuthenticationRepository get instance => Get.find();

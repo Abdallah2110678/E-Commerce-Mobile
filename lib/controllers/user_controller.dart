@@ -13,7 +13,6 @@ import 'package:mobile_project/utils/helpers/network_manager.dart';
 import 'package:mobile_project/utils/popups/full_screen_loader.dart';
 import 'package:mobile_project/utils/popups/loaders.dart';
 import 'package:mobile_project/models/role.dart';
-import 'package:mobile_project/controllers/authentication.dart';
 
 class UserController extends GetxController {
   final UserRepository _userRepository = UserRepository();

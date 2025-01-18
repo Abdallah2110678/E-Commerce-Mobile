@@ -10,8 +10,8 @@ final authProvider = StreamProvider<User?>((ref) {
 final userIdProvider = Provider<String?>((ref) {
   final authState = ref.watch(authProvider);
   return authState.when(
-    data: (user) => user?.uid, // Return the user ID if the user is authenticated
-    loading: () => null, // Return null while loading
-    error: (error, stack) => null, // Return null if there's an error
+    data: (user) => user?.uid,
+    loading: () => null,
+    error: (error, stack) => null,
   );
 });

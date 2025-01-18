@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
 import 'package:image_picker/image_picker.dart';
-import 'package:mobile_project/controllers/category_controller.dart';
 import 'package:mobile_project/models/brand.dart';
 import 'package:mobile_project/models/category.dart';
 import 'package:mobile_project/models/product.dart';
