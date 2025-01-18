@@ -20,7 +20,7 @@ class OrderController extends GetxController {
 
   // Fetch orders for a specific user
   // In OrderController class, modify fetchOrdersByUser:
-  Future<List<Orders>> fetchOrdersByUser(String userId) async {
+Future<List<Orders>> fetchOrdersByUser(String userId) async {
     if (userId.isEmpty) {
       print("UserId is empty!");
       throw Exception('User ID is required to fetch orders.');
@@ -34,30 +34,32 @@ class OrderController extends GetxController {
           .where('userId', isEqualTo: userId)
           .get();
 
-      print(
-          "Query executed. Number of documents: ${querySnapshot.docs.length}");
+      print("Query executed. Number of documents: ${querySnapshot.docs.length}");
 
-      // Print raw data for debugging
-      querySnapshot.docs.forEach((doc) {
-        print("Document ID: ${doc.id}");
-        print("Document data: ${doc.data()}");
-      });
+      final orders = querySnapshot.docs.map((doc) {
+        try {
+          final data = doc.data();
+          // Add id to the data map
+          data['id'] = doc.id;
+          return Orders.fromMap(data);
+        } catch (e) {
+          print('Error parsing order document ${doc.id}: $e');
+          return null;
+        }
+      })
+      .where((order) => order != null)  // Filter out null orders
+      .cast<Orders>()  // Cast to non-null Orders
+      .toList();
 
-      final orders = querySnapshot.docs
-          .map((doc) => Orders.fromMap({
-                ...doc.data(),
-                'id': doc.id,
-              }))
-          .toList();
-
-      print("Parsed orders length: ${orders.length}");
+      print("Successfully parsed ${orders.length} orders");
       return orders;
     } catch (e) {
       print('Error fetching orders for user $userId: $e');
       print('Stack trace: ${StackTrace.current}');
-      throw Exception('Failed to fetch orders.');
+      throw Exception('Failed to fetch orders: ${e.toString()}');
     }
   }
+
 
   // Create a new order
   Future<void> createOrder(Orders order) async {

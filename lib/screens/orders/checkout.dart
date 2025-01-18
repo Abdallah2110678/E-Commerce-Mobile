@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_project/controllers/CartController.dart';
+import 'package:mobile_project/controllers/authentication.dart';
 import 'package:mobile_project/controllers/order_controller.dart';
 import 'package:mobile_project/models/order.dart';
 import 'package:mobile_project/models/orderItem.dart';
@@ -16,6 +17,8 @@ class CheckoutScreen extends ConsumerStatefulWidget {
 }
 
 class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
+
+  final user = AuthenticationRepository.instance.authUser;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
@@ -42,7 +45,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       final cartItems = ref.read(cartControllerProvider);
       final orderItems = cartItems.entries.map((entry) {
         return OrderItem(
-          id: "",
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
           productId: entry.key,
           title: entry.value.product.title,
           quantity: entry.value.quantity,
@@ -54,7 +57,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
       final order = Orders(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
-        userId: "12",
+        userId: user?.uid.toString() ?? '',
         items: orderItems,
         totalAmount: ref.read(cartControllerProvider.notifier).totalAmount,
         status: 'pending',

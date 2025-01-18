@@ -44,7 +44,7 @@ class Orders {
     final data = doc.data() as Map<String, dynamic>;
     return Orders(
       id: doc.id,
-      userId: data['userId'],
+      userId: data['userId']?? '',
       items: (data['items'] as List).map((item) => OrderItem.fromMap(item)).toList(),
       totalAmount: data['totalAmount'].toDouble(),
       status: data['status'],
@@ -61,7 +61,7 @@ class Orders {
   factory Orders.fromMap(Map<String, dynamic> map) {
     return Orders(
       id: map['id'],
-      userId: map['userId'],
+      userId: map['userId'] ?? '',
       items: List<OrderItem>.from(
           map['items'].map((item) => OrderItem.fromMap(item))),
       totalAmount: map['totalAmount'],
