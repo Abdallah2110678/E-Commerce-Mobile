@@ -63,11 +63,12 @@ class SettingsScreen extends StatelessWidget {
                     subtitle: 'Add, remove products',
                     onTap: () => Get.to(() => const CartScreen()),
                   ),
-                   AccountSettings(
-                      icon: Iconsax.bag_tick,
-                      title: 'My Orders',
-                      subtitle: 'In-progress and Completed Orders',
-                      onTap : () => Get.to(() =>  MyOrdersScreen()),),
+                  AccountSettings(
+                    icon: Iconsax.bag_tick,
+                    title: 'My Orders',
+                    subtitle: 'In-progress and Completed Orders',
+                    onTap: () => Get.to(() => MyOrdersScreen()),
+                  ),
 
                   const AccountSettings(
                       icon: Iconsax.discount_shape,
