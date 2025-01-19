@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
-import 'package:mobile_project/controllers/category_controller.dart';
+
 import 'package:mobile_project/controllers/product_controller.dart';
 import 'package:mobile_project/models/brand.dart';
 import 'package:mobile_project/models/category.dart';
@@ -11,7 +11,7 @@ import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:mobile_project/utils/helpers/helper_functions.dart';
 import 'package:mobile_project/utils/validators/validation.dart';
 import 'package:mobile_project/widgets/custom_shapes/rounded_container.dart';
-import 'package:mobile_project/widgets/products/product_image_picker.dart';
+
 
 class AddProductView extends StatefulWidget {
   const AddProductView({super.key});

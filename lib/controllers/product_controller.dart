@@ -472,7 +472,7 @@ Future<void> updateProduct(Product product) async {
       return products;
     } catch (e) {
       print('Error fetching products: $e');
-      return products;
+      throw Exception('Failed to fetch products');
     }
   }
 
