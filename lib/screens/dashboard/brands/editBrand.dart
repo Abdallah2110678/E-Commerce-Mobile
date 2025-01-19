@@ -16,7 +16,7 @@ class EditBrandScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final dark = THelperFunctions.isDarkMode(context);
 
-    // Prepopulate the text field controller and selected logo
+    
     brandController.edit_nameController.text = brand['name'] ?? '';
     brandController.edit_selectedLogo.value = brand['logoUrl'] ?? '';
 

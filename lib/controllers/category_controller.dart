@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -7,8 +9,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:path/path.dart' as path;
-
-
 
 class CategoryController extends GetxController {
   RxString selectedImage = ''.obs;
@@ -32,23 +32,18 @@ class CategoryController extends GetxController {
 
   // Function to pick an image from the gallery
   Future<void> pickImage() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       selectedImage.value = pickedFile.path;
     }
   }
 
-  // Function to reset the image
-  void resetImage() {
-    selectedImage.value = '';
-  }
-
   // Function to clear all inputs
   void clearInputs() {
     nameController.clear();
-    resetImage();
+    selectedImage.value = '';
   }
 
   Future<void> ensureBucketExists() async {
@@ -289,8 +284,8 @@ class CategoryController extends GetxController {
   TextEditingController edit_nameController = TextEditingController();
 
   Future<void> pickEditImage() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       edit_selectedImage.value = pickedFile.path;

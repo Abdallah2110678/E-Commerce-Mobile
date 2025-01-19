@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -8,36 +10,33 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path/path.dart' as path;
 
 class BrandController extends GetxController {
-  RxString selectedLogo = ''.obs;
-  TextEditingController nameController = TextEditingController();
-
+  
   // Firebase and Supabase instances
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final SupabaseClient _supabase = Supabase.instance.client;
 
+  RxString selectedLogo = ''.obs;
+  TextEditingController nameController = TextEditingController();
+
+  
   // Loading state
   RxBool isLoading = false.obs;
 
   // Function to pick a logo from the gallery
   Future<void> pickLogo() async {
-    final ImagePicker _picker = ImagePicker();
+    final ImagePicker picker = ImagePicker();
     final XFile? pickedFile =
-        await _picker.pickImage(source: ImageSource.gallery);
+        await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       selectedLogo.value = pickedFile.path;
     }
   }
 
-  // Function to reset the logo
-  void resetLogo() {
-    selectedLogo.value = '';
-  }
-
   // Function to clear all inputs
   void clearInputs() {
     nameController.clear();
-    resetLogo();
+    selectedLogo.value = '';
   }
 
   Future<void> ensureBucketExists() async {
@@ -52,11 +51,9 @@ class BrandController extends GetxController {
             'brands',
             const BucketOptions(
               public: true, // Make bucket public
-              // 2MB limit
             ),
           );
-
-          // Add policy for public access
+          
           await _supabase.rpc('create_storage_policy', params: {
             'bucket_name': 'brands',
             'policy_name': 'Public Access',
@@ -311,13 +308,14 @@ class BrandController extends GetxController {
     }
   }
 
+  
   RxString edit_selectedLogo = ''.obs;
   TextEditingController edit_nameController = TextEditingController();
 // Function to pick a logo for editing from the gallery
   Future<void> pickEditLogo() async {
-    final ImagePicker _picker = ImagePicker();
+    final ImagePicker picker = ImagePicker();
     final XFile? pickedFile =
-        await _picker.pickImage(source: ImageSource.gallery);
+        await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       edit_selectedLogo.value = pickedFile.path;

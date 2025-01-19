@@ -16,14 +16,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:path/path.dart' as path;
 import 'package:get/get.dart';
 
-class UpdateProductView extends StatefulWidget {
-  UpdateProductView({Key? key, required this.product}) : super(key: key);
-  final Product product;
-  @override
-  _UpdateProductViewState createState() => _UpdateProductViewState();
-}
-
-class _UpdateProductViewState extends State<UpdateProductView> {
+class UpdateProductView extends StatelessWidget {
   // final _formKey = GlobalKey<FormState>();
   // final _titleController = TextEditingController();
   // final _descriptionController = TextEditingController();
@@ -168,17 +161,18 @@ class _UpdateProductViewState extends State<UpdateProductView> {
       ),
     );
   }
-
+  UpdateProductView({Key? key, required this.product}) : super(key: key);
+  final Product product;
   @override
   Widget build(BuildContext context) {
-    controller.editTitleController.text = widget.product.title;
-    controller.editDescriptionController.text = widget.product.description;
-    controller.editPriceController.text = widget.product.price.toString();
-    controller.editDiscountController.text = widget.product.discount.toString();
-    controller.editStockController.text = widget.product.stock.toString();
-    controller.editSelectedThumbnail.value = widget.product.thumbnailUrl;
-    controller.editSelectedCategory.value = widget.product.category;
-    controller.editSelectedBrand.value = widget.product.brand;
+    controller.editTitleController.text = product.title;
+    controller.editDescriptionController.text = product.description;
+    controller.editPriceController.text = product.price.toString();
+    controller.editDiscountController.text = product.discount.toString();
+    controller.editStockController.text = product.stock.toString();
+    controller.editSelectedThumbnail.value = product.thumbnailUrl;
+    controller.editSelectedCategory.value = product.category;
+    controller.editSelectedBrand.value = product.brand;
 
     return Scaffold(
       appBar: AppBar(
@@ -388,7 +382,7 @@ class _UpdateProductViewState extends State<UpdateProductView> {
                     child: Obx(() => ElevatedButton(
                           onPressed: controller.isLoading.value
                               ? null
-                              :()=> controller.updateProduct(widget.product),
+                              :()=> controller.updateProduct(product),
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(

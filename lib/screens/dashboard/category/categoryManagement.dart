@@ -3,26 +3,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mobile_project/controllers/category_controller.dart';
 import 'package:get/get.dart';
-import 'package:mobile_project/screens/dashboard/brands/createBrand.dart';
 import 'package:mobile_project/screens/dashboard/category/createCategory.dart';
 import 'package:mobile_project/screens/dashboard/category/editCategory.dart';
 import 'package:mobile_project/screens/dashboard/category/listCategory.dart';
-import 'package:mobile_project/utils/constants/colors.dart';
-import 'package:mobile_project/utils/constants/enum.dart';
-import 'package:mobile_project/utils/constants/sizes.dart';
-import 'package:mobile_project/utils/helpers/helper_functions.dart';
-import 'package:mobile_project/widgets/custom_shapes/rounded_container.dart';
-import 'package:mobile_project/widgets/images/circular_image.dart';
 import 'package:mobile_project/widgets/layout/grid_layout.dart';
-import 'package:mobile_project/widgets/texts/brand_title_text_with_varified_icon.dart';
-class CategoryManagementScreen extends StatefulWidget {
-  const CategoryManagementScreen({super.key});
 
-  @override
-  State<CategoryManagementScreen> createState() => _CategoryManagementScreenState();
-}
-
-class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
+class CategoryManagementScreen extends StatelessWidget {
 
 final CategoryController categoryController = Get.put(CategoryController());
   @override
@@ -48,11 +34,6 @@ final CategoryController categoryController = Get.put(CategoryController());
               return Dismissible(
                 key: Key(category['id'].toString()),
                 direction: DismissDirection.horizontal,
-                onDismissed: (direction) {
-                  if (direction == DismissDirection.startToEnd) {
-                  //  editBrand(index);
-                  }
-                },
                 confirmDismiss: (direction) async {
                   if (direction == DismissDirection.startToEnd) {
                     Navigator.push(

@@ -1,22 +1,14 @@
 // views/brand_view.dart
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobile_project/controllers/brand_controller.dart';
 import 'package:mobile_project/screens/dashboard/brands/createBrand.dart';
 import 'package:mobile_project/screens/dashboard/brands/editBrand.dart';
 import 'package:mobile_project/screens/dashboard/brands/listBrand.dart';
-
 import 'package:mobile_project/widgets/layout/grid_layout.dart';
 
-
-class BrandManagementScreen extends StatefulWidget {
-  @override
-  _BrandManagementScreenState createState() => _BrandManagementScreenState();
-}
-
-class _BrandManagementScreenState extends State<BrandManagementScreen> {
+class BrandManagementScreen extends StatelessWidget {
+  
   final BrandController brandController = Get.put(BrandController());
 
   @override
@@ -42,11 +34,6 @@ class _BrandManagementScreenState extends State<BrandManagementScreen> {
               return Dismissible(
                 key: Key(brand['id'].toString()),
                 direction: DismissDirection.horizontal,
-                onDismissed: (direction) {
-                  if (direction == DismissDirection.startToEnd) {
-                  //  editBrand(index);
-                  }
-                },
                 confirmDismiss: (direction) async {
                   if (direction == DismissDirection.startToEnd) {
                     Navigator.push(
