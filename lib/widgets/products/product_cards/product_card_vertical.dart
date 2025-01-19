@@ -37,7 +37,7 @@ class TProductCardVertical extends ConsumerWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ProductDescriptionPage(productId: product.id),
+            builder: (context) => ProductDescriptionPage(product: product),
           ),
         );
       },

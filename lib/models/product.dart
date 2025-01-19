@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mobile_project/models/brand.dart';
 import 'package:mobile_project/models/category.dart';
+import 'package:mobile_project/models/ratingComment.dart';
 
 class Product {
   String id;
@@ -13,6 +14,8 @@ class Product {
   int stock;
   Category category;
   Brand brand;
+   List<RatingComment> ratingComments;
+   
 
   Product({
     required this.id,
@@ -25,11 +28,19 @@ class Product {
     required this.stock,
     required this.category,
     required this.brand,
+     this.ratingComments = const [],
   });
 
   // Calculate the discounted price
   double get discountedPrice {
     return price - (price * (discount / 100));
+  }
+
+
+  double get averageRating {
+    if (ratingComments.isEmpty) return 0.0;
+    double total = ratingComments.fold(0, (sum, rc) => sum + rc.rating);
+    return total / ratingComments.length;
   }
 
   // Convert a Product to a Map (for SQFlite)
@@ -64,13 +75,21 @@ class Product {
     );
   }
 
-  // Convert a Firestore DocumentSnapshot to a Product
   factory Product.fromFirestore(
     DocumentSnapshot doc, {
     required Category category,
     required Brand brand,
   }) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    
+    // Safely handle the ratingComments list
+    List<RatingComment> comments = [];
+    if (data['ratingComments'] != null) {
+      comments = (data['ratingComments'] as List)
+          .map((rc) => RatingComment.fromMap(rc as Map<String, dynamic>))
+          .toList();
+    }
+    
     return Product(
       id: doc.id,
       title: data['title'] ?? '',
@@ -82,6 +101,7 @@ class Product {
       stock: (data['stock'] as num).toInt(),
       category: category,
       brand: brand,
+      ratingComments: comments,
     );
   }
 
@@ -97,6 +117,7 @@ class Product {
       'stock': stock,
       'categoryId': category.id,
       'brandId': brand.id,
+      'ratingComments': ratingComments.map((rc) => rc.toMap()).toList(),
     };
   }
 }
