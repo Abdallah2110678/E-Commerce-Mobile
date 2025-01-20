@@ -27,7 +27,7 @@ class Nav extends StatelessWidget {
                 NavigationDestination(
                     icon: Icon(Iconsax.shop), label: 'Store'),
                 NavigationDestination(
-                    icon: Icon(Iconsax.user), label: 'Dashboard'),
+                    icon: Icon(Icons.dashboard), label: 'Dashboard'),
                 NavigationDestination(
                     icon: Icon(Iconsax.user), label: 'Profile'),
               ]
