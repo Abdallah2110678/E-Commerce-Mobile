@@ -23,8 +23,8 @@ class CartController extends StateNotifier<Map<String, CartItem>> {
       for (var entry in cartData.entries) {
         final product = Product.fromFirestore(
           await _firestore.collection('products').doc(entry.key).get(),
-          category: Category.empty(), // Replace with actual category
-          brand: Brand.empty(), // Replace with actual brand
+          category: Category.empty(),
+          brand: Brand.empty(),
         );
         cartItems[entry.key] = CartItem.fromMap(entry.value, product: product);
       }
