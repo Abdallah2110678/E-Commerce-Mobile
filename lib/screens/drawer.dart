@@ -6,6 +6,7 @@ import 'package:mobile_project/screens/dashboard/products/createProduct.dart';
 import 'package:mobile_project/screens/dashboard/products/productsTable.dart';
 import 'package:mobile_project/screens/dashboard/users/users.dart';
 import 'package:mobile_project/utils/helpers/helper_functions.dart';
+import 'package:mobile_project/screens/dashboard/users/createUser.dart';
 
 // The main screen with a drawer
 class DrawerScreen extends StatefulWidget {
@@ -21,6 +22,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
     CategoryManagementScreen(),
     const ProductTableView(),
     UsersPage(),
+    AddUserScreen(),
     BrandManagementScreen(),
   ];
 
@@ -31,6 +33,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
     "Categories",
     "Products",
     "Users",
+    "Add User",
     "Brand Management"
   ];
 
@@ -119,9 +122,15 @@ class _DrawerScreenState extends State<DrawerScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.category),
-              title: const Text('Brands'),
+              title: const Text('Add user'),
               selected: _selectedIndex == 5, // Highlight when active
               onTap: () => _onSelectItem(5),
+            ),
+            ListTile(
+              leading: const Icon(Icons.category),
+              title: const Text('Brands'),
+              selected: _selectedIndex == 6, // Highlight when active
+              onTap: () => _onSelectItem(6),
             ),
           ],
         ),
