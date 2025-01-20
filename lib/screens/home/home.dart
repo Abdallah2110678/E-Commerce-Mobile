@@ -366,6 +366,8 @@ class THomeCategories extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final HomeController homeController = Get.find();
+
     return FutureBuilder<List<Category>>(
       future: _fetchCategories(),
       builder: (context, snapshot) {
@@ -387,12 +389,11 @@ class THomeCategories extends StatelessWidget {
             itemBuilder: (_, index) {
               final category = categories[index];
               return TVerticalImageText(
-                image: category
-                    .imagUrl, // Replace with dynamic image handling if needed
+                image: category.imagUrl,
                 title: category.name,
                 onTap: () {
                   // Handle category tap
-                  print('Selected category: ${category.name}');
+                  homeController.setSelectedCategory(category.id);
                 },
               );
             },

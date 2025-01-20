@@ -10,13 +10,72 @@ class HomeController extends GetxController {
   final carousalCurrentIndex = 0.obs;
   final RxList<Product> products = <Product>[].obs;
   final RxList<Product> featuredProducts = <Product>[].obs;
-
+  final RxString selectedCategoryId = ''.obs;
+  final RxBool isLoading = false.obs;
 
   // Reference to Firestore
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   void updatePageIndicator(index) {
     carousalCurrentIndex.value = index;
+  }
+
+  // Set selected category
+  void setSelectedCategory(String? categoryId) {
+    selectedCategoryId.value = categoryId ?? '';
+    if (categoryId == null) {
+      fetchAllProducts();
+    } else {
+      fetchProductsByCategory(categoryId);
+    }
+  }
+
+  // Fetch products by category
+  Future<void> fetchProductsByCategory(String categoryId) async {
+    try {
+      isLoading.value = true;
+
+      // Get products filtered by category
+      final QuerySnapshot productSnapshot = await _firestore
+          .collection('products')
+          .where('categoryId', isEqualTo: categoryId)
+          .get();
+
+      // Temporary list to hold products
+      List<Product> loadedProducts = [];
+
+      // Process each document
+      for (var doc in productSnapshot.docs) {
+        // Fetch the category
+        final categoryDoc = await _firestore
+            .collection('categories')
+            .doc(doc.get('categoryId'))
+            .get();
+        final category = Category.fromFirestore(categoryDoc);
+
+        // Fetch the brand
+        final brandDoc =
+            await _firestore.collection('brands').doc(doc.get('brandId')).get();
+        final brand = Brand.fromFirestore(brandDoc);
+
+        // Create the product
+        final product = Product.fromFirestore(
+          doc,
+          category: category,
+          brand: brand,
+        );
+
+        loadedProducts.add(product);
+      }
+
+      // Update the observable list
+      products.assignAll(loadedProducts);
+    } catch (e) {
+      print('Error fetching products by category: $e');
+      Get.snackbar('Error', 'Failed to load category products: $e');
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   // Fetch all products
@@ -108,20 +167,14 @@ class HomeController extends GetxController {
     fetchFeaturedProducts();
   }
 
-
-
-
-
- // Method to check if the user has already rated the product
+  // Method to check if the user has already rated the product
   Future<bool> hasUserRated({
     required String productId,
     required String userId,
   }) async {
     try {
-      DocumentSnapshot productDoc = await _firestore
-          .collection('products')
-          .doc(productId)
-          .get();
+      DocumentSnapshot productDoc =
+          await _firestore.collection('products').doc(productId).get();
 
       if (productDoc.exists) {
         List<dynamic> ratingComments = productDoc['ratingComments'] ?? [];
@@ -153,7 +206,8 @@ class HomeController extends GetxController {
       );
 
       // Get the product document reference
-      DocumentReference productRef = _firestore.collection('products').doc(productId);
+      DocumentReference productRef =
+          _firestore.collection('products').doc(productId);
 
       // Update the product document with the new rating and comment
       await productRef.update({

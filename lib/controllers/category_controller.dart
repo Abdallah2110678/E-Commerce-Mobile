@@ -17,6 +17,8 @@ class CategoryController extends GetxController {
   // Firebase and Supabase instances
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final SupabaseClient _supabase = Supabase.instance.client;
+  RxString selectedCategoryId = ''.obs;
+  RxList<Map<String, dynamic>> filteredProducts = <Map<String, dynamic>>[].obs;
 
   // Loading state
   RxBool isLoading = false.obs;
@@ -30,10 +32,49 @@ class CategoryController extends GetxController {
     fetchCategories();
   }
 
+  void clearCategorySelection() {
+    selectedCategoryId.value = '';
+    filteredProducts.clear();
+  }
+
+  // Function to handle category selection and fetch related products
+  Future<void> selectCategory(String categoryId) async {
+    try {
+      isLoading.value = true;
+      selectedCategoryId.value = categoryId;
+
+      // Fetch products for selected category
+      final productsSnapshot = await _firestore
+          .collection('products')
+          .where('categoryId', isEqualTo: categoryId)
+          .get();
+
+      final products = productsSnapshot.docs
+          .map((doc) => {
+                'id': doc.id,
+                ...doc.data(),
+              })
+          .toList();
+
+      filteredProducts.assignAll(products);
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to load products: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   // Function to pick an image from the gallery
   Future<void> pickImage() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile =
+        await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       selectedImage.value = pickedFile.path;
@@ -90,7 +131,8 @@ class CategoryController extends GetxController {
       await ensureBucketExists();
 
       final String fileExtension = path.extension(selectedImage.value);
-      final String uniqueFileName = 'category_images/${DateTime.now().millisecondsSinceEpoch}$fileExtension';
+      final String uniqueFileName =
+          'category_images/${DateTime.now().millisecondsSinceEpoch}$fileExtension';
 
       final File imageFile = File(selectedImage.value);
 
@@ -108,15 +150,16 @@ class CategoryController extends GetxController {
 
       try {
         await _supabase.storage.from('categories').upload(
-          uniqueFileName,
-          imageFile,
-          fileOptions: FileOptions(
-            contentType: 'image/${fileExtension.substring(1)}',
-            upsert: true,
-          ),
-        );
+              uniqueFileName,
+              imageFile,
+              fileOptions: FileOptions(
+                contentType: 'image/${fileExtension.substring(1)}',
+                upsert: true,
+              ),
+            );
 
-        final String imagUrl = _supabase.storage.from('categories').getPublicUrl(uniqueFileName);
+        final String imagUrl =
+            _supabase.storage.from('categories').getPublicUrl(uniqueFileName);
 
         final categoryData = {
           'name': nameController.text.trim(),
@@ -153,7 +196,8 @@ class CategoryController extends GetxController {
 
   Future<void> fetchCategories() async {
     try {
-      final categoriesSnapshot = await FirebaseFirestore.instance.collection('categories').get();
+      final categoriesSnapshot =
+          await FirebaseFirestore.instance.collection('categories').get();
 
       final fetchedCategories = await Future.wait(
         categoriesSnapshot.docs.map((doc) async {
@@ -179,7 +223,8 @@ class CategoryController extends GetxController {
     }
   }
 
-  Future<void> deleteCategoryIfNotUsed(String categoryId, String imagUrl) async {
+  Future<void> deleteCategoryIfNotUsed(
+      String categoryId, String imagUrl) async {
     try {
       final productSnapshot = await FirebaseFirestore.instance
           .collection('products')
@@ -223,18 +268,18 @@ class CategoryController extends GetxController {
         colorText: Colors.white,
         duration: const Duration(seconds: totalSeconds),
         messageText: Obx(() => Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Category deleted successfully.',
-              style: TextStyle(color: Colors.white),
-            ),
-            Text(
-              'Undo (${remainingSeconds.value}s)',
-              style: const TextStyle(color: Colors.white),
-            ),
-          ],
-        )),
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Category deleted successfully.',
+                  style: TextStyle(color: Colors.white),
+                ),
+                Text(
+                  'Undo (${remainingSeconds.value}s)',
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ],
+            )),
         mainButton: TextButton(
           onPressed: () {
             shouldDelete = false;
@@ -256,13 +301,15 @@ class CategoryController extends GetxController {
       await Future.delayed(const Duration(seconds: totalSeconds));
 
       try {
-        final String filePath = Uri.parse(imagUrl).pathSegments.skip(1).join('/');
+        final String filePath =
+            Uri.parse(imagUrl).pathSegments.skip(1).join('/');
         await _supabase.storage.from('categories').remove([filePath]);
       } catch (storageError) {
         print('Error deleting image from Supabase: $storageError');
       }
 
-      if (shouldDelete && !categories.any((category) => category['id'] == categoryId)) {
+      if (shouldDelete &&
+          !categories.any((category) => category['id'] == categoryId)) {
         await FirebaseFirestore.instance
             .collection('categories')
             .doc(categoryId)
@@ -285,7 +332,8 @@ class CategoryController extends GetxController {
 
   Future<void> pickEditImage() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile =
+        await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       edit_selectedImage.value = pickedFile.path;
@@ -311,31 +359,35 @@ class CategoryController extends GetxController {
         await ensureBucketExists();
 
         final String fileExtension = path.extension(newImagePath);
-        final String uniqueFileName = 'category_images/${DateTime.now().millisecondsSinceEpoch}$fileExtension';
+        final String uniqueFileName =
+            'category_images/${DateTime.now().millisecondsSinceEpoch}$fileExtension';
 
         final File imageFile = File(newImagePath);
 
         if (await imageFile.length() > 2 * 1024 * 1024) {
           throw 'Image size must be less than 2MB';
         }
-        if (!['.jpg', '.jpeg', '.png', '.gif'].contains(fileExtension.toLowerCase())) {
+        if (!['.jpg', '.jpeg', '.png', '.gif']
+            .contains(fileExtension.toLowerCase())) {
           throw 'Only JPG, PNG, and GIF files are allowed';
         }
 
         try {
           await _supabase.storage.from('categories').upload(
-            uniqueFileName,
-            imageFile,
-            fileOptions: FileOptions(
-              contentType: 'image/${fileExtension.substring(1)}',
-              upsert: true,
-            ),
-          );
+                uniqueFileName,
+                imageFile,
+                fileOptions: FileOptions(
+                  contentType: 'image/${fileExtension.substring(1)}',
+                  upsert: true,
+                ),
+              );
 
-          updatedimagUrl = _supabase.storage.from('categories').getPublicUrl(uniqueFileName);
+          updatedimagUrl =
+              _supabase.storage.from('categories').getPublicUrl(uniqueFileName);
 
           if (currentimagUrl.isNotEmpty) {
-            final String filePath = Uri.parse(currentimagUrl).pathSegments.skip(1).join('/');
+            final String filePath =
+                Uri.parse(currentimagUrl).pathSegments.skip(1).join('/');
             await _supabase.storage.from('categories').remove([filePath]);
           }
         } catch (e) {
