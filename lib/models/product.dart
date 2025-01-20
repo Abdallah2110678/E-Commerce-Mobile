@@ -14,7 +14,7 @@ class Product {
   int stock;
   Category category;
   Brand brand;
-   List<RatingComment> ratingComments;
+  List<RatingComment> ratingComments;
    
 
   Product({
@@ -28,7 +28,7 @@ class Product {
     required this.stock,
     required this.category,
     required this.brand,
-     this.ratingComments = const [],
+    this.ratingComments = const [],
   });
 
   // Calculate the discounted price

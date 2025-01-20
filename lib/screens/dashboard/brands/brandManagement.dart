@@ -5,6 +5,7 @@ import 'package:mobile_project/controllers/brand_controller.dart';
 import 'package:mobile_project/screens/dashboard/brands/createBrand.dart';
 import 'package:mobile_project/screens/dashboard/brands/editBrand.dart';
 import 'package:mobile_project/screens/dashboard/brands/listBrand.dart';
+import 'package:mobile_project/utils/helpers/helper_functions.dart';
 import 'package:mobile_project/widgets/layout/grid_layout.dart';
 
 class BrandManagementScreen extends StatelessWidget {
@@ -46,6 +47,9 @@ class BrandManagementScreen extends StatelessWidget {
                     return await showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
+                        backgroundColor: THelperFunctions.isDarkMode(context)
+                            ? Colors.grey[800]
+                            : Colors.white,
                         title: const Text("Confirm Delete"),
                         content: Text(
                             "Are you sure you want to delete ${brand['name']}?"),

@@ -51,7 +51,7 @@ class DashboardController extends GetxController {
   for (var doc in querySnapshot.docs) {
     totalAmount += doc['totalAmount'];
   }
-  return totalAmount;
+  return double.parse(totalAmount.toStringAsFixed(2));
 }
 
 Future<void> fetchLastFiveOrders() async {
