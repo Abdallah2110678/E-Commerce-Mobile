@@ -12,11 +12,11 @@ import 'package:mobile_project/utils/helpers/helper_functions.dart';
 import 'package:mobile_project/widgets/home/section_heading.dart';
 import 'package:mobile_project/widgets/images/circular_image.dart';
 import 'package:mobile_project/widgets/images/rounded_image.dart';
+import 'package:mobile_project/widgets/products/product_cards/RatingsDetailsPage.dart';
 import 'package:mobile_project/widgets/texts/brand_title_text_with_varified_icon.dart';
 import 'package:mobile_project/widgets/texts/product_price_text.dart';
 import 'package:mobile_project/widgets/custom_shapes/rounded_container.dart';
 import 'package:get/get.dart';
-
 class ProductDescriptionPage extends ConsumerWidget {
   final Product product;
   final bool action;
@@ -156,21 +156,43 @@ class ProductDescriptionPage extends ConsumerWidget {
             ),
             const SizedBox(height: TSizes.spaceBtwSections),
             SizedBox(height: 8),
-            // Star Rating
-            StarRating(
-              rating: product.averageRating,
-              starSize: 20,
+// Star Rating
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    StarRating(
+                      rating: product.averageRating,
+                      starSize: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '${product.ratingComments.length} reviews',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            RatingsDetailsPage(product: product),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'View All',
+                    style: TextStyle(color: TColors.primary),
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: 4),
-            // Number of Ratings
-            Text(
-              '${product.ratingComments.length} reviews',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
-              ),
-            ),
-            const SizedBox(height: TSizes.spaceBtwSections),
 
             /// Add to Cart Button
             if (action == true)
