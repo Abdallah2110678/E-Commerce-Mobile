@@ -5,7 +5,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:mobile_project/controllers/user_controller.dart';
 import 'package:mobile_project/screens/Cart/Cart_Screen.dart';
 import 'package:mobile_project/screens/home/appbar.dart';
-import 'package:mobile_project/screens/home/widgets/cart_counter_icon.dart';
+import 'package:mobile_project/widgets/home/cart_counter_icon.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:mobile_project/utils/constants/text_strings.dart';
 import 'package:mobile_project/utils/shimmers/shimmer.dart';

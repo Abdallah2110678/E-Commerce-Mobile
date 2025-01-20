@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_project/controllers/CartController.dart';
 import 'package:mobile_project/controllers/authentication.dart';
 import 'package:mobile_project/controllers/home_controller.dart';
 import 'package:mobile_project/models/product.dart';
-import 'package:mobile_project/models/brand.dart';
-import 'package:mobile_project/models/category.dart';
-import 'package:mobile_project/screens/home/home.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:mobile_project/utils/helpers/helper_functions.dart';
+import 'package:mobile_project/widgets/home/section_heading.dart';
 import 'package:mobile_project/widgets/images/circular_image.dart';
 import 'package:mobile_project/widgets/images/rounded_image.dart';
 import 'package:mobile_project/widgets/texts/brand_title_text_with_varified_icon.dart';
@@ -23,7 +20,7 @@ class ProductDescriptionPage extends ConsumerWidget {
   final Product product;
   final bool action;
 
-  ProductDescriptionPage( {
+  ProductDescriptionPage({
     super.key,
     required this.product,
     this.action = true,
@@ -46,8 +43,7 @@ class ProductDescriptionPage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            
-          /// 
+            ///
             Center(
               child: TRoundedImage(
                 isNetworkImage: true,
@@ -69,12 +65,13 @@ class ProductDescriptionPage extends ConsumerWidget {
             Row(
               children: [
                 TCircularImage(
-                isNetworkImage: true,
-                image:product.brand.logoUrl,
-                backgroundColor: Colors.transparent,
-                overlayColor: THelperFunctions.isDarkMode(context)
-                    ? TColors.white
-                    : TColors.black,),
+                  isNetworkImage: true,
+                  image: product.brand.logoUrl,
+                  backgroundColor: Colors.transparent,
+                  overlayColor: THelperFunctions.isDarkMode(context)
+                      ? TColors.white
+                      : TColors.black,
+                ),
                 TBrandTitleWithVerifiedIcon(
                   title: product.brand.name,
                 ),
@@ -82,31 +79,31 @@ class ProductDescriptionPage extends ConsumerWidget {
             ),
             const SizedBox(height: TSizes.spaceBtwItems),
 
-
             Row(
               children: [
                 TCircularImage(
-                isNetworkImage: true,
-                image:product.category.imagUrl,
-                backgroundColor: Colors.transparent,
-                overlayColor: THelperFunctions.isDarkMode(context)
-                    ? TColors.white
-                    : TColors.black,),
+                  isNetworkImage: true,
+                  image: product.category.imagUrl,
+                  backgroundColor: Colors.transparent,
+                  overlayColor: THelperFunctions.isDarkMode(context)
+                      ? TColors.white
+                      : TColors.black,
+                ),
                 TBrandTitleWithVerifiedIcon(
                   title: product.category.name,
                 ),
               ],
             ),
             const SizedBox(height: TSizes.spaceBtwItems),
+
             /// Product Price and Discount
             Row(
               children: [
                 if (product.discount > 0)
-                    TProductPriceText(
-                      isLarge: true,
-                      price: product.discountedPrice.toStringAsFixed(2),
-                    ),
-  
+                  TProductPriceText(
+                    isLarge: true,
+                    price: product.discountedPrice.toStringAsFixed(2),
+                  ),
                 SizedBox(
                   width: 15,
                 ),
@@ -115,22 +112,22 @@ class ProductDescriptionPage extends ConsumerWidget {
                   lineThrough: product.discount > 0 ? true : false,
                   price: product.price.toStringAsFixed(2),
                 ),
-                  if (product.discount > 0)
-                TRoundedContainer(
-                      radius: TSizes.sm,
-                      backgroundColor: TColors.secondary.withOpacity(0.8),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: TSizes.sm,
-                        vertical: TSizes.xs,
-                      ),
-                      child: Text(
-                        '${product.discount}% Off',
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelLarge!
-                            .apply(color: TColors.black),
-                      ),
+                if (product.discount > 0)
+                  TRoundedContainer(
+                    radius: TSizes.sm,
+                    backgroundColor: TColors.secondary.withOpacity(0.8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: TSizes.sm,
+                      vertical: TSizes.xs,
                     ),
+                    child: Text(
+                      '${product.discount}% Off',
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelLarge!
+                          .apply(color: TColors.black),
+                    ),
+                  ),
               ],
             ),
             const SizedBox(height: TSizes.spaceBtwItems),
@@ -141,9 +138,8 @@ class ProductDescriptionPage extends ConsumerWidget {
                   ),
             ),
 
-              const SizedBox(height: TSizes.spaceBtwItems),
-              
-              
+            const SizedBox(height: TSizes.spaceBtwItems),
+
             /// Product Description
             Text(
               'Description',
@@ -173,55 +169,58 @@ class ProductDescriptionPage extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: TSizes.spaceBtwSections),
+
             /// Add to Cart Button
             if (action == true)
               Column(
                 children: [
                   SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  ref.read(cartControllerProvider.notifier).addItem(product);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Product added to cart')),
-                  );
-                },
-                child: const Text(
-                  'Add to Cart',
-                  style: TextStyle(color: TColors.white),
-                ),
-              ),
-            ),
-            const SizedBox(height: TSizes.buttonElevation),
-              SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AddRatingCommentScreen(
-                        productId: product.id,
-                        userId: user?.uid.toString() ?? '',
-                        userName: "user",
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        ref
+                            .read(cartControllerProvider.notifier)
+                            .addItem(product);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Product added to cart')),
+                        );
+                      },
+                      child: const Text(
+                        'Add to Cart',
+                        style: TextStyle(color: TColors.white),
                       ),
                     ),
-                  );
-                },
-                child: const Text(
-                  'Add Rating & Comment',
-                  style: TextStyle(color: TColors.white),
-                ),
-              ),
-            ),
+                  ),
+                  const SizedBox(height: TSizes.buttonElevation),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddRatingCommentScreen(
+                              productId: product.id,
+                              userId: user?.uid.toString() ?? '',
+                              userName: "user",
+                            ),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'Add Rating & Comment',
+                        style: TextStyle(color: TColors.white),
+                      ),
+                    ),
+                  ),
                 ],
               ),
 
             const SizedBox(height: TSizes.spaceBtwSections),
-          TSectionHeading(
+            TSectionHeading(
               title: 'Ratings & Reviews',
               showActionButton: false,
-
             ),
             const SizedBox(height: TSizes.spaceBtwItems),
             ...product.ratingComments.map((rc) {
@@ -257,7 +256,6 @@ class ProductDescriptionPage extends ConsumerWidget {
             }).toList(),
 
             /// Add Rating & Comment Button
-          
           ],
         ),
       ),

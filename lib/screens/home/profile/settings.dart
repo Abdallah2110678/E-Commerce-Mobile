@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-// import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:mobile_project/controllers/authentication.dart';
 import 'package:mobile_project/controllers/user_controller.dart';
 import 'package:mobile_project/screens/Cart/Cart_Screen.dart';
 import 'package:mobile_project/screens/home/account_settings.dart';
 import 'package:mobile_project/screens/home/appbar.dart';
-import 'package:mobile_project/screens/home/home.dart';
 import 'package:mobile_project/screens/home/profile/notification.dart';
 import 'package:mobile_project/screens/home/profile/profile.dart';
-import 'package:mobile_project/screens/home/widgets/primary_header_container.dart';
+import 'package:mobile_project/widgets/home/primary_header_container.dart';
 import 'package:mobile_project/screens/login/login.dart';
 import 'package:mobile_project/screens/orders/myOrders.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:mobile_project/utils/constants/image_setting.dart';
 import 'package:mobile_project/utils/constants/sizes.dart';
+import 'package:mobile_project/widgets/home/section_heading.dart';
 import 'package:mobile_project/widgets/images/circular_image.dart';
 
 class SettingsScreen extends StatelessWidget {

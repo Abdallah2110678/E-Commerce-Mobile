@@ -93,7 +93,8 @@ class CartController extends StateNotifier<Map<String, CartItem>> {
 }
 
 // Create a StateNotifierProvider for the CartController
-final cartControllerProvider = StateNotifierProvider<CartController, Map<String, CartItem>>((ref) {
+final cartControllerProvider =
+    StateNotifierProvider<CartController, Map<String, CartItem>>((ref) {
   final userId = ref.watch(userIdProvider);
   if (userId == null) {
     throw Exception('User is not authenticated');
