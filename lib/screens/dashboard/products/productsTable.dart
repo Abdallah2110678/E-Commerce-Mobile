@@ -5,6 +5,7 @@ import 'package:mobile_project/models/product.dart';
 import 'package:mobile_project/screens/dashboard/products/updateProduct.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:mobile_project/utils/helpers/helper_functions.dart';
+import 'package:mobile_project/widgets/products/product_cards/product_decription.dart';
 
 class ProductTableView extends StatefulWidget {
   const ProductTableView({super.key});
@@ -116,7 +117,7 @@ class _ProductTableViewState extends State<ProductTableView> {
                           DataColumn(label: Text('Name', style: TextStyle(fontWeight: FontWeight.bold))),
                           DataColumn(label: Text('Stock', style: TextStyle(fontWeight: FontWeight.bold))),
                           DataColumn(label: Text('Thumbnail', style: TextStyle(fontWeight: FontWeight.bold))),
-                            DataColumn(label: Text('Brand', style: TextStyle(fontWeight: FontWeight.bold))),
+                        
                           DataColumn(label: Text('Price', style: TextStyle(fontWeight: FontWeight.bold))),
                           DataColumn(label: Text('Action', style: TextStyle(fontWeight: FontWeight.bold))),
                         ],
@@ -127,11 +128,7 @@ class _ProductTableViewState extends State<ProductTableView> {
                             DataCell(Text(product.title)),
                             DataCell(Text(product.stock.toString())),
                             DataCell(Center(child: Image.network(product.thumbnailUrl,width: 70,))),
-                            DataCell(Center(child: Image.network(product.brand.logoUrl,width: 70,color:
-                                                    THelperFunctions.isDarkMode(
-                                                            context)
-                                                        ? TColors.light
-                                                        : TColors.dark,))),
+                            
                             DataCell(Text('\$${product.price.toStringAsFixed(2)}')),
                             DataCell(
                               Row(
@@ -145,7 +142,11 @@ class _ProductTableViewState extends State<ProductTableView> {
                                     icon: const Icon(Icons.edit, color: Colors.blue,),
                                     onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateProductView(product: product))),
                                     
+                                    
                                   ),
+                                    IconButton(
+                                    icon: const Icon(Icons.edit, color: Colors.blue,),
+                                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDescriptionPage(product: product,action: false,))),)
                                 ],
                               ),
                             ),

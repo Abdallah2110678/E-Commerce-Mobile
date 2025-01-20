@@ -43,7 +43,7 @@ class ProductController extends GetxController {
 
   // Observable values
   final editSelectedThumbnail = ''.obs;
-  Rxn<Category> editSelectedCategory = Rxn<Category>();
+  Rxn<Category> editSelectedCategory = Rxn<Category>(); // reactive nullable
   Rxn<Brand> editSelectedBrand = Rxn<Brand>();
 
   @override
@@ -99,7 +99,7 @@ class ProductController extends GetxController {
       final List<Brand> fetchedBrands = brandsSnapshot.docs.map((doc) {
         return Brand(
           id: doc.id,
-          name: doc.data()['name'] ?? 'Unnamed', // Default if 'name' is missing
+          name: doc.data()['name'] ?? '', // Default if 'name' is missing
           logoUrl:
               doc.data()['logoUrl'] ?? '', // Default if 'logoUrl' is missing
         );
@@ -134,35 +134,15 @@ class ProductController extends GetxController {
     try {
       isLoading.value = true;
 
-      // Validate required fields
-      if (editTitleController.text.trim().isEmpty) {
-        throw 'Product title is required';
-      }
-      if (editDescriptionController.text.trim().isEmpty) {
-        throw 'Product description is required';
-      }
-      if (double.tryParse(editPriceController.text) == null ||
-          double.parse(editPriceController.text) <= 0) {
-        throw 'Price must be greater than 0';
-      }
-      if (double.tryParse(editDiscountController.text) == null ||
-          double.parse(editDiscountController.text) < 0 ||
-          double.parse(editDiscountController.text) > 100) {
-        throw 'Discount must be between 0 and 100';
-      }
-      if (int.tryParse(editStockController.text) == null ||
-          int.parse(editStockController.text) < 0) {
-        throw 'Stock cannot be negative';
-      }
+    if (!formKey.currentState!.validate()) {
+      TLoaders.errorSnackBar(
+          title: 'Error', message: 'Please fill in all required fields');
+    }
+    
       if (editSelectedThumbnail.value.isEmpty) {
         throw 'Please select a thumbnail image';
       }
-      if (editSelectedCategory.value == null) {
-        throw 'Please select a category';
-      }
-      if (editSelectedBrand.value == null) {
-        throw 'Please select a brand';
-      }
+
 
       String updatedThumbnailUrl = product.thumbnailUrl;
 
@@ -207,6 +187,7 @@ class ProductController extends GetxController {
             final String filePath =
                 Uri.parse(product.thumbnailUrl).pathSegments.skip(1).join('/');
             await _supabase.storage.from('products').remove([filePath]);
+            
           }
         } catch (e) {
           print('Error uploading image: $e');
@@ -237,10 +218,6 @@ class ProductController extends GetxController {
           title: 'Success', message: 'Product updated successfully');
 
       fetchProducts();
-
-      // Reset form or navigate back
-
-      Get.back(result: updatedProduct);
     } catch (e) {
       TLoaders.errorSnackBar(
         title: 'Error',
@@ -272,7 +249,10 @@ class ProductController extends GetxController {
   }
 
   Future<void> submitProduct() async {
-    if (!formKey.currentState!.validate()) return;
+    if (!formKey.currentState!.validate()) {
+      TLoaders.errorSnackBar(
+          title: 'Error', message: 'Please fill in all required fields');
+    }
 
     await ensureBucketExists();
     final String fileExtension = path.extension(selectedThumbnail.value);
@@ -310,12 +290,6 @@ class ProductController extends GetxController {
       return;
     }
 
-    if (selectedCategory.value == null) {
-      TLoaders.errorSnackBar(
-          title: 'Error', message: 'Please select a category');
-      return;
-    }
-
     try {
       isLoading.value = true;
 
@@ -333,6 +307,7 @@ class ProductController extends GetxController {
       TLoaders.successSnackBar(
           title: 'Success', message: 'Product created successfully');
       resetForm();
+
     } catch (e) {
       TLoaders.errorSnackBar(
           title: 'Error', message: 'Failed to create product: $e');

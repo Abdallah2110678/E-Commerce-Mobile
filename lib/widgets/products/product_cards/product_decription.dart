@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:mobile_project/controllers/CartController.dart';
 import 'package:mobile_project/controllers/authentication.dart';
 import 'package:mobile_project/controllers/home_controller.dart';
+import 'package:mobile_project/controllers/user_controller.dart';
 import 'package:mobile_project/models/product.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:mobile_project/utils/constants/sizes.dart';
@@ -30,6 +31,7 @@ class ProductDescriptionPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final dark = THelperFunctions.isDarkMode(context);
     final user = AuthenticationRepository.instance.authUser;
+    final userController = UserController.instance;
 
     return Scaffold(
       appBar: AppBar(
@@ -203,7 +205,7 @@ class ProductDescriptionPage extends ConsumerWidget {
                             builder: (context) => AddRatingCommentScreen(
                               productId: product.id,
                               userId: user?.uid.toString() ?? '',
-                              userName: "user",
+                              userName: userController.user.value.fullName,
                             ),
                           ),
                         );
@@ -248,7 +250,7 @@ class ProductDescriptionPage extends ConsumerWidget {
                     ],
                   ),
                   trailing: Text(
-                    DateFormat('(hh-mm-ss)dd MMM yyyy').format(rc.timestamp),
+                    DateFormat('(hh-mm)dd MMM yyyy').format(rc.timestamp),
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ),

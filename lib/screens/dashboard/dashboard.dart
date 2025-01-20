@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_project/controllers/dashboard_controller.dart';
+import 'package:mobile_project/controllers/user_controller.dart';
 import 'package:mobile_project/screens/orders/orders.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -21,6 +22,7 @@ class _DashboardState extends State<Dashboard> {
   final DashboardController controller = Get.put(DashboardController());
   @override
   Widget build(BuildContext context) {
+    final userController = UserController.instance;
     return Scaffold(
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
@@ -42,7 +44,7 @@ class _DashboardState extends State<Dashboard> {
                   Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Welcome Back Admin!",
+                        Text('Welcome Back ${userController.user.value.fullName}',
                             style: GoogleFonts.poppins(
                                 color: Colors.white,
                                 fontSize: 20,
@@ -240,7 +242,7 @@ class _DashboardState extends State<Dashboard> {
             decoration: BoxDecoration(
                 gradient: LinearGradient(colors: [
                   color,
-                  color.withOpacity(0.7),
+                  color.withOpacity(0.5),
                 ], begin: Alignment.topLeft, end: Alignment.bottomRight),
                 borderRadius: BorderRadius.circular(15)),
             child: Stack(children: [
