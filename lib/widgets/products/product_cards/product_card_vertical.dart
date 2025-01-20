@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
-import 'package:mobile_project/controllers/CartController.dart'; // Import CartController
-import 'package:mobile_project/controllers/wishlist_controller.dart'; // Import WishlistController
-import 'package:mobile_project/models/product.dart'; // Import Product model
-import 'package:mobile_project/screens/styles/shadows.dart'; // Import shadows
-import 'package:mobile_project/utils/constants/colors.dart'; // Import colors
-import 'package:mobile_project/utils/constants/sizes.dart'; // Import sizes
-import 'package:mobile_project/utils/helpers/helper_functions.dart'; // Import helper functions
-import 'package:mobile_project/widgets/custom_shapes/rounded_container.dart'; // Import RoundedContainer
-import 'package:mobile_project/widgets/icons/circular_icon.dart'; // Import CircularIcon
-import 'package:mobile_project/widgets/images/rounded_image.dart'; // Import RoundedImage
-import 'package:mobile_project/widgets/products/product_cards/product_decription.dart'; // Import ProductDescriptionPage
-import 'package:mobile_project/widgets/texts/product_price_text.dart'; // Import ProductPriceText
+import 'package:get/get_core/src/get_main.dart';
+import 'package:mobile_project/controllers/wishlist_controller.dart';
+import 'package:mobile_project/models/product.dart';
+import 'package:mobile_project/screens/styles/shadows.dart';
+import 'package:mobile_project/utils/constants/colors.dart';
+import 'package:mobile_project/utils/constants/sizes.dart';
+import 'package:mobile_project/utils/helpers/helper_functions.dart';
+import 'package:mobile_project/widgets/products/PriceAndCartButton.dart';
+import 'package:mobile_project/widgets/products/ProductBrand.dart';
+import 'package:mobile_project/widgets/products/ProductImageAndTags.dart';
+import 'package:mobile_project/widgets/products/ProductTitle.dart';
+import 'package:mobile_project/widgets/products/product_cards/product_decription.dart';
 
 class TProductCardVertical extends ConsumerWidget {
   final Product product;
@@ -53,7 +52,11 @@ class TProductCardVertical extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             // Product Image and Tags
-            _buildProductImageAndTags(context),
+            ProductImageAndTags(
+              product: product,
+              isHomeScreen: isHomeScreen,
+              wishlistController: _wishlistController,
+            ),
 
             // Product Details
             Expanded(
@@ -63,10 +66,10 @@ class TProductCardVertical extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _buildProductTitle(context, darkMode),
-                    if (!isHomeScreen) _buildProductBrand(context, darkMode),
+                    ProductTitle(product: product, darkMode: darkMode),
+                    if (!isHomeScreen) ProductBrand(product: product, darkMode: darkMode),
                     const Spacer(),
-                    _buildPriceAndCartButton(context, ref),
+                    PriceAndCartButton(product: product),
                   ],
                 ),
               ),
@@ -74,132 +77,6 @@ class TProductCardVertical extends ConsumerWidget {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildProductImageAndTags(BuildContext context) {
-    return SizedBox(
-      height: isHomeScreen ? 120 : 160,
-      child: Stack(
-        children: [
-          // Product Image
-          TRoundedImage(
-            isNetworkImage: true,
-            imageUrl: product.thumbnailUrl,
-            applyImageRadius: true,
-          ),
-
-          // Discount Tag
-          if (product.discount > 0)
-            Positioned(
-              top: 8,
-              left: 8,
-              child: TRoundedContainer(
-                radius: TSizes.sm,
-                backgroundColor: TColors.secondary.withOpacity(0.8),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: TSizes.sm,
-                  vertical: TSizes.xs,
-                ),
-                child: Text(
-                  '${product.discount}%',
-                  style: Theme.of(context).textTheme.labelLarge!.apply(
-                        color: TColors.black,
-                      ),
-                ),
-              ),
-            ),
-
-          // Favorite Icon
-          Positioned(
-            top: 0,
-            right: 0,
-            child: Obx(
-              () => GestureDetector(
-                onTap: () => _wishlistController.toggleWishlist(product),
-                child: TCircularIcon(
-                  icon: _wishlistController.isInWishlist(product)
-                      ? Iconsax.heart5
-                      : Iconsax.heart,
-                  color: _wishlistController.isInWishlist(product)
-                      ? Colors.red
-                      : Colors.grey,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProductTitle(BuildContext context, bool darkMode) {
-    return Text(
-      product.title,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: Theme.of(context).textTheme.labelLarge!.copyWith(
-            color: darkMode ? TColors.white : TColors.dark,
-            fontWeight: FontWeight.w600,
-          ),
-    );
-  }
-
-  Widget _buildProductBrand(BuildContext context, bool darkMode) {
-    return Row(
-      children: [
-        if (product.brand.logoUrl.isNotEmpty) ...[
-          CircleAvatar(
-            backgroundImage: NetworkImage(product.brand.logoUrl),
-            radius: TSizes.iconXs,
-          ),
-          const SizedBox(width: TSizes.xs),
-        ],
-        Expanded(
-          child: Text(
-            product.brand.name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                  color: darkMode ? TColors.white : TColors.dark,
-                ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPriceAndCartButton(BuildContext context, WidgetRef ref) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        // Price
-        TProductPriceText(
-          price: '${product.discountedPrice.toStringAsFixed(2)}',
-          isLarge: false,
-        ),
-
-        // Cart Button
-        Container(
-          decoration: const BoxDecoration(
-            color: TColors.dark,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(TSizes.cardRadiusMd),
-              bottomRight: Radius.circular(TSizes.productImageRadius),
-            ),
-          ),
-          child: IconButton(
-            onPressed: () {
-              // Use .read to add the product to the cart
-              ref.read(cartControllerProvider.notifier).addItem(product);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Added to cart')),
-              );
-            },
-            icon: const Icon(Icons.add, color: TColors.white),
-          ),
-        ),
-      ],
     );
   }
 }
