@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:mobile_project/controllers/user_controller.dart';
-import 'package:mobile_project/screens/home/nav.dart';
+import 'package:mobile_project/screens/navbar/nav.dart';
 import 'package:mobile_project/screens/styles/spacing_styles.dart';
 import 'package:mobile_project/controllers/registration_controller.dart';
 import 'package:mobile_project/utils/constants/colors.dart';

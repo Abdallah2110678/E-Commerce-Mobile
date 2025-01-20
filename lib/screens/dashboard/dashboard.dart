@@ -4,12 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_project/controllers/dashboard_controller.dart';
-import 'package:mobile_project/screens/home/home.dart';
 import 'package:mobile_project/screens/orders/orders.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
-// import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
+import 'package:mobile_project/widgets/home/section_heading.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -125,7 +124,7 @@ class _DashboardState extends State<Dashboard> {
               if (controller.orders.isEmpty) {
                 return Center(child: Text('No orders found'));
               }
-               return SingleChildScrollView(
+              return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: DataTable(
                   columns: [

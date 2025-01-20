@@ -5,7 +5,6 @@ import 'package:iconsax/iconsax.dart';
 import 'package:mobile_project/controllers/CartController.dart'; // Import CartController
 import 'package:mobile_project/controllers/wishlist_controller.dart'; // Import WishlistController
 import 'package:mobile_project/models/product.dart'; // Import Product model
-import 'package:mobile_project/screens/Cart/Cart_Screen.dart'; // Import CartScreen
 import 'package:mobile_project/screens/styles/shadows.dart'; // Import shadows
 import 'package:mobile_project/utils/constants/colors.dart'; // Import colors
 import 'package:mobile_project/utils/constants/sizes.dart'; // Import sizes

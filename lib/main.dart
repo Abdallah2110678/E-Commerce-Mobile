@@ -10,7 +10,7 @@ import 'package:mobile_project/services/user_services.dart';
 import 'package:mobile_project/utils/helpers/network_manager.dart';
 import 'package:mobile_project/utils/theme/theme.dart';
 import 'package:mobile_project/screens/boarding_screen/onboarding_screen.dart';
-import 'package:mobile_project/screens/home/nav.dart';
+import 'package:mobile_project/screens/navbar/nav.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -34,9 +34,9 @@ void main() async {
     ),
   );
 
-  Get.lazyPut(() =>AuthenticationRepository());
-  Get.lazyPut(() =>WishlistController());
-  Get.lazyPut(() =>StoreController());
+  Get.lazyPut(() => AuthenticationRepository());
+  Get.lazyPut(() => WishlistController());
+  Get.lazyPut(() => StoreController());
 }
 
 class MyApp extends StatelessWidget {
@@ -72,9 +72,9 @@ class AuthCheck extends StatelessWidget {
 class GeneralBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut(() =>WishlistController());
-    Get.lazyPut(() =>NetworkManager());
-    Get.lazyPut(() =>UserController());
-    Get.lazyPut(() =>UserRepository());
+    Get.lazyPut(() => WishlistController());
+    Get.lazyPut(() => NetworkManager());
+    Get.lazyPut(() => UserController());
+    Get.lazyPut(() => UserRepository());
   }
 }
