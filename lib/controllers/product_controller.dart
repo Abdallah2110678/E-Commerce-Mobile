@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_project/utils/popups/loaders.dart';
 import 'package:path/path.dart' as path;
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_project/models/brand.dart';
@@ -34,10 +35,7 @@ class ProductController extends GetxController {
   RxList<Brand> brands = <Brand>[].obs; // Observable list of brands
   Rxn<Brand> selectedBrand = Rxn<Brand>(); // Observable for selected brand
 
-
-
-
-final editTitleController = TextEditingController();
+  final editTitleController = TextEditingController();
   final editDescriptionController = TextEditingController();
   final editPriceController = TextEditingController();
   final editDiscountController = TextEditingController();
@@ -48,11 +46,9 @@ final editTitleController = TextEditingController();
   Rxn<Category> editSelectedCategory = Rxn<Category>();
   Rxn<Brand> editSelectedBrand = Rxn<Brand>();
 
-
   @override
   void onInit() {
     super.onInit();
-    print('onInit called'); // Debug log
     fetchCategories();
     fetchBrands();
   }
@@ -66,8 +62,6 @@ final editTitleController = TextEditingController();
     stockController.dispose();
     super.onClose();
   }
-
-
 
   Future<void> ensureBucketExists() async {
     try {
@@ -136,140 +130,136 @@ final editTitleController = TextEditingController();
     }
   }
 
+  Future<void> updateProduct(Product product) async {
+    try {
+      isLoading.value = true;
 
-
-Future<void> updateProduct(Product product) async {
-  try {
-    isLoading.value = true;
-
-    // Validate required fields
-    if (editTitleController.text.trim().isEmpty) {
-      throw 'Product title is required';
-    }
-    if (editDescriptionController.text.trim().isEmpty) {
-      throw 'Product description is required';
-    }
-    if (double.tryParse(editPriceController.text) == null || double.parse(editPriceController.text) <= 0) {
-      throw 'Price must be greater than 0';
-    }
-    if (double.tryParse(editDiscountController.text) == null || double.parse(editDiscountController.text) < 0 || double.parse(editDiscountController.text) > 100) {
-      throw 'Discount must be between 0 and 100';
-    }
-    if (int.tryParse(editStockController.text) == null || int.parse(editStockController.text) < 0) {
-      throw 'Stock cannot be negative';
-    }
-    if (editSelectedThumbnail.value.isEmpty) {
-      throw 'Please select a thumbnail image';
-    }
-    if (editSelectedCategory.value == null) {
-      throw 'Please select a category';
-    }
-    if (editSelectedBrand.value == null) {
-      throw 'Please select a brand';
-    }
-
-    String updatedThumbnailUrl = product.thumbnailUrl;
-
-    // Handle new thumbnail upload if it's different from the current one
-    if (editSelectedThumbnail.value.isNotEmpty && editSelectedThumbnail.value != product.thumbnailUrl) {
-      await ensureBucketExists();
-
-      final String fileExtension = path.extension(editSelectedThumbnail.value);
-      final String uniqueFileName = 'product_images/${DateTime.now().millisecondsSinceEpoch}$fileExtension';
-
-      final File imageFile = File(editSelectedThumbnail.value);
-
-      // Validate image size and type
-      if (await imageFile.length() > 2 * 1024 * 1024) {
-        throw 'Image size must be less than 2MB';
+      // Validate required fields
+      if (editTitleController.text.trim().isEmpty) {
+        throw 'Product title is required';
       }
-      if (!['.jpg', '.jpeg', '.png', '.gif'].contains(fileExtension.toLowerCase())) {
-        throw 'Only JPG, PNG, and GIF files are allowed';
+      if (editDescriptionController.text.trim().isEmpty) {
+        throw 'Product description is required';
+      }
+      if (double.tryParse(editPriceController.text) == null ||
+          double.parse(editPriceController.text) <= 0) {
+        throw 'Price must be greater than 0';
+      }
+      if (double.tryParse(editDiscountController.text) == null ||
+          double.parse(editDiscountController.text) < 0 ||
+          double.parse(editDiscountController.text) > 100) {
+        throw 'Discount must be between 0 and 100';
+      }
+      if (int.tryParse(editStockController.text) == null ||
+          int.parse(editStockController.text) < 0) {
+        throw 'Stock cannot be negative';
+      }
+      if (editSelectedThumbnail.value.isEmpty) {
+        throw 'Please select a thumbnail image';
+      }
+      if (editSelectedCategory.value == null) {
+        throw 'Please select a category';
+      }
+      if (editSelectedBrand.value == null) {
+        throw 'Please select a brand';
       }
 
-      try {
-        // Upload the new thumbnail to Supabase
-        await _supabase.storage.from('products').upload(
-          uniqueFileName,
-          imageFile,
-          fileOptions: FileOptions(
-            contentType: 'image/${fileExtension.substring(1)}',
-            upsert: true,
-          ),
-        );
+      String updatedThumbnailUrl = product.thumbnailUrl;
 
-        // Get the public URL of the uploaded image
-        updatedThumbnailUrl = _supabase.storage.from('products').getPublicUrl(uniqueFileName);
+      // Handle new thumbnail upload if it's different from the current one
+      if (editSelectedThumbnail.value.isNotEmpty &&
+          editSelectedThumbnail.value != product.thumbnailUrl) {
+        await ensureBucketExists();
 
-        // Delete the old thumbnail from Supabase if it exists
-        if (product.thumbnailUrl.isNotEmpty) {
-          final String filePath = Uri.parse(product.thumbnailUrl).pathSegments.skip(1).join('/');
-          await _supabase.storage.from('products').remove([filePath]);
+        final String fileExtension =
+            path.extension(editSelectedThumbnail.value);
+        final String uniqueFileName =
+            'product_images/${DateTime.now().millisecondsSinceEpoch}$fileExtension';
+
+        final File imageFile = File(editSelectedThumbnail.value);
+
+        // Validate image size and type
+        if (await imageFile.length() > 2 * 1024 * 1024) {
+          throw 'Image size must be less than 2MB';
         }
-      } catch (e) {
-        print('Error uploading image: $e');
-        throw 'Failed to upload the new thumbnail.';
+        if (!['.jpg', '.jpeg', '.png', '.gif']
+            .contains(fileExtension.toLowerCase())) {
+          throw 'Only JPG, PNG, and GIF files are allowed';
+        }
+
+        try {
+          // Upload the new thumbnail to Supabase
+          await _supabase.storage.from('products').upload(
+                uniqueFileName,
+                imageFile,
+                fileOptions: FileOptions(
+                  contentType: 'image/${fileExtension.substring(1)}',
+                  upsert: true,
+                ),
+              );
+
+          // Get the public URL of the uploaded image
+          updatedThumbnailUrl =
+              _supabase.storage.from('products').getPublicUrl(uniqueFileName);
+
+          // Delete the old thumbnail from Supabase if it exists
+          if (product.thumbnailUrl.isNotEmpty) {
+            final String filePath =
+                Uri.parse(product.thumbnailUrl).pathSegments.skip(1).join('/');
+            await _supabase.storage.from('products').remove([filePath]);
+          }
+        } catch (e) {
+          print('Error uploading image: $e');
+          throw 'Failed to upload the new thumbnail.';
+        }
       }
+
+      // Update product in Firestore
+      final updatedProduct = Product(
+        id: product.id,
+        title: editTitleController.text.trim(),
+        description: editDescriptionController.text.trim(),
+        thumbnailUrl: updatedThumbnailUrl,
+        price: double.parse(editPriceController.text),
+        discount: double.parse(editDiscountController.text),
+        stock: int.parse(editStockController.text),
+        category: editSelectedCategory.value!,
+        brand: editSelectedBrand.value!,
+        imageUrls: product.imageUrls, // Keep existing images
+      );
+
+      await _firestore
+          .collection('products')
+          .doc(product.id)
+          .update(updatedProduct.toFirestore());
+
+      TLoaders.successSnackBar(
+          title: 'Success', message: 'Product updated successfully');
+
+      fetchProducts();
+
+      // Reset form or navigate back
+
+      Get.back(result: updatedProduct);
+    } catch (e) {
+      TLoaders.errorSnackBar(
+        title: 'Error',
+        message: e.toString(),
+      );
+    } finally {
+      isLoading.value = false;
     }
-
-    // Update product in Firestore
-    final updatedProduct = Product(
-      id: product.id,
-      title: editTitleController.text.trim(),
-      description: editDescriptionController.text.trim(),
-      thumbnailUrl: updatedThumbnailUrl,
-      price: double.parse(editPriceController.text),
-      discount: double.parse(editDiscountController.text),
-      stock: int.parse(editStockController.text),
-      category: editSelectedCategory.value!,
-      brand: editSelectedBrand.value!,
-      imageUrls: product.imageUrls, // Keep existing images
-    );
-
-    await _firestore.collection('products').doc(product.id).update(updatedProduct.toFirestore());
-
-    // Show success message
-    Get.snackbar(
-      'Success',
-      'Product updated successfully',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.green,
-      colorText: Colors.white,
-    );
-
-    // Fetch updated products (if needed)
-    fetchProducts();
-
-    // Reset form or navigate back
-    
-    Get.back(result: updatedProduct);
-  } catch (e) {
-    // Show error message
-    Get.snackbar(
-      'Error',
-      e.toString(),
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-    );
-  } finally {
-    isLoading.value = false;
   }
-}
 
   Future<void> editPickThumbnail() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile =
+        await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       editSelectedThumbnail.value = pickedFile.path;
     }
   }
-
-
-
-
-  
 
   Future<void> pickThumbnail() async {
     final ImagePicker picker = ImagePicker();
@@ -286,24 +276,24 @@ Future<void> updateProduct(Product product) async {
 
     await ensureBucketExists();
     final String fileExtension = path.extension(selectedThumbnail.value);
-      final String uniqueFileName = 'product_images/${DateTime.now().millisecondsSinceEpoch}$fileExtension';
+    final String uniqueFileName =
+        'product_images/${DateTime.now().millisecondsSinceEpoch}$fileExtension';
 
-      final File imageFile = File(selectedThumbnail.value);
+    final File imageFile = File(selectedThumbnail.value);
 
-      // Check file size (2MB limit)
-      final fileSize = await imageFile.length();
-      if (fileSize > 2 * 1024 * 1024) {
-        throw 'Image size must be less than 2MB';
-      }
+    // Check file size (2MB limit)
+    final fileSize = await imageFile.length();
+    if (fileSize > 2 * 1024 * 1024) {
+      throw 'Image size must be less than 2MB';
+    }
 
-      // Check file type
-      final validExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
-      if (!validExtensions.contains(fileExtension.toLowerCase())) {
-        throw 'Only JPG, PNG and GIF files are allowed';
-      }
+    // Check file type
+    final validExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
+    if (!validExtensions.contains(fileExtension.toLowerCase())) {
+      throw 'Only JPG, PNG and GIF files are allowed';
+    }
 
-    
-        await _supabase.storage.from('products').upload(
+    await _supabase.storage.from('products').upload(
           uniqueFileName,
           imageFile,
           fileOptions: FileOptions(
@@ -311,37 +301,18 @@ Future<void> updateProduct(Product product) async {
             upsert: true,
           ),
         );
-          final String imagUrl = _supabase.storage.from('products').getPublicUrl(uniqueFileName);
-
-
-
-
-
-
-
-
+    final String imagUrl =
+        _supabase.storage.from('products').getPublicUrl(uniqueFileName);
 
     if (selectedThumbnail.value.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please select a thumbnail image',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      TLoaders.errorSnackBar(
+          title: 'Error', message: 'Please select a thumbnail image');
       return;
     }
 
-    
-
     if (selectedCategory.value == null) {
-      Get.snackbar(
-        'Error',
-        'Please select a category',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      TLoaders.errorSnackBar(
+          title: 'Error', message: 'Please select a category');
       return;
     }
 
@@ -359,24 +330,12 @@ Future<void> updateProduct(Product product) async {
         brand: selectedBrand.value!,
         imageUrls: [],
       );
-
-      Get.snackbar(
-        'Success',
-        'Product created successfully',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
-
+      TLoaders.successSnackBar(
+          title: 'Success', message: 'Product created successfully');
       resetForm();
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to create product: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      TLoaders.errorSnackBar(
+          title: 'Error', message: 'Failed to create product: $e');
     } finally {
       isLoading.value = false;
     }
@@ -396,9 +355,6 @@ Future<void> updateProduct(Product product) async {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<Product> products = [];
-  DocumentSnapshot? lastDocument;
-  bool hasMore = true;
-  final int pageSize = 5;
 
 // Cache for brands to avoid repeated fetches
   Map<String, Brand> brandsCache = {};
@@ -418,56 +374,43 @@ Future<void> updateProduct(Product product) async {
 
 // Fetch products with pagination
   Future<List<Product>> fetchProducts() async {
-    if (!hasMore) return products;
-
     try {
       // Fetch all brands first
       await fetchAllBrands();
 
-      Query query = _firestore.collection('products').limit(pageSize);
-
-      if (lastDocument != null) {
-        query = query.startAfterDocument(lastDocument!);
-      }
-
+      Query query = _firestore.collection('products');
       final QuerySnapshot snapshot = await query.get();
+      // Fetch categories for these products
+      Map<String, Category> categoriesCache = {};
 
-      if (snapshot.docs.isNotEmpty) {
-        lastDocument = snapshot.docs.last;
-        if (snapshot.docs.length < pageSize) hasMore = false;
+      // Get unique category IDs from the products
+      Set<String> categoryIds = snapshot.docs
+          .map((doc) =>
+              (doc.data() as Map<String, dynamic>)['categoryId'] as String)
+          .toSet();
 
-        // Fetch categories for these products
-        Map<String, Category> categoriesCache = {};
+      // Fetch all needed categories at once
+      for (String categoryId in categoryIds) {
+        DocumentSnapshot categoryDoc =
+            await _firestore.collection('categories').doc(categoryId).get();
 
-        // Get unique category IDs from the products
-        Set<String> categoryIds = snapshot.docs
-            .map((doc) =>
-                (doc.data() as Map<String, dynamic>)['categoryId'] as String)
-            .toSet();
-
-        // Fetch all needed categories at once
-        for (String categoryId in categoryIds) {
-          DocumentSnapshot categoryDoc =
-              await _firestore.collection('categories').doc(categoryId).get();
-
-          categoriesCache[categoryId] = Category.fromFirestore(categoryDoc);
-        }
-
-        // Create Product objects
-        List<Product> newProducts = snapshot.docs.map((doc) {
-          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-          String categoryId = data['categoryId'];
-          String brandId = data['brandId'];
-
-          return Product.fromFirestore(
-            doc,
-            category: categoriesCache[categoryId]!,
-            brand: brandsCache[brandId]!,
-          );
-        }).toList();
-
-        products.addAll(newProducts);
+        categoriesCache[categoryId] = Category.fromFirestore(categoryDoc);
       }
+
+      // Create Product objects
+      List<Product> newProducts = snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        String categoryId = data['categoryId'];
+        String brandId = data['brandId'];
+
+        return Product.fromFirestore(
+          doc,
+          category: categoriesCache[categoryId]!,
+          brand: brandsCache[brandId]!,
+        );
+      }).toList();
+
+      products.addAll(newProducts);
 
       return products;
     } catch (e) {
@@ -476,22 +419,11 @@ Future<void> updateProduct(Product product) async {
     }
   }
 
-// Function to reset pagination
-  void resetPagination() {
-    products.clear();
-    lastDocument = null;
-    hasMore = true;
-    brandsCache.clear();
-  }
-
   // Delete a product
   Future<void> deleteProduct(Product product) async {
     try {
       // Delete the document
       await _firestore.collection('products').doc(product.id).delete();
-
-      // Optionally delete the image from Firebase Storage
-      // await FirebaseStorage.instance.ref(product.imagePath).delete();
     } catch (e) {
       throw Exception('Failed to delete product: $e');
     }

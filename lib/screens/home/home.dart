@@ -155,7 +155,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final email = TextEditingController();
     final controller = UserController.instance;
-
+    HomeController homeController = Get.put(HomeController());
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -245,7 +245,7 @@ class HomeScreen extends StatelessWidget {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => AllProductsScreen(
-                                          products: products,
+                                          products: homeController.products,
                                         ),
                                       ),
                                     );
@@ -254,22 +254,34 @@ class HomeScreen extends StatelessWidget {
                                 showActionButton: _searchQuery.value.isEmpty,
                               ),
                               const SizedBox(height: TSizes.spaceBtwItems),
-                              GridView.builder(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: TSizes.sm,
-                                  mainAxisSpacing: TSizes.sm,
-                                  childAspectRatio: 0.8,
-                                ),
-                                itemCount: products.length,
-                                itemBuilder: (context, index) {
-                                  return TProductCardVertical(
-                                      product: products[index]);
-                                },
-                              ),
+                              Obx(() {
+                                // Show loading indicator
+
+                                // Show empty message if no products
+                                if (homeController.products.isEmpty) {
+                                  return const Center(
+                                      child: Text('No products available'));
+                                }
+
+                                // Show the product grid
+                                return GridView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  gridDelegate:
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    crossAxisSpacing: TSizes.sm,
+                                    mainAxisSpacing: TSizes.sm,
+                                    childAspectRatio: 0.8,
+                                  ),
+                                  itemCount: homeController.products.length,
+                                  itemBuilder: (context, index) {
+                                    return TProductCardVertical(
+                                        product:
+                                            homeController.products[index]);
+                                  },
+                                );
+                              })
                             ],
                           );
                         },
@@ -752,6 +764,7 @@ class TCartCounterIcon extends ConsumerWidget {
     }
   }
 }
+
 ///home
 
 class THomeAppBar extends StatelessWidget {

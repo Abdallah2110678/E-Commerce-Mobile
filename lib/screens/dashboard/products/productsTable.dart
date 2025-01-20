@@ -154,11 +154,6 @@ class _ProductTableViewState extends State<ProductTableView> {
                       ),
                     ),
             ),
-            if (_controller.hasMore)
-              ElevatedButton(
-                onPressed: _loadProducts,
-                child: const Text('Load More'),
-              ),
           ],
         ),
       ),

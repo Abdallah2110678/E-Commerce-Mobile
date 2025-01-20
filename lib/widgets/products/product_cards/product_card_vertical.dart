@@ -176,7 +176,7 @@ class TProductCardVertical extends ConsumerWidget {
       children: [
         // Price
         TProductPriceText(
-          price: '\$${product.discountedPrice.toStringAsFixed(2)}',
+          price: '${product.discountedPrice.toStringAsFixed(2)}',
           isLarge: false,
         ),
 

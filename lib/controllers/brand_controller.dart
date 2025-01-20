@@ -5,12 +5,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
+import 'package:mobile_project/utils/popups/loaders.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path/path.dart' as path;
 
 class BrandController extends GetxController {
-  
   // Firebase and Supabase instances
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final SupabaseClient _supabase = Supabase.instance.client;
@@ -18,7 +18,6 @@ class BrandController extends GetxController {
   RxString selectedLogo = ''.obs;
   TextEditingController nameController = TextEditingController();
 
-  
   // Loading state
   RxBool isLoading = false.obs;
 
@@ -53,7 +52,7 @@ class BrandController extends GetxController {
               public: true, // Make bucket public
             ),
           );
-          
+
           await _supabase.rpc('create_storage_policy', params: {
             'bucket_name': 'brands',
             'policy_name': 'Public Access',
@@ -106,7 +105,7 @@ class BrandController extends GetxController {
       }
 
       try {
-          await _supabase.storage.from('brands').upload(
+        await _supabase.storage.from('brands').upload(
               uniqueFileName,
               logoFile,
               fileOptions: FileOptions(
@@ -129,25 +128,14 @@ class BrandController extends GetxController {
 
         clearInputs();
         fetchFeaturedBrands();
-        Get.snackbar(
-          'Success',
-          'Brand created successfully',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
+        TLoaders.successSnackBar(
+            title: 'Success', message: 'Brand created successfully');
       } catch (uploadError) {
         print('Upload error: $uploadError');
         throw 'Failed to upload image. Please try again.';
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        e.toString(),
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      TLoaders.errorSnackBar(title: 'Error', message: e.toString());
     } finally {
       isLoading.value = false;
     }
@@ -202,13 +190,10 @@ class BrandController extends GetxController {
           .get();
 
       if (productSnapshot.docs.isNotEmpty) {
-        Get.snackbar(
-          'Cannot Delete Brand',
-          'This brand is associated with ${productSnapshot.docs.length} products.',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        TLoaders.errorSnackBar(
+            title: 'Cannot Delete Brand',
+            message:
+                'This brand is associated with ${productSnapshot.docs.length} products.');
         return;
       }
 
@@ -298,17 +283,11 @@ class BrandController extends GetxController {
             .delete();
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to delete brand: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      TLoaders.successSnackBar(
+          title: 'Success', message: 'Failed to delete brand: ${e.toString()}');
     }
   }
 
-  
   RxString edit_selectedLogo = ''.obs;
   TextEditingController edit_nameController = TextEditingController();
 // Function to pick a logo for editing from the gallery
@@ -411,21 +390,11 @@ class BrandController extends GetxController {
       });
 
       fetchFeaturedBrands();
-      Get.snackbar(
-        'Success',
-        'Brand updated successfully',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
+
+      TLoaders.successSnackBar(
+          title: 'Success', message: 'Brand updated successfully');
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        e.toString(),
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      TLoaders.errorSnackBar(title: 'Error', message: e.toString());
     } finally {
       isLoading.value = false;
     }
