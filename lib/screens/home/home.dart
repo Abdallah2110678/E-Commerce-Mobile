@@ -24,8 +24,12 @@ class HomeScreen extends StatelessWidget {
 
   final TextEditingController _searchController = TextEditingController();
   final RxString _searchQuery = ''.obs;
+  final UserController _controller = Get.put(UserController());
   final StoreController _storeController = Get.find<StoreController>();
   final HomeController _homeController = Get.put(HomeController());
+
+  final RxBool _isLoading = false.obs;
+
   Future<String?> _getAdminEmail() async {
     try {
       final snapshot = await FirebaseFirestore.instance
@@ -113,155 +117,210 @@ class HomeScreen extends StatelessWidget {
     }
   }
 
+  Future<void> _loadUsers() async {
+    try {
+      _isLoading.value = true;
+
+      // Refresh all necessary data
+      await Future.wait([
+        _controller.loadUsers(), // Refresh users
+        _homeController.fetchAllProducts(), // Refresh products
+      ]);
+    } catch (e) {
+      // Show error message
+      Get.snackbar(
+        'Error',
+        'Failed to refresh the page',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red.withOpacity(0.7),
+        colorText: Colors.white,
+      );
+      debugPrint('Error refreshing page: $e');
+    } finally {
+      _isLoading.value = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            TPrimaryHeaderContainer(
-              child: Column(
-                children: [
-                  const THomeAppBar(),
-                  const SizedBox(height: TSizes.spaceBtwSections),
-                  TSearchContainer(
-                    text: 'Search in Store',
-                    controller: _searchController,
-                    onChanged: (value) {
-                      _searchQuery.value = value; // Update search query
-                    },
-                  ),
-                  const SizedBox(height: TSizes.spaceBtwSections),
-                  const Padding(
-                    padding: EdgeInsets.only(left: TSizes.defaultSpace),
-                    child: Column(
+      body: RefreshIndicator(
+        onRefresh: _loadUsers,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // Header Section
+              TPrimaryHeaderContainer(
+                child: Column(
+                  children: [
+                    // App Bar with Refresh Button
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        TSectionHeading(
-                          title: 'Popular Categories',
-                          showActionButton: false,
-                          textColor: Colors.white,
+                        const Expanded(child: THomeAppBar()),
+                        Obx(
+                          () => _isLoading.value
+                              ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : IconButton(
+                                  icon: const Icon(Icons.refresh,
+                                      color: Colors.white),
+                                  onPressed: _loadUsers,
+                                ),
                         ),
-                        SizedBox(height: TSizes.spaceBtwSections),
-                        THomeCategories(),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: TSizes.spaceBtwSections),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(TSizes.defaultSpace),
-              child: Column(
-                children: [
-                  const TPromoSlider(banners: TImages.banners),
-                  const SizedBox(height: TSizes.spaceBtwSections),
+                    const SizedBox(height: TSizes.spaceBtwSections),
 
-                  // Display Products by Search or Default
-                  Obx(() {
-                    if (_searchQuery.value.isEmpty) {
-                      // Show Popular Products if no search query
-                      return Column(
+                    // Search Bar
+                    TSearchContainer(
+                      text: 'Search in Store',
+                      controller: _searchController,
+                      onChanged: (value) {
+                        _searchQuery.value = value;
+                      },
+                    ),
+                    const SizedBox(height: TSizes.spaceBtwSections),
+
+                    // Categories Section
+                    const Padding(
+                      padding: EdgeInsets.only(left: TSizes.defaultSpace),
+                      child: Column(
                         children: [
                           TSectionHeading(
-                            title: 'Popular Products',
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => AllProductsScreen(
-                                    products: _homeController.products,
-                                  ),
-                                ),
-                              );
-                            },
-                            showActionButton: true,
+                            title: 'Popular Categories',
+                            showActionButton: false,
+                            textColor: Colors.white,
                           ),
-                          const SizedBox(height: TSizes.spaceBtwItems),
-                          Obx(() {
-                            if (_homeController.products.isEmpty) {
-                              return const Center(
-                                  child: Text('No products available'));
-                            }
-
-                            return GridView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: TSizes.sm,
-                                mainAxisSpacing: TSizes.sm,
-                                childAspectRatio: 0.8,
-                              ),
-                              itemCount: _homeController.products.length,
-                              itemBuilder: (context, index) {
-                                return TProductCardVertical(
-                                    product: _homeController.products[index]);
-                              },
-                            );
-                          }),
+                          SizedBox(height: TSizes.spaceBtwSections),
+                          THomeCategories(),
                         ],
-                      );
-                    } else {
-                      // Show Search Results if there is a search query
-                      return Column(
-                        children: [
-                          const SizedBox(height: TSizes.spaceBtwSections),
-                          TSectionHeading(
-                            title: 'Search Results',
-                            onPressed: () {},
-                          ),
-                          const SizedBox(height: TSizes.spaceBtwItems),
-                          StreamBuilder<QuerySnapshot>(
-                            stream: _storeController
-                                .searchProducts(_searchQuery.value),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const Center(
-                                    child: CircularProgressIndicator());
-                              }
+                      ),
+                    ),
+                    const SizedBox(height: TSizes.spaceBtwSections),
+                  ],
+                ),
+              ),
 
-                              if (snapshot.hasError) {
-                                return Center(
-                                    child: Text('Error: ${snapshot.error}'));
-                              }
+              // Products Section
+              Padding(
+                padding: const EdgeInsets.all(TSizes.defaultSpace),
+                child: Column(
+                  children: [
+                    const TPromoSlider(banners: TImages.banners),
+                    const SizedBox(height: TSizes.spaceBtwSections),
 
-                              if (!snapshot.hasData ||
-                                  snapshot.data!.docs.isEmpty) {
-                                return const Center(
-                                  child: Padding(
-                                    padding:
-                                        EdgeInsets.all(TSizes.defaultSpace),
-                                    child: Text('No products found'),
+                    // Products or Search Results
+                    Obx(() {
+                      if (_searchQuery.value.isEmpty) {
+                        // Show Popular Products
+                        return Column(
+                          children: [
+                            TSectionHeading(
+                              title: 'Popular Products',
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => AllProductsScreen(
+                                      products: _homeController.products,
+                                    ),
                                   ),
                                 );
+                              },
+                              showActionButton: true,
+                            ),
+                            const SizedBox(height: TSizes.spaceBtwItems),
+                            Obx(() {
+                              if (_homeController.products.isEmpty) {
+                                return const Center(
+                                    child: Text('No products available'));
                               }
 
-                              // Convert Firestore documents to Product objects
-                              final products = snapshot.data!.docs.map((doc) {
-                                return _storeController
-                                    .productFromSnapshot(doc);
-                              }).toList();
-
-                              // Display products using TGridLayout and TProductCardVertical
-                              return TGridLayout(
-                                itemCount: products.length,
-                                itemBuilder: (_, index) => TProductCardVertical(
-                                  product: products[index],
+                              return GridView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: TSizes.sm,
+                                  mainAxisSpacing: TSizes.sm,
+                                  childAspectRatio: 0.8,
                                 ),
+                                itemCount: _homeController.products.length,
+                                itemBuilder: (context, index) {
+                                  return TProductCardVertical(
+                                      product: _homeController.products[index]);
+                                },
                               );
-                            },
-                          ),
-                        ],
-                      );
-                    }
-                  }),
-                ],
+                            }),
+                          ],
+                        );
+                      } else {
+                        // Show Search Results
+                        return Column(
+                          children: [
+                            const SizedBox(height: TSizes.spaceBtwSections),
+                            TSectionHeading(
+                              title: 'Search Results',
+                              onPressed: () {},
+                            ),
+                            const SizedBox(height: TSizes.spaceBtwItems),
+                            StreamBuilder<QuerySnapshot>(
+                              stream: _storeController
+                                  .searchProducts(_searchQuery.value),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                }
+
+                                if (snapshot.hasError) {
+                                  return Center(
+                                      child: Text('Error: ${snapshot.error}'));
+                                }
+
+                                if (!snapshot.hasData ||
+                                    snapshot.data!.docs.isEmpty) {
+                                  return const Center(
+                                    child: Padding(
+                                      padding:
+                                          EdgeInsets.all(TSizes.defaultSpace),
+                                      child: Text('No products found'),
+                                    ),
+                                  );
+                                }
+
+                                final products = snapshot.data!.docs
+                                    .map((doc) => _storeController
+                                        .productFromSnapshot(doc))
+                                    .toList();
+
+                                return TGridLayout(
+                                  itemCount: products.length,
+                                  itemBuilder: (_, index) =>
+                                      TProductCardVertical(
+                                    product: products[index],
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        );
+                      }
+                    }),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
