@@ -37,6 +37,7 @@ class HomeScreen extends StatelessWidget {
   final TextEditingController _searchController = TextEditingController();
   final RxString _searchQuery = ''.obs;
   final StoreController _storeController = Get.find<StoreController>();
+  final HomeController _homeController = Get.put(HomeController());
   Future<String?> _getAdminEmail() async {
     try {
       final snapshot = await FirebaseFirestore.instance
@@ -124,38 +125,8 @@ class HomeScreen extends StatelessWidget {
     }
   }
 
-  Future<List<Product>> _fetchProducts() async {
-    try {
-      final productsSnapshot =
-          await FirebaseFirestore.instance.collection('products').get();
-      final categoriesSnapshot =
-          await FirebaseFirestore.instance.collection('categories').get();
-      final brandsSnapshot =
-          await FirebaseFirestore.instance.collection('brands').get();
-
-      final categoryMap = {
-        for (var doc in categoriesSnapshot.docs)
-          doc.id: Category.fromFirestore(doc)
-      };
-      final brandMap = {
-        for (var doc in brandsSnapshot.docs) doc.id: Brand.fromFirestore(doc)
-      };
-
-      return productsSnapshot.docs.map((doc) {
-        final category = categoryMap[doc['categoryId']]!;
-        final brand = brandMap[doc['brandId']]!;
-        return Product.fromFirestore(doc, category: category, brand: brand);
-      }).toList();
-    } catch (e) {
-      throw Exception('Failed to load products: $e');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final email = TextEditingController();
-    final controller = UserController.instance;
-    HomeController homeController = Get.put(HomeController());
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -169,7 +140,7 @@ class HomeScreen extends StatelessWidget {
                     text: 'Search in Store',
                     controller: _searchController,
                     onChanged: (value) {
-                      _searchQuery.value = value;
+                      _searchQuery.value = value; // Update search query
                     },
                   ),
                   const SizedBox(height: TSizes.spaceBtwSections),
@@ -198,94 +169,107 @@ class HomeScreen extends StatelessWidget {
                   const TPromoSlider(banners: TImages.banners),
                   const SizedBox(height: TSizes.spaceBtwSections),
 
-                  // Updated Products Section with Search
-                  Obx(() => StreamBuilder<QuerySnapshot>(
-                        stream: _searchQuery.value.isNotEmpty
-                            ? _storeController
-                                .searchProducts(_searchQuery.value)
-                            : FirebaseFirestore.instance
-                                .collection('products')
-                                .snapshots(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          }
-                          if (snapshot.hasError) {
-                            return Center(
-                                child: Text('Error: ${snapshot.error}'));
-                          }
+                  // Display Products by Search or Default
+                  Obx(() {
+                    if (_searchQuery.value.isEmpty) {
+                      return const SizedBox.shrink(); // Hide if no search query
+                    }
 
-                          if (!snapshot.hasData ||
-                              snapshot.data!.docs.isEmpty) {
-                            return const Center(
-                              child: Padding(
-                                padding: EdgeInsets.all(TSizes.defaultSpace),
-                                child: Text('No products found'),
+                    return Column(
+                      children: [
+                        const SizedBox(height: TSizes.spaceBtwSections),
+                        TSectionHeading(
+                          title: 'Search Results',
+                          onPressed: () {},
+                        ),
+                        const SizedBox(height: TSizes.spaceBtwItems),
+                        StreamBuilder<QuerySnapshot>(
+                          stream: _storeController
+                              .searchProducts(_searchQuery.value),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            }
+
+                            if (snapshot.hasError) {
+                              return Center(
+                                  child: Text('Error: ${snapshot.error}'));
+                            }
+
+                            if (!snapshot.hasData ||
+                                snapshot.data!.docs.isEmpty) {
+                              return const Center(
+                                child: Padding(
+                                  padding: EdgeInsets.all(TSizes.defaultSpace),
+                                  child: Text('No products found'),
+                                ),
+                              );
+                            }
+
+                            // Convert Firestore documents to Product objects
+                            final products = snapshot.data!.docs.map((doc) {
+                              return _storeController.productFromSnapshot(doc);
+                            }).toList();
+
+                            // Display products using TGridLayout and TProductCardVertical
+                            return TGridLayout(
+                              itemCount: products.length,
+                              itemBuilder: (_, index) => TProductCardVertical(
+                                product: products[index],
                               ),
                             );
+                          },
+                        ),
+                      ],
+                    );
+                  }),
+
+                  // Display Popular Products if no search query
+                  if (_searchQuery.value.isEmpty)
+                    Column(
+                      children: [
+                        TSectionHeading(
+                          title: 'Popular Products',
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AllProductsScreen(
+                                  products: _homeController.products,
+                                ),
+                              ),
+                            );
+                          },
+                          showActionButton: true,
+                        ),
+                        const SizedBox(height: TSizes.spaceBtwItems),
+                        Obx(() {
+                          if (_homeController.products.isEmpty) {
+                            return const Center(
+                                child: Text('No products available'));
                           }
 
-                          // Convert Firestore documents to Product objects
-                          final products = snapshot.data!.docs
-                              .map((doc) =>
-                                  _storeController.productFromSnapshot(doc))
-                              .toList();
-
-                          return Column(
-                            children: [
-                              TSectionHeading(
-                                title: _searchQuery.value.isEmpty
-                                    ? 'Popular Products'
-                                    : 'Search Results',
-                                onPressed: () {
-                                  if (_searchQuery.value.isEmpty) {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => AllProductsScreen(
-                                          products: homeController.products,
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                },
-                                showActionButton: _searchQuery.value.isEmpty,
-                              ),
-                              const SizedBox(height: TSizes.spaceBtwItems),
-                              Obx(() {
-                                // Show loading indicator
-
-                                // Show empty message if no products
-                                if (homeController.products.isEmpty) {
-                                  return const Center(
-                                      child: Text('No products available'));
-                                }
-
-                                // Show the product grid
-                                return GridView.builder(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  gridDelegate:
-                                      const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    crossAxisSpacing: TSizes.sm,
-                                    mainAxisSpacing: TSizes.sm,
-                                    childAspectRatio: 0.8,
-                                  ),
-                                  itemCount: homeController.products.length,
-                                  itemBuilder: (context, index) {
-                                    return TProductCardVertical(
-                                        product:
-                                            homeController.products[index]);
-                                  },
-                                );
-                              })
-                            ],
+                          return GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: TSizes.sm,
+                              mainAxisSpacing: TSizes.sm,
+                              childAspectRatio: 0.8,
+                            ),
+                            itemCount: _homeController.products.length,
+                            itemBuilder: (context, index) {
+                              return TProductCardVertical(
+                                  product: _homeController.products[index]);
+                            },
                           );
-                        },
-                      )),
+                        }),
+                      ],
+                    ),
                 ],
               ),
             ),
@@ -293,7 +277,8 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _navigateToChat(context, controller.user.value.email),
+        onPressed: () =>
+            _navigateToChat(context, UserController.instance.user.value.email),
         backgroundColor: Colors.blue,
         child: const Icon(Icons.message, color: Colors.white),
       ),
