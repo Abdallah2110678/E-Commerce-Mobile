@@ -3,11 +3,12 @@ import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mobile_project/controllers/store_controller.dart'; // Import StoreController
 import 'package:mobile_project/screens/home/appbar.dart';
-import 'package:mobile_project/screens/home/home.dart';
 import 'package:mobile_project/utils/constants/enum.dart';
 import 'package:mobile_project/utils/constants/sizes.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:mobile_project/utils/helpers/helper_functions.dart';
+import 'package:mobile_project/widgets/home/search_container.dart';
+import 'package:mobile_project/widgets/home/section_heading.dart';
 import 'package:mobile_project/widgets/layout/grid_layout.dart';
 import 'package:mobile_project/widgets/products/product_cards/product_card_vertical.dart';
 import 'package:mobile_project/widgets/images/circular_image.dart';
@@ -26,9 +27,6 @@ class StoreScreen extends StatelessWidget {
     return Scaffold(
       appBar: TAppbar(
         title: Text('Store', style: Theme.of(context).textTheme.headlineMedium),
-        actions: const [
-          // Add a cart icon or other actions if needed
-        ],
       ),
       body: SingleChildScrollView(
         child: Padding(

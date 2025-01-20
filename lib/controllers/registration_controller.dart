@@ -5,7 +5,7 @@ import 'package:mobile_project/controllers/authentication.dart';
 import 'package:mobile_project/controllers/user_controller.dart';
 import 'package:mobile_project/services/user_services.dart';
 import 'package:mobile_project/models/usermodel.dart';
-import 'package:mobile_project/screens/home/nav.dart';
+import 'package:mobile_project/screens/navbar/nav.dart';
 import 'package:mobile_project/utils/constants/image_setting.dart';
 import 'package:mobile_project/utils/helpers/network_manager.dart';
 import 'package:mobile_project/utils/popups/full_screen_loader.dart';
