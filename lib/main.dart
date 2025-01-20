@@ -75,6 +75,6 @@ class GeneralBinding extends Bindings {
     Get.lazyPut(() =>WishlistController());
     Get.lazyPut(() =>NetworkManager());
     Get.lazyPut(() =>UserController());
-    Get.lazyPut(() =>UserRepository());
+    Get.put(UserRepository());
   }
 }
