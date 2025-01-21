@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:mobile_project/screens/dashboard/category/createCategory.dart';
 import 'package:mobile_project/screens/dashboard/category/editCategory.dart';
 import 'package:mobile_project/screens/dashboard/category/listCategory.dart';
+import 'package:mobile_project/utils/helpers/helper_functions.dart';
 import 'package:mobile_project/widgets/layout/grid_layout.dart';
 
 class CategoryManagementScreen extends StatelessWidget {
@@ -46,6 +47,9 @@ final CategoryController categoryController = Get.put(CategoryController());
                     return await showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
+                          backgroundColor: THelperFunctions.isDarkMode(context)
+                            ? Colors.grey[800]
+                            : Colors.white,
                         title: const Text("Confirm Delete"),
                         content: Text(
                             "Are you sure you want to delete ${category['name']}?"),

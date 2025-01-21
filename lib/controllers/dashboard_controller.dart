@@ -10,7 +10,6 @@ class DashboardController extends GetxController {
   var totalAmount = 0.0.obs;
   final RxList<Orders> orders = <Orders>[].obs;
 
-
   final RxBool isLoading = false.obs;
   @override
   void onInit() {
@@ -24,7 +23,6 @@ class DashboardController extends GetxController {
     orderCount.value = await _fetchOrderCount();
     totalAmount.value = await fetchTotalAmount();
     await fetchLastFiveOrders();
-  
   }
 
   Future<int> _fetchUserCount() async {
@@ -46,26 +44,29 @@ class DashboardController extends GetxController {
   }
 
   Future<double> fetchTotalAmount() async {
-  double totalAmount = 0.0;
-  QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('orders').get();
-  for (var doc in querySnapshot.docs) {
-    totalAmount += doc['totalAmount'];
+    double totalAmount = 0.0;
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('orders')
+        .where('status', isEqualTo: 'delivered') // Filter by status
+        .get();
+    for (var doc in querySnapshot.docs) {
+      totalAmount += doc['totalAmount'];
+      print(totalAmount);
+    }
+    return double.parse(totalAmount.toStringAsFixed(2));
   }
-  return double.parse(totalAmount.toStringAsFixed(2));
-}
 
-Future<void> fetchLastFiveOrders() async {
+  Future<void> fetchLastFiveOrders() async {
     try {
       isLoading.value = true;
-    final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-    .collection('orders')
-    .orderBy('timestamp', descending: true)
-    .limit(5)
-    .get();
+      final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('orders')
+          .orderBy('timestamp', descending: true)
+          .limit(5)
+          .get();
 
-      orders.value = querySnapshot.docs
-          .map((doc) => Orders.fromFirestore(doc))
-          .toList();
+      orders.value =
+          querySnapshot.docs.map((doc) => Orders.fromFirestore(doc)).toList();
     } catch (e) {
       print('Error fetching orders: $e');
     } finally {
@@ -73,12 +74,15 @@ Future<void> fetchLastFiveOrders() async {
     }
   }
 
-   Future<void> updateOrderStatus(String orderId, String newStatus) async {
+  Future<void> updateOrderStatus(String orderId, String newStatus) async {
     try {
-      await FirebaseFirestore.instance.collection('orders').doc(orderId).update({
+      await FirebaseFirestore.instance
+          .collection('orders')
+          .doc(orderId)
+          .update({
         'status': newStatus,
       });
-      
+
       // Update local state
       final index = orders.indexWhere((order) => order.id == orderId);
       if (index != -1) {
@@ -97,7 +101,7 @@ Future<void> fetchLastFiveOrders() async {
         orders[index] = updatedOrder;
         orders.refresh();
       }
-      
+
       Get.snackbar(
         'Success',
         'Order status updated successfully',

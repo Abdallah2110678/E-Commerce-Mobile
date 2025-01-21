@@ -8,7 +8,7 @@ class Product {
   String title;
   String description;
   String thumbnailUrl;
-  List<String> imageUrls;
+
   double price;
   double discount;
   int stock;
@@ -22,7 +22,7 @@ class Product {
     required this.title,
     required this.description,
     required this.thumbnailUrl,
-    required this.imageUrls,
+    
     required this.price,
     required this.discount,
     required this.stock,
@@ -50,7 +50,7 @@ class Product {
       'title': title,
       'description': description,
       'thumbnailUrl': thumbnailUrl,
-      'imageUrls': imageUrls.join(','), // Storing list as comma-separated string
+     // Storing list as comma-separated string
       'price': price,
       'discount': discount,
       'stock': stock,
@@ -66,7 +66,7 @@ class Product {
       title: map['title'],
       description: map['description'],
       thumbnailUrl: map['thumbnailUrl'],
-      imageUrls: map['imageUrls'].split(','), // Convert back to list
+     // Convert back to list
       price: map['price'],
       discount: map['discount'],
       stock: map['stock'],
@@ -95,7 +95,7 @@ class Product {
       title: data['title'] ?? '',
       description: data['description'] ?? '',
       thumbnailUrl: data['thumbnailUrl'] ?? '',
-      imageUrls: List<String>.from(data['imageUrls'] ?? []),
+  
       price: (data['price'] as num).toDouble(),
       discount: (data['discount'] as num).toDouble(),
       stock: (data['stock'] as num).toInt(),
@@ -111,7 +111,6 @@ class Product {
       'title': title,
       'description': description,
       'thumbnailUrl': thumbnailUrl,
-      'imageUrls': imageUrls,
       'price': price,
       'discount': discount,
       'stock': stock,
