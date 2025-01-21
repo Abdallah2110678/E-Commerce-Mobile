@@ -120,6 +120,7 @@ class _ProductTableViewState extends State<ProductTableView> {
                         
                           DataColumn(label: Text('Price', style: TextStyle(fontWeight: FontWeight.bold))),
                           DataColumn(label: Text('Action', style: TextStyle(fontWeight: FontWeight.bold))),
+                          DataColumn(label: Text('Details', style: TextStyle(fontWeight: FontWeight.bold))),
                         ],
                         rows: _controller.products
                             .where((product) => product.title.toLowerCase().contains(_searchQuery))
@@ -141,15 +142,13 @@ class _ProductTableViewState extends State<ProductTableView> {
                                   IconButton(
                                     icon: const Icon(Icons.edit, color: Colors.blue,),
                                     onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateProductView(product: product))),
-                                    
-                                    
+                                  
                                   ),
-                                    IconButton(
-                                    icon: const Icon(Icons.edit, color: Colors.blue,),
-                                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDescriptionPage(product: product,action: false,))),)
                                 ],
                               ),
                             ),
+                            DataCell( TextButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDescriptionPage(product: product,action: false,))),
+                            child: Text('view', style: TextStyle(fontWeight: FontWeight.bold)))),
                           ]);
                         }).toList(),
                       ),

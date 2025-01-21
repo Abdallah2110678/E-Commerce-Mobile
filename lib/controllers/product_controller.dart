@@ -206,7 +206,7 @@ class ProductController extends GetxController {
         stock: int.parse(editStockController.text),
         category: editSelectedCategory.value!,
         brand: editSelectedBrand.value!,
-        imageUrls: product.imageUrls, // Keep existing images
+      // Keep existing images
       );
 
       await _firestore
@@ -302,7 +302,6 @@ class ProductController extends GetxController {
         stock: int.parse(stockController.text),
         category: selectedCategory.value!,
         brand: selectedBrand.value!,
-        imageUrls: [],
       );
       TLoaders.successSnackBar(
           title: 'Success', message: 'Product created successfully');
@@ -407,8 +406,7 @@ class ProductController extends GetxController {
   Future<void> createProduct({
     required String title,
     required String description,
-    required String thumbnailUrl, // Changed from thumbnail File
-    required List<String> imageUrls, // Changed from List<File>
+    required String thumbnailUrl, // Changed from thumbnail File// Changed from List<File>
     required double price,
     required double discount,
     required int stock,
@@ -422,7 +420,7 @@ class ProductController extends GetxController {
         title: title,
         description: description,
         thumbnailUrl: thumbnailUrl,
-        imageUrls: imageUrls,
+      
         price: price,
         discount: discount,
         stock: stock,

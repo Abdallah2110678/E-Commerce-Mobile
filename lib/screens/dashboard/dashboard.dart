@@ -9,6 +9,7 @@ import 'package:mobile_project/screens/orders/orders.dart';
 import 'package:mobile_project/utils/constants/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
+import 'package:mobile_project/utils/helpers/helper_functions.dart';
 import 'package:mobile_project/widgets/home/section_heading.dart';
 
 class Dashboard extends StatefulWidget {
@@ -150,6 +151,9 @@ class _DashboardState extends State<Dashboard> {
                               showDialog(
                                 context: context,
                                 builder: (context) => AlertDialog(
+                                    backgroundColor: THelperFunctions.isDarkMode(context)
+                            ? Colors.grey[800]
+                            : Colors.white,
                                   title: Text('Update Order Status'),
                                   content: DropdownButton<String>(
                                     value: order.status,
@@ -222,7 +226,7 @@ class _DashboardState extends State<Dashboard> {
     switch (status.toLowerCase()) {
       case 'pending':
         return Colors.orange;
-      case 'completed':
+      case 'delivered':
         return Colors.green;
       case 'cancelled':
         return Colors.red;

@@ -59,7 +59,6 @@ class StoreController extends GetxController {
       title: data['title'] ?? 'Unnamed Product',
       description: data['description'] ?? '',
       thumbnailUrl: data['thumbnailUrl'] ?? '',
-      imageUrls: List<String>.from(data['imageUrls'] ?? []),
       price: (data['price'] ?? 0.0).toDouble(),
       discount: (data['discount'] ?? 0.0).toDouble(),
       stock: (data['stock'] ?? 0).toInt(),
