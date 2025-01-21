@@ -46,7 +46,7 @@ class _DashboardState extends State<Dashboard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                            'Welcome Back ${userController.user.value.firstName}',
+                            'Welcome ${userController.user.value.fullName}',
                             style: GoogleFonts.poppins(
                                 color: Colors.white,
                                 fontSize: 20,
