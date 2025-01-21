@@ -32,7 +32,6 @@ class NavController extends GetxController {
   void _updateScreens(Role role) {
     screens.clear();
     if (role == Role.admin) {
-      // If the user is an admin, add the Dashboard screen
       screens.addAll([
         HomeScreen(),
         StoreScreen(),

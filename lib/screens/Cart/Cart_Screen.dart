@@ -177,7 +177,7 @@ class CartScreen extends ConsumerWidget {
                           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => CheckoutScreen(), // Replace with your screen
+                builder: (context) => CheckoutScreen(), 
               ),
             );
                           ScaffoldMessenger.of(context).showSnackBar(

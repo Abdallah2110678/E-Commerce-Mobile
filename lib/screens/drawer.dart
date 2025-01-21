@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:mobile_project/screens/dashboard/brands/brandManagement.dart';
 import 'package:mobile_project/screens/dashboard/category/categoryManagement.dart';
 import 'package:mobile_project/screens/dashboard/dashboard.dart';
@@ -6,6 +7,7 @@ import 'package:mobile_project/screens/dashboard/products/createProduct.dart';
 import 'package:mobile_project/screens/dashboard/products/productsTable.dart';
 import 'package:mobile_project/screens/dashboard/users/users.dart';
 import 'package:mobile_project/utils/helpers/helper_functions.dart';
+import 'package:mobile_project/screens/dashboard/users/createUser.dart';
 
 // The main screen with a drawer
 class DrawerScreen extends StatefulWidget {
@@ -21,6 +23,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
     CategoryManagementScreen(),
     const ProductTableView(),
     UsersPage(),
+    AddUserScreen(),
     BrandManagementScreen(),
   ];
 
@@ -31,6 +34,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
     "Categories",
     "Products",
     "Users",
+    "Add User",
     "Brand Management"
   ];
 
@@ -79,7 +83,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 color: Colors.blue,
               ),
               child: Text(
-                'Navigation Drawer',
+                'Buyond',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
@@ -112,16 +116,22 @@ class _DrawerScreenState extends State<DrawerScreen> {
               onTap: () => _onSelectItem(3),
             ),
             ListTile(
-              leading: const Icon(Icons.category),
+              leading: const Icon(Iconsax.user),
               title: const Text('Users'),
               selected: _selectedIndex == 4, // Highlight when active
               onTap: () => _onSelectItem(4),
             ),
             ListTile(
-              leading: const Icon(Icons.category),
-              title: const Text('Brands'),
+              leading: const Icon(Icons.add),
+              title: const Text('Add user'),
               selected: _selectedIndex == 5, // Highlight when active
               onTap: () => _onSelectItem(5),
+            ),
+            ListTile(
+              leading: const Icon(Icons.category),
+              title: const Text('Brands'),
+              selected: _selectedIndex == 6, // Highlight when active
+              onTap: () => _onSelectItem(6),
             ),
           ],
         ),

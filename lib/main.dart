@@ -34,7 +34,7 @@ void main() async {
     ),
   );
 
-  Get.lazyPut(() => AuthenticationRepository());
+  Get.put( AuthenticationRepository());
   Get.lazyPut(() => WishlistController());
   Get.lazyPut(() => StoreController());
 }
@@ -72,7 +72,6 @@ class AuthCheck extends StatelessWidget {
 class GeneralBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut(() =>WishlistController());
     Get.lazyPut(() =>NetworkManager());
     Get.lazyPut(() =>UserController());
     Get.put(UserRepository());

@@ -41,4 +41,10 @@ class OnboardingController extends GetxController {
     storage.write('hasSeenOnboarding', true); // Store flag
     Get.offAll(() => const LoginScreen()); // Navigate to login screen
   }
+
+  /// Clear storage
+  void clearStorage() {
+    storage.erase();
+    Get.snackbar('Storage Cleared', 'All stored data has been cleared.');
+  }
 }

@@ -49,8 +49,8 @@ class TCartCounterIcon extends ConsumerWidget {
                 child: Text(
                   '${cartItems.length}', // Display the number of items in the cart
                   style: Theme.of(context).textTheme.labelLarge!.apply(
-                        color: TColors.white, // Text color
-                        fontSizeFactor: 0.8, // Adjust font size
+                        color: TColors.white,
+                        fontSizeFactor: 0.8, 
                       ),
                 ),
               ),
@@ -59,7 +59,6 @@ class TCartCounterIcon extends ConsumerWidget {
         ],
       );
     } catch (e) {
-      // إظهار رسالة للمستخدم لتسجيل الدخول
       return IconButton(
         onPressed: () {
           ScaffoldMessenger.of(context).showSnackBar(
