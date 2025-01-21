@@ -83,7 +83,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 color: Colors.blue,
               ),
               child: Text(
-                'Navigation Drawer',
+                'Buyond',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
