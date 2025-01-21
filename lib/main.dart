@@ -71,7 +71,7 @@ class AuthCheck extends StatelessWidget {
 
 class GeneralBinding extends Bindings {
   @override
-  void dependencies() {
+  void dependencies() { 
     Get.lazyPut(() =>NetworkManager());
     Get.lazyPut(() =>UserController());
     Get.put(UserRepository());
