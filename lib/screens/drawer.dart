@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:mobile_project/screens/dashboard/brands/brandManagement.dart';
 import 'package:mobile_project/screens/dashboard/category/categoryManagement.dart';
 import 'package:mobile_project/screens/dashboard/dashboard.dart';
@@ -115,13 +116,13 @@ class _DrawerScreenState extends State<DrawerScreen> {
               onTap: () => _onSelectItem(3),
             ),
             ListTile(
-              leading: const Icon(Icons.category),
+              leading: const Icon(Iconsax.user),
               title: const Text('Users'),
               selected: _selectedIndex == 4, // Highlight when active
               onTap: () => _onSelectItem(4),
             ),
             ListTile(
-              leading: const Icon(Icons.category),
+              leading: const Icon(Icons.add),
               title: const Text('Add user'),
               selected: _selectedIndex == 5, // Highlight when active
               onTap: () => _onSelectItem(5),
